@@ -1,8 +1,172 @@
+/* Original settings */
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 14px Garamond;
+  background-color: #2762B0;
 }
 
 a {
-  color: #00B7FF;
+  color: #ffffff;
+  text-decoration: none;
 }
+
+/* 
+Nav bar 
+*/
+nav {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background-color: #1992E2;
+}
+
+nav .container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 4px 0;
+}
+
+/* nav-header */
+.navbar-header {
+  width: 20%;
+  max-width: 200px;
+}
+
+.navbar-brand {
+  margin: 0px;
+  height: 90%;
+}
+
+/* nav-middle */
+.navbar-middle {
+  width: 56%;
+  margin: 0 2%;
+}
+
+.container-inside {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-middle .container-inside input, .navbar-middle .container-inside div {
+  border-radius: 15px;
+  text-align: center;
+} 
+
+.search {
+  height: 100%;
+  width: 49%;
+  padding: 4px 0;
+  border: none;
+}
+
+.list {
+  width: 49%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  padding: 4px 0;
+  border: none;
+}
+
+/* nav-right */
+.navbar-right {
+  width: 20%;
+  max-width: 240px;
+  display: flex;
+  align-items: center;
+}
+
+.member a {
+  color: #fff;
+  margin: 0px;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.container-inside a {
+  height: 24px;
+}
+/* 
+main
+ */
+.main {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background-color: #2762B0;
+}
+
+.main .container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.main-left, .main-middle, .main-right {
+  display: flex;
+  flex-direction: column;
+}
+
+/* main-left */
+.main-left {
+  width : 20%;
+  max-width: 200px;
+  height: 100%;
+}
+
+.sub-main-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.subtext {
+  display: flex;
+  font-size: 20px;
+  font-weight: 500;
+  color : #fff;
+  margin: 15px 0;
+}
+
+.subscribe-item {
+  display: flex;
+}
+
+.subscribe-content {
+  display: flex;
+  background-color: #fff;
+  border-radius: 16px;
+  color: #1992E2;
+  font-size: 20px;
+  font-weight: 500;
+  justify-content: center;
+  padding: 2px 14px;
+}
+
+/* main-middle */
+.main-middle {
+  width: 56%;
+  background: #aaa;
+  margin: 0 2%;
+}
+
+/* main-right */
+.main-right {
+  width: 20%;
+  max-width: 240px;
+  background-color: #fff;
+}
+
+.ads img {
+  max-width: 240px;
+}
+
+/*
+add_item  
+*/

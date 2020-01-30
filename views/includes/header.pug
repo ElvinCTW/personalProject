@@ -1,0 +1,52 @@
+nav.top-navbar
+    .container
+        .navbar-header
+            a(href='/')
+                h1.navbar-brand Triangle Trade
+        .navbar-middle
+            .container-inside
+                input.search(type="text", name="search", placeholder="Search...")
+                //- drop down list
+                div.list()
+                    span Board List
+        .navbar-right
+            .container-inside
+                div.member
+                    if !user
+                        //- link to sign_in / sign_up page
+                        a(href="/") SIGN IN
+                    else 
+                        //- link to user page
+                        a(href="/") user.name
+                        //- drop down list
+                a(href="/")
+                    //- link to notification page
+                    img.notification(src="/images/notification.png", alt="")
+                a(href="/")
+                    //- link to favorite page
+                    img.likes(src="/images/likes.png", alt="")
+                a(href="/")
+                    //- link to message page
+                    img.message(src="/images/message.png", alt="")
+                a(href="/items/add")
+                    //- link to new item page
+                    img.plus(src="/images/plus.png", alt="")
+                
+        //-     ul.nav.navbar-nav.navbar-right
+        //-         if user
+        //-             li.dropdown
+        //-                 a.navbar-avatar.dropdown-toggle(href='#', data-toggle='dropdown')
+        //-                     span #{user.name || user.email} &nbsp;
+        //-                     i.caret
+        //-                 ul.dropdown-menu
+        //-                     li
+        //-                         a(href='/profile') Profile
+        //-                     li.divider(role='separator')
+        //-                     li
+        //-                         a(href='/logout') Logout
+        //-         else
+        //-             li(class=(title == 'Log in') ? 'active' : null)
+        //-                 a(href='/login') Log-in
+        //-             li(class=(title == 'Register') ? 'active' : null)
+        //-                 a(href='/register') Register
+//- /.nav-collapse

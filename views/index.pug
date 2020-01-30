@@ -1,5 +1,19 @@
 extends layout
-
 block content
-  h1= title
-  p Welcome to #{title}
+  .main 
+    .container
+      .main-left
+        .sub-main-container
+          .subtext Subscribes
+            //- for (i=0;i<6;i++)
+          .subscribe-item
+            .subscribe-content #Camera
+      .main-middle
+        .sub-main-container
+          .subtext Recommands
+          .recommand-item
+            .recommand
+      .main-right
+        .sub-main-container
+          .ads
+            img(src="./images/gad.png", alt="")

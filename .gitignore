@@ -1,7 +1,10 @@
 node_modules
+
+# Personal Security
 *.pem
 *.key
 *.ssh
+*.crt
 
-SSL file
+# SSL file
 public/.well-known

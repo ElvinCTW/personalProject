@@ -53,8 +53,8 @@ nav .container {
 }
 
 .navbar-middle .container-inside input, .navbar-middle .container-inside div {
-  border-radius: 15px;
   text-align: center;
+  border-radius: 15px;
 } 
 
 .search {
@@ -165,6 +165,75 @@ main
 
 .ads img {
   max-width: 240px;
+}
+
+/* 
+users_register
+*/
+.main-middle.sign {
+  align-items: center;
+}
+
+.subtext.sign {
+  width: 100%;
+  text-align: left;
+  color: #fff;
+  font-weight: 600;
+}
+
+.sub-main-container.sign {
+  background-color: #fff;
+  width: 100%;
+  border-radius: 15px;
+}
+
+.main-middle form {
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+  width: 50%;
+  margin-left: 10px;
+}
+
+.main-middle form p {
+  width: 100%;
+  margin: 14px 0 2px 12px ;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.main-middle form input {
+  width: 100%;
+  border-radius: 15px;
+  padding-left: 10px;
+  height: 24px;
+}
+
+.sub-main-container.sign .button-div {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.sub-main-container.sign .button-div a {
+  color: #2762B0;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.sub-main-container.sign .button-div button {
+  border-radius: 15px;
+  font-size: 16px;
+  color: #000000;
+  font-weight: 500;
+  background-color: #FAD7AC;
+  border: none;
+  min-width: 80px;
+}
+
+.sub-main-container.sign .button-div.sign {
+  margin-left: 10px;
+  width: 50%;
 }
 
 /*

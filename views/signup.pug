@@ -6,19 +6,19 @@ block content
       .main-middle.sign
         .subtext.sign Member Sign Up
         .sub-main-container.sign
-          form(action="api/1.0/users/register", method="post")
+          form(action="/api/1.0/users/register", method="post")
             p ID for Sign In
             input.id(name="id" type="text" max=10 placeholder="ID for Sign In")
             p Password
-            input.password(name="password" type="text" placeholder="Password")
+            input.password(name="password" type="password" placeholder="Password" value="123")
             p Nickname
-            input.name(name="name" type="text" placeholder="Nickname")
+            input.name(name="name" type="text" placeholder="Nickname" value="aaa")
             p Cell Phone Number
-            input.phone(type="tel", name="phone" placeholder="Cell Phone Number")
+            input.phone(type="tel", name="phone" placeholder="Cell Phone Number" value="51051133")
             p Email Address
-            input.email(type="email", name="email" placeholder="Email Address")
+            input.email(type="email", name="email" placeholder="Email Address" value="111@dasd.com")
             p Address
-            input.address(type="text", name="address" placeholder="Address")
+            input.address(type="text", name="address" placeholder="Address" value="asdasd64056asd")
             .button-div
               button(type="submit") Register
           .button-div.sign

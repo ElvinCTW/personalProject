@@ -181,7 +181,7 @@ users_register
   font-weight: 600;
 }
 
-.sub-main-container.sign {
+.sub-main-container.sign, .sub-main-container.add-item {
   background-color: #fff;
   width: 100%;
   border-radius: 15px;
@@ -209,19 +209,19 @@ users_register
   height: 24px;
 }
 
-.sub-main-container.sign .button-div {
+.sub-main-container.sign .button-div, .sub-main-container.add-item .button-div {
   display: flex;
   justify-content: flex-end;
   margin-top: 10px;
 }
 
-.sub-main-container.sign .button-div a {
+/* .sub-main-container.sign .button-div a {
   color: #2762B0;
   font-size: 20px;
   font-weight: 500;
-}
+} */
 
-.sub-main-container.sign .button-div button {
+.sub-main-container.sign .button-div button, .sub-main-container.add-item .button-div button {
   border-radius: 15px;
   font-size: 16px;
   color: #000000;

@@ -2,6 +2,7 @@
 const createError = require('http-errors');
 const express = require('express');
 const userAPI = require('./routes/userAPI')
+const itemAPI = require('./routes/itemAPI')
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
@@ -25,6 +26,7 @@ app.get('/items/add', (req,res)=>{res.render('items_add')});
 
 /* API Routers */
 app.use('/api/1.0/users', userAPI);
+app.use('/api/1.0/items', itemAPI);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

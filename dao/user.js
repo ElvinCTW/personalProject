@@ -4,21 +4,21 @@ module.exports = {
   // get user data by log-in_id || token
   get: (userInfo)=>{
     // check id or token
-    let queryString;
+    let queryColumn;
     if (userInfo.length <= 10 ) {
       // max length of id = 10
-      queryString = `sign_id = ${userInfo}`;
+      queryColumn = 'sign_id';
     } else {
-      queryString = `token = ${userInfo}`
+      queryColumn = 'token'
     }
     return new Promise((resolve, reject)=>{
-      mysql.pool.query('SELECT * FROM users WHERE ?', queryString, (err, getUserResult, fileds)=>{
+      mysql.pool.query(`SELECT * FROM users WHERE ${queryColumn} = ?`, userInfo, (err, userData, fileds)=>{
         if (err) {
           console.log('error in getUserPromise');
           console.log(err);
           throw err;
         }
-        resolve(getUserResult);
+        resolve(userData);
       });
     });
   },
@@ -37,11 +37,21 @@ module.exports = {
         if (err) {
           console.log('error in insertUserPromise');
           console.log(err);
-          throw err;
+          reject(err);
         }
-        resolve(insertUserResult);
+        // if insert success, send token and nickname back
+        resolve({
+          token: token,
+          nickname: userObject.nickname,
+        });
         console.log('insert user success');
       });
+    })
+  },
+  update: (updateUserData)=>{
+    // To do : update function
+    return new Promise((resolve,reject)=>{
+      mysql.pool.query('UPDATE users SET ? = ? WHERE sign_id = ?', [,,])
     })
   },
 }

@@ -5,6 +5,7 @@ node_modules
 *.key
 *.ssh
 *.crt
+.env
 
 # SSL file
 public/.well-known

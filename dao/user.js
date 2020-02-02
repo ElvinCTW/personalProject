@@ -32,8 +32,7 @@ module.exports = {
       // make object
       userObject.token = token;
       userObject.time = Date.now().toString();
-      const insertQueryString = 'INSERT INTO users SET ?'
-      mysql.pool.query(insertQueryString, userObject, (err, insertUserResult, fields)=>{
+      mysql.pool.query('INSERT INTO users SET ?', userObject, (err, insertUserResult, fields)=>{
         if (err) {
           console.log('error in insertUserPromise');
           console.log(err);

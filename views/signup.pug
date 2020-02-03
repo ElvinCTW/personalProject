@@ -8,15 +8,17 @@ block content
         .sub-main-container.sign
           form(action="/api/1.0/users/register", method="post" id="sign-form")
             p ID for Sign In
-            input.id(name="id" type="text" max=10 placeholder="ID for Sign In")
+            input.id(name="id" type="text" max=10 placeholder="ID for Sign In" required)
             p Password
-            input.password(name="password" type="password" placeholder="Password" value="123")
+            input.password(name="password" type="password" placeholder="Password" value="123" required)
             p Nickname
-            input.name(name="name" type="text" placeholder="Nickname" value="aaa")
+            input.name(name="name" type="text" placeholder="Nickname" value="aaa" required)
             p Cell Phone Number
-            input.phone(type="tel", name="phone" placeholder="Cell Phone Number" value="51051133")
+            input.phone(type="tel", name="phone" placeholder="Cell Phone Number" value="51051133" required)
             p Email Address
-            input.email(type="email", name="email" placeholder="Email Address" value="111@dasd.com")
+            input.email(type="email", name="email" placeholder="Email Address" value="111@dasd.com" required)
+            p City
+            input.city(type="text", name="city" placeholder="city" value="taipei")
             p Address
             input.address(type="text", name="address" placeholder="Address" value="asdasd64056asd")
             .button-div

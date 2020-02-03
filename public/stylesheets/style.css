@@ -156,6 +156,58 @@ main
   margin: 0 2%;
 }
 
+.items-area.recommands {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.item-container-outside.recommands {
+  background-color: #fff;
+  border-radius: 15px;
+  width: 240px;
+  height: 400px;
+}
+
+.item-container-inside.recommands {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 8px;
+  /* width: 100%;
+  height: 100%; */
+}
+
+.item-container-inside.recommands .based-on {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.item-container-inside.recommands .based-on span, .item-container-inside.recommands .item.content .item-info span {
+  margin: 3px 2px 3px 0;
+}
+
+.item-container-inside.recommands .item-img.recommands {
+  width:100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-container-inside.recommands .item-img.recommands img {
+  max-width: 220px;
+  max-height: 165px;
+}
+
+.item-container-inside.recommands .item.content div {
+  margin: 3px 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.item-container-inside.recommands .item.content .title {
+  font-size: 20px;
+}
+
+
 /* main-right */
 .main-right {
   width: 20%;

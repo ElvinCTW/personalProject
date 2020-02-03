@@ -6,7 +6,7 @@ block content
       .main-middle.add-item
         .subtext.add-item Add items
         .sub-main-container.add-item
-          form(action="/api/1.0/items/add" method="post" id="add-items-form" enctype="multipart/form-data")
+          form(action="/api/1.0/items/new" method="post" id="add-items-form" enctype="multipart/form-data")
             input(type="text" name="token" id="token-input" style="display:none;")
             p Main Category
             input.main-category(name="main_category" type="text" placeholder="Basketball" value="basketball")
@@ -23,7 +23,7 @@ block content
             p Introduction
             input.introduction(name="introduction" type="text" placeholder="Introduction" value="yoyoyo")
             p Pictures (up to 6)
-            input.pictures(type="file", name="pictures" accept="image/*" multiple)
+            input.pictures(type="file", name="pictures" accept="image/*" id="pics-input" multiple required)
             .button-div
               button(type="submit" id="add-items-btn") Add items
       .main-right

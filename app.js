@@ -25,7 +25,7 @@ app.get('/', (req, res) => {res.render('index')});
 app.get('/users/signin', (req,res)=>{res.render('signin')});
 app.get('/users/signup', (req,res)=>{res.render('signup')});
 // Items
-app.get('/items/add', (req,res)=>{res.render('items_add')});
+app.get('/items/new', (req,res)=>{res.render('items_add')});
 
 /* API Routers */
 app.use('/api/1.0/users', userAPI);

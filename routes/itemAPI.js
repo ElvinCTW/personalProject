@@ -12,48 +12,39 @@ const s3 = new aws.S3({
   accessKeyId: awsConfig.accessKeyId,
   secretAccessKey: awsConfig.secretAccessKey,
 });
-// const upload = multer({
-//   storage: multerS3({
-//     s3: s3,
-//     bucket: 'triangletradeelvin',
-//     contentType: multerS3.AUTO_CONTENT_TYPE,
-//     acl: 'public-read',
-//     key: function (req, file, cb) {
-//       console.log(file);
-//       cb(null, +'userUpload/'+Date.now().toString())
-//     }
-//   })
-// })
-// const cpUpload = upload.fields([{ name: "pictures", maxCount: 6 }]);
-router.post('/add', async (req, res, next) => {
+// Add new item API
+router.post('/new', async (req, res, next) => {
   /** Input : req.body from add items page */
   /** To Do : get user data add item into db */
-  // get user data
-  // console.log(req.body);
-  // const userDataArr = await userDAO.get(req.body.token);
-  // const userID = userDataArr[0].sign_id
   // upload pictures to s3 and get pics name
   let userID;
   let userNickname;
-  console.log(Date());
   const upload = multer({
     storage: multerS3({
       s3: s3,
-      bucket: 'triangletradeelvin',
+      bucket: 'triangletradeelvintokyo',
       contentType: multerS3.AUTO_CONTENT_TYPE,
       acl: 'public-read',
       key: async function (req, file, cb) {
-        console.log(Date());
+        // check picture uploaded
+        // if (!file) {
+        //   console.log('no file');
+        //   res.status(400).send('plz select picture');
+        // }
+        // if (file.length === 0) {
+        //   console.log(file.length === 0);
+        //   res.status(400).send('plz select picture');
+        // }
+        // get user data
         const userDataArr = await userDAO.get(req.body.token);
         userID = userDataArr[0].sign_id;
         userNickname = userDataArr[0].nickname;
-        cb(null, `userUpload/${userNickname}/` + Date.now().toString())
+        cb(null, `userUpload/${userNickname}/${userNickname}-` + Date.now().toString())
       }
     })
   }).fields([{ name: "pictures", maxCount: 6 }])
   upload(req, res, async (err) => {
-    console.log(Date());
-    if (!req.files) {
+    if (!req.files.pictures) {
       res.status(400).send('Please choose pictures');
       return;
     }
@@ -76,20 +67,49 @@ router.post('/add', async (req, res, next) => {
       title: req.body.title,
       status: req.body.status,
       count: req.body.count,
-      introduction: req.body.insert,
+      introduction: req.body.introduction,
       // change this after finish multer-s3
       pictures: picturesString,
+      time: Date.now().toString(),
     })
     /** Output : success or error msg */
     if (insertItemResult.errorMsg) {
       res.status(500).send(insertItemResult.errorMsg)
     } else {
-      console.log(Date());
       res.status(200).send({
         insertStatus: 'success',
       })
     }
   });
+})
+// get recommmand items
+router.get('/:type', async (req, res, next) => {
+  /** Input: query */
+  // Lastest items for someone not member
+  if (req.params.type === 'all' || req.params.type === 'detail') {
+    let token = null;
+    if (req.headers.authorization) {
+      token = req.headers.authorization.split(' ')[1]
+    }
+    console.log('before DAO');
+    const getItemResultArr = await itemDAO.get({
+      type: req.params.type || null,
+      page: req.query.page || 0,
+      main_category: req.query.main_category || null,
+      sub_category: req.query.sub_category || null,
+      item_id: req.query.item_id || null,
+      token: token,
+    })
+    console.log(getItemResultArr);
+    if (!getItemResultArr.errorMsg) {
+      res.status(200).send(getItemResultArr);
+    } else {
+      console.log(getItemResultArr.errorMsg);
+      res.status(500).send(insertItemResult.errorMsg);
+    }
+  } else {
+    res.status(400).send('plz choose correct type : /all /detail');
+  }
 })
 
 module.exports = router;

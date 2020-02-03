@@ -8,9 +8,9 @@ block content
         .sub-main-container.sign
           form(action="/api/1.0/users/signin", method="post" id="sign-form")
             p ID for Sign In
-            input.id(name="id" type="text" max=10 placeholder="ID for Sign In")
+            input.id(name="id" type="text" max=10 placeholder="ID for Sign In" value="test")
             p Password
-            input.password(name="password" type="text" placeholder="Password")
+            input.password(name="password" type="text" placeholder="Password" value="123")
             .button-div
               button(type="button" id="signin-btn") Sign In
           .button-div.sign

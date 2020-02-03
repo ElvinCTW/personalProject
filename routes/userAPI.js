@@ -18,6 +18,7 @@ router.post('/register', async (req, res, next)=>{
       phone: req.body.phone,
       email: req.body.email,
       address: req.body.address,
+      city: req.body.city,
     });
     /* Output : Index page w/ user data || fail alert */
     res.status(200).send({user: insertUserResult});

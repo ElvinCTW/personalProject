@@ -9,12 +9,32 @@ block content
           .subscribe-item
             .subscribe-content #Camera
       .main-middle
-        .sub-main-container
-          .subtext Recommands
-          .sub-main-container.recommand
-            .recommand-raw
+        //- .sub-main-container.news
+          //- .subtext.news News
+        .sub-main-container.recommands
+          .subtext.recommand Recommands
+          //- for (i=0;i<6;i++)
+          .items-area.recommands
+            //- item div start here 
+            .item-container-outside.recommands
+              .item-container-inside.recommands
+                .based-on
+                  span Based on
+                  span #Shoes
+                .item-img.recommands
+                  img(src="", alt="" id="img")
+                .item.content
+                  .title Title
+                  .item-info 
+                    span.uploader aaa
+                    span.likes 10
+                    span.status used
+                  .tags tags
+              
+
+            
       .main-right
         .sub-main-container
           .ads
             img(src="./images/gad.png", alt="")
-  
+  script(src="/javascripts/index.js")

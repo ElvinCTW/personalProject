@@ -1,3 +1,6 @@
+// cst
+const s3_url = 'https://triangletradeelvintokyo.s3-ap-northeast-1.amazonaws.com/'
+
 // To do : made header react to log in status (by changing login div)
 if (localStorage.getItem('token')) {
   // Sign in status

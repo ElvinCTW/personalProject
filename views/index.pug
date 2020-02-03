@@ -4,37 +4,49 @@ block content
     .container
       .main-left
         .sub-main-container
-          .subtext Subscribes
+          .subtext.subscribe Subscribes
             //- for (i=0;i<6;i++)
           .subscribe-item
-            .subscribe-content #Camera
+            .subscribe-content 
+              span #Camera
+            .subscribe-content
+              span #iPhone
+            .subscribe-content
+              span #Xbox
+            .subscribe-content
+              span #Ethan
+            .subscribe-content
+              span #Is
+            .subscribe-content
+              span #God
       .main-middle
         //- .sub-main-container.news
           //- .subtext.news News
         .sub-main-container.recommands
           .subtext.recommand Recommands
-          //- for (i=0;i<6;i++)
-          .items-area.recommands
+          .items-area.recommands(id="items-area-recommand")
             //- item div start here 
-            .item-container-outside.recommands
-              .item-container-inside.recommands
-                .based-on
-                  span Based on
-                  span #Shoes
-                .item-img.recommands
-                  img(src="", alt="" id="img")
-                .item.content
-                  .title Title
-                  .item-info 
-                    span.uploader aaa
-                    span.likes 10
-                    span.status used
-                  .tags tags
-              
-
-            
+            //- - let n = 0;
+            //- while n <6
+            //-   .item-container-outside.recommands
+            //-     .item-container-inside.recommands
+            //-       .based-on
+            //-         span Based on
+            //-         span.item #Shoes
+            //-       .item-img.recommands
+            //-         img(src="", alt="" id="img")
+            //-       .item.content
+            //-         .title Title
+            //-         .item-info 
+            //-           span.nickname aaa
+            //-           //- span.likes 10
+            //-           span.status used
+            //-         .tags tags
+            //-           span tag
+            //-   - n++
       .main-right
         .sub-main-container
-          .ads
-            img(src="./images/gad.png", alt="")
+        .subtext.ads Advertisement
+        .ads
+          img(src="./images/gad.png", alt="")
   script(src="/javascripts/index.js")

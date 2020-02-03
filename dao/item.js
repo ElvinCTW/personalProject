@@ -1,12 +1,6 @@
 const mysql = require('../util/mysql');
-
 module.exports = {
   get: (queryCondition) => {
-    // type: req.params.type || null,
-    // page: req.query.page || null,
-    // main_category: req.query.main_category || null,
-    // sub_category: req.query.sub_category || null,
-    // token: req.headers.authorization.split(' ')[1] || null,
     return new Promise((resolve, reject)=>{
       let queryString = 'SELECT * FROM items ';
       if (queryCondition.type === 'all') {
@@ -30,10 +24,10 @@ module.exports = {
         } else if (!queryCondition.token) {
           // lastest
           queryString += 'ORDER BY time DESC LIMIT ?, 6'
-          console.log(queryString);
           mysql.pool.query(queryString, queryCondition.page*6, (err, getItemResultArr, fields)=>{
-            if (err) {reject(err)};
-            resolve(getItemResultArr);
+            // if (err) {reject(err)};
+            // resolve(getItemResultArr);
+            afterItemsQuery(err, queryCondition, getItemResultArr, resolve, reject);
           })
         } else {
           // recommand
@@ -69,4 +63,12 @@ module.exports = {
     /** To do: insert data to db */
     /** Output: Success or error msg*/
   }
+}
+
+function afterItemsQuery(err, queryCondition, getItemResultArr, resolve, reject) {
+  if (err) {reject(err)};
+  if (getItemResultArr.length === 6) {
+    getItemResultArr.next_paging = queryCondition.page+1;
+  };
+  resolve(getItemResultArr);
 }

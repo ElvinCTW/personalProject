@@ -61,6 +61,7 @@ router.post('/new', async (req, res, next) => {
     // insert item
     const insertItemResult = await itemDAO.insert({
       user_id: userID,
+      user_nickname: userNickname,
       main_category: req.body.main_category,
       sub_category: req.body.sub_category,
       tags: req.body.tags,
@@ -91,7 +92,6 @@ router.get('/:type', async (req, res, next) => {
     if (req.headers.authorization) {
       token = req.headers.authorization.split(' ')[1]
     }
-    console.log('before DAO');
     const getItemResultArr = await itemDAO.get({
       type: req.params.type || null,
       page: req.query.page || 0,
@@ -100,7 +100,6 @@ router.get('/:type', async (req, res, next) => {
       item_id: req.query.item_id || null,
       token: token,
     })
-    console.log(getItemResultArr);
     if (!getItemResultArr.errorMsg) {
       res.status(200).send(getItemResultArr);
     } else {

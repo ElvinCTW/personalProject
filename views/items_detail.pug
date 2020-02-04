@@ -1,0 +1,19 @@
+extends layout
+block content
+  .main 
+    .container
+      .main-left
+      .main-middle.item-detail
+        .subtext.item-detail Item Detail
+        .sub-main-container.item-detail
+          .title.item-detail(id="item-detail-title")=title
+          .picture-div.item-detail
+            - let imgUrl = 'https://triangletradeelvintokyo.s3-ap-northeast-1.amazonaws.com/'+pictures.split(',')[0]
+            img(src=imgUrl)
+          .interaction.item-detail
+            .nickname.item-detail=user_nickname
+            .change-button.item-detail
+              button Change
+          .introduction-div.item-detail=introduction
+      .main-right
+  script(src="/javascripts/items_detail.js")

@@ -89,8 +89,12 @@ router.get('/:type', async (req, res, next) => {
   // Lastest items for someone not member
   if (req.params.type === 'all' || req.params.type === 'detail') {
     let token = null;
+    let user_nickname = null;
     if (req.headers.authorization) {
       token = req.headers.authorization.split(' ')[1]
+    }
+    if (req.query.user_nickname) {
+      user_nickname = req.query.user_nickname
     }
     const getItemResultArr = await itemDAO.get({
       type: req.params.type || null,
@@ -99,6 +103,7 @@ router.get('/:type', async (req, res, next) => {
       sub_category: req.query.sub_category || null,
       item_id: req.query.item_id || null,
       token: token,
+      user_nickname: user_nickname,
     })
     if (!getItemResultArr.errorMsg) {
       res.status(200).send(getItemResultArr);

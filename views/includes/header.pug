@@ -7,8 +7,14 @@ nav.top-navbar
             .container-inside
                 input.search(type="text", name="search", placeholder="Search...")
                 //- drop down list
-                div.list()
-                    span Board List
+                //- div.list()
+                //-     span Board List
+                //- select.list(onchange=`window.location.assign('/board/${this.value}')`)
+                //- select.list(onchange=`locateToBoard(${this})`)
+                select.list(onchange='locateToBoard()' id="select-list")
+                    option(value="boardlist") Board List
+                    option(value="basketball") Basketball
+                    option(value="photograph") Photograph
         .navbar-right
             .container-inside
                 div.member

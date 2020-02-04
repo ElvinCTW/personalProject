@@ -268,7 +268,7 @@ main
   padding: 2px 6px;
   margin: 0 5px 5px 0;
 }
-.items-area.recommands .nomore-text-div {
+.sub-main-container.recommands .nomore-text-div {
   width: 100%;
   text-align: center;
   font-weight: 500;
@@ -276,6 +276,59 @@ main
   background: #fff;
   border-radius: 16px;
   color: #2762B0;
+}
+
+/* Item Dtails */
+.sub-main-container.item-detail {
+  border-radius: 16px;
+  background: #fff;
+}
+
+.title.item-detail {
+  font-size: 36px;
+  color: #1992E2;
+  width: 100%;
+  font-weight: 600;
+  margin: 20px;
+  /* overflow : hidden;
+  text-overflow : ellipsis;
+  white-space : nowrap; */
+}
+
+.picture-div.item-detail {
+  display: flex;
+  justify-content: center;
+}
+
+.picture-div.item-detail img {
+  max-width: 500px;
+  max-height: 500px;
+  padding: 20px;
+
+}
+
+.interaction.item-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nickname.item-detail, .introduction-div.item-detail {
+  font-size: 24px;
+  color: #1992E2;
+  font-weight: 600;
+  margin: 20px;
+}
+
+.change-button.item-detail button {
+  margin-right: 20px;
+  background-color: #FAD7AC;
+  border-radius: 14px;
+  color: #000;
+  text-align: start;
+  padding: 2px 6px;
+  font-size: 24px;
+  font-weight: 500;
 }
 
 /* main-right */
@@ -324,11 +377,15 @@ users_register
   font-size: 14px;
 }
 
-.main-middle form input {
+.main-middle form input, .main-middle form select {
   width: 100%;
   border-radius: 15px;
   padding-left: 10px;
   height: 24px;
+}
+
+.main-middle form input.introduction {
+  min-height: 100px;
 }
 
 .sub-main-container.sign .button-div, .sub-main-container.add-item .button-div {
@@ -337,7 +394,7 @@ users_register
   margin-top: 10px;
 }
 
-.sub-main-container.sign .button-div button, .sub-main-container.add-item .button-div button {
+.sub-main-container.sign .button-div button, .sub-main-container.add-item .button-div button, .button-div.item-detail.change button {
   border-radius: 15px;
   font-size: 16px;
   color: #000000;

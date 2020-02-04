@@ -4,26 +4,25 @@ module.exports = {
     return new Promise((resolve, reject)=>{
       let queryString = 'SELECT * FROM items ';
       if (queryCondition.type === 'all') {
-        // add paging
         if (queryCondition.main_category) {
           if (!queryCondition.sub_category) {
             // select all by main category only
-            queryString += 'WHERE main_category = ?'
-            mysql.pool.query(queryString, queryCondition.page*6, queryCondition.main_category, (err, getItemResultArr, fields)=>{
+            queryString += 'WHERE main_category = ? ORDER BY time DESC LIMIT ?, 6';
+            let q = mysql.pool.query(queryString, [queryCondition.main_category, queryCondition.page*6], (err, getItemResultArr, fields)=>{
               if (err) {reject(err)};
               resolve(getItemResultArr);
-            })
+            }) 
           } else {
             // select all by main and sub category
-            queryString += 'WHERE main_category = ? AND sub_category = ?'
-            mysql.pool.query(queryString, queryCondition.page*6, queryCondition.main_category, queryCondition.sub_category, (err, getItemResultArr, fields)=>{
+            queryString += 'WHERE main_category = ? AND sub_category = ? ORDER BY time DESC LIMIT ?, 6';
+            mysql.pool.query(queryString, queryCondition.main_category, queryCondition.sub_category, queryCondition.page*6, (err, getItemResultArr, fields)=>{
               if (err) {reject(err)};
               resolve(getItemResultArr);
             })
           }
-        } else if (!queryCondition.token) {
+        } else if (!queryCondition.user_nickname) {
           // lastest
-          queryString += 'ORDER BY time DESC LIMIT ?, 6'
+          queryString += 'ORDER BY time DESC LIMIT ?, 6';
           mysql.pool.query(queryString, queryCondition.page*6, (err, getItemResultArr, fields)=>{
             // if (err) {reject(err)};
             // resolve(getItemResultArr);
@@ -31,6 +30,10 @@ module.exports = {
           })
         } else {
           // recommand
+          queryString += 'WHERE user_nickname = ? ORDER BY time DESC LIMIT ?, 6';
+          mysql.pool.query(queryString, [queryCondition.user_nickname, queryCondition.page*6], (err, getItemResultArr, fields)=>{
+            afterItemsQuery(err, queryCondition, getItemResultArr, resolve, reject);
+          })
         } 
       } else if (queryCondition.type === 'detail') {
         // item detail info page

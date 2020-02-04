@@ -1,6 +1,10 @@
 // cst
 const s3_url = 'https://triangletradeelvintokyo.s3-ap-northeast-1.amazonaws.com/'
-
+function locateToBoard() {
+  // locate user to selected board
+  let boardname = $('#select-list').val()
+  window.location.assign(`/boards/${boardname}`)
+};
 // To do : made header react to log in status (by changing login div)
 if (localStorage.getItem('token')) {
   // Sign in status

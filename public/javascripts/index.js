@@ -6,6 +6,9 @@ $('#img').attr({
 let page = 0;
 let nomoreUpdate = false;
 createMoreItems();
+// $('#nomore-text-div').click(
+//   createMoreItems()
+// );
 $(window).scroll(function () {
   // 判斷整體網頁的高度
   const $BodyHeight = $(document).height();
@@ -14,19 +17,13 @@ $(window).scroll(function () {
   // 偵測目前捲軸頂點
   $ScrollTop = $(this).scrollTop();
 
-  console.log($BodyHeight);
-  console.log($ViewportHeight + $ScrollTop);
-  console.log($BodyHeight - ($ViewportHeight + $ScrollTop));
-  if ($BodyHeight - ($ViewportHeight + $ScrollTop) < 0 ) {
+  if ($BodyHeight - ($ViewportHeight + $ScrollTop) < 10 ) {
     if (page !== 'end') {
       createMoreItems();
     } else {
       if (!nomoreUpdate) {
         nomoreUpdate = true;
-        let nomoreTextDiv = $('<div></div>').attr({
-          'class': 'nomore-text-div'
-        }).html('no more items');
-        $('#items-area-recommand').append(nomoreTextDiv);
+        $('#nomore-text-div').attr({'onclick': ''}).html('no more items');
       }
     }
   };
@@ -38,12 +35,8 @@ function createMoreItems() {
     type: 'get',
     success: (itemsListArr) => {
       for (let i = 6 * page; i < (6 * page + itemsListArr.length); i++) {
-        console.log(i);
-        console.log(page);
-        console.log(6 * page + itemsListArr.length);
-        // Create link to item info page
-        console.log(itemsListArr[i - 6 * page]);
-        let link = $('<a></a>').attr({ 'href': `/items/info?item_id=${itemsListArr[i - 6 * page].id}` });
+        // Create link to item detail page
+        let link = $('<a></a>').attr({ 'href': `/items/detail?item_id=${itemsListArr[i - 6 * page].id}` });
         $('#items-area-recommand').append(link);
         // Create new Item outside container
         let newItemContainer_Outside = $('<div></div>').attr({ 'class': 'item-container-outside recommands' });

@@ -3,6 +3,7 @@ const createError = require('http-errors');
 const express = require('express');
 const userAPI = require('./routes/userAPI')
 const itemAPI = require('./routes/itemAPI')
+const itemDAO = require('./dao/item');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -26,6 +27,30 @@ app.get('/users/signin', (req,res)=>{res.render('signin')});
 app.get('/users/signup', (req,res)=>{res.render('signup')});
 // Items
 app.get('/items/new', (req,res)=>{res.render('items_add')});
+app.get('/items/detail', async (req,res)=>{
+  let itemDetailData = await itemDAO.get({
+    type: 'detail',
+    item_id: req.query.item_id,
+  })
+  res.render('items_detail',itemDetailData[0])
+});
+// Boards
+app.get('/boards/:board', async (req,res)=>{
+  // call itemDAO to get board items
+  let sub_category = null;
+  if (req.query.sub_category) {
+    sub_category = req.query.sub_category;
+  }
+  let itemDetailData = await itemDAO.get({
+    type: 'all',
+    main_category: req.params.board,
+    sub_category: sub_category,
+    page: 0,
+  })
+  // after get data, render board page with data
+  res.render('board',itemDetailData)
+});
+
 
 /* API Routers */
 app.use('/api/1.0/users', userAPI);

@@ -9,17 +9,25 @@ block content
           form(action="/api/1.0/items/new" method="post" id="add-items-form" enctype="multipart/form-data")
             input(type="text" name="token" id="token-input" style="display:none;")
             p Main Category
-            input.main-category(name="main_category" type="text" placeholder="Basketball" value="basketball" required)
+            //- input.main-category(name="main_category" type="text" placeholder="Basketball" value="basketball" required)
+            select(name="main_category" id="main_category" onchange="changeSubOption()")
+              option(value="basketball") Basketball
+              option(value="photograph") Photograph
             p Sub Category
-            input.sub-category(name="sub_category" type="text" placeholder="Shoes" value="shoes")
+            select(name="sub_category" id="sub_category")
+            //- input.sub-category(name="sub_category" type="text" placeholder="Shoes" value="shoes")
             p Tags(start with #, seperate by space)
             input.tags(name="tags" type="text" placeholder="\#Basketball \#Kobe" value="\#Basketball \#Kobe")
             p Title
             input.title(name="title" type="text" placeholder="Kobe basketball shoes" value="Kobe basketball shoes" required)
-            p Item Status
-            input.status(name="status" type="text" placeholder="Used" value="Used" required)
+            //- input.status(name="status" type="text" placeholder="Used" value="Used" required)
             p Count
             input.count(name="count" type="number" placeholder="Item Category" value=1 min=1 required)
+            p Item Status
+            select(name="status")
+              option(value="new") New
+              option(value="used") Used
+              option(value="lookonly") Look Only
             p Introduction
             input.introduction(name="introduction" type="text" placeholder="Introduction" value="yoyoyo")
             p Pictures (up to 6)

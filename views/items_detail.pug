@@ -13,7 +13,11 @@ block content
           .interaction.item-detail
             .nickname.item-detail=user_nickname
             .change-button.item-detail
-              button Change
+              button(id="change-btn-item-detail") Change
           .introduction-div.item-detail=introduction
+        .sub-main-container.user-items
+          .title.user-items Please select items you want to trade with
+          .items-div.user-items(id="items-area-recommand")
+
       .main-right
   script(src="/javascripts/items_detail.js")

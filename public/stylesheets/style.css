@@ -52,7 +52,8 @@ nav .container {
   align-items: center;
 }
 
-.navbar-middle .container-inside input, .navbar-middle .container-inside div {
+.navbar-middle .container-inside input,
+.navbar-middle .container-inside div {
   text-align: center;
   border-radius: 15px;
 } 
@@ -109,7 +110,9 @@ main
   justify-content: center;
 }
 
-.main-left, .main-middle, .main-right {
+.main-left,
+.main-middle,
+.main-right {
   display: flex;
   flex-direction: column;
 }
@@ -167,7 +170,8 @@ main
   margin: 0 2%;
 }
 
-.items-area.recommands {
+.items-area.recommands,
+.items-div.user-items {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between; 
@@ -199,7 +203,8 @@ main
   justify-content: space-between;
 }
 
-.item-container-inside.recommands .based-on span, .item-container-inside.recommands .item.content .item-info span {
+.item-container-inside.recommands .based-on span,
+.item-container-inside.recommands .item.content .item-info span {
   margin: 3px 2px 3px 0;
   color: #1992E2;
   font-weight: 500;
@@ -279,20 +284,29 @@ main
 }
 
 /* Item Dtails */
-.sub-main-container.item-detail {
+.sub-main-container.item-detail,
+.sub-main-container.user-items {
   border-radius: 16px;
   background: #fff;
+  margin-bottom: 20px;
 }
 
-.title.item-detail {
+.sub-main-container.user-items {
+  background: #2762B0;
+}
+
+.title.item-detail,
+.title.user-items {
   font-size: 36px;
   color: #1992E2;
   width: 100%;
   font-weight: 600;
   margin: 20px;
-  /* overflow : hidden;
-  text-overflow : ellipsis;
-  white-space : nowrap; */
+}
+
+.title.user-items {
+  font-size: 24px;
+  color: #fff;
 }
 
 .picture-div.item-detail {
@@ -313,7 +327,8 @@ main
   align-items: center;
 }
 
-.nickname.item-detail, .introduction-div.item-detail {
+.nickname.item-detail,
+.introduction-div.item-detail {
   font-size: 24px;
   color: #1992E2;
   font-weight: 600;
@@ -357,7 +372,8 @@ users_register
   font-weight: 600;
 }
 
-.sub-main-container.sign, .sub-main-container.add-item {
+.sub-main-container.sign,
+.sub-main-container.add-item {
   background-color: #fff;
   width: 100%;
   border-radius: 15px;
@@ -377,7 +393,8 @@ users_register
   font-size: 14px;
 }
 
-.main-middle form input, .main-middle form select {
+.main-middle form input,
+.main-middle form select {
   width: 100%;
   border-radius: 15px;
   padding-left: 10px;
@@ -388,13 +405,16 @@ users_register
   min-height: 100px;
 }
 
-.sub-main-container.sign .button-div, .sub-main-container.add-item .button-div {
+.sub-main-container.sign .button-div,
+.sub-main-container.add-item .button-div {
   display: flex;
   justify-content: flex-end;
   margin-top: 10px;
 }
 
-.sub-main-container.sign .button-div button, .sub-main-container.add-item .button-div button, .button-div.item-detail.change button {
+.sub-main-container.sign .button-div button,
+.sub-main-container.add-item .button-div button,
+.button-div.item-detail.change button {
   border-radius: 15px;
   font-size: 16px;
   color: #000000;

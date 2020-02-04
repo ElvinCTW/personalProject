@@ -51,7 +51,6 @@ app.get('/boards/:board', async (req,res)=>{
   res.render('board',itemDetailData)
 });
 
-
 /* API Routers */
 app.use('/api/1.0/users', userAPI);
 app.use('/api/1.0/items', itemAPI);

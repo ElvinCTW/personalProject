@@ -11,13 +11,12 @@ block content
             - let imgUrl = 'https://triangletradeelvintokyo.s3-ap-northeast-1.amazonaws.com/'+pictures.split(',')[0]
             img(src=imgUrl)
           .interaction.item-detail
-            .nickname.item-detail=user_nickname
+            .nickname.item-detail(id="required-owner")=user_nickname
             .change-button.item-detail
-              button(id="change-btn-item-detail") Change
+              button(id="change-btn-item-detail") Change⬇︎
           .introduction-div.item-detail=introduction
-        .sub-main-container.user-items
-          .title.user-items Please select items you want to trade with
+        .sub-main-container.user-items(id="subdiv-itemdetail-useritems" style="display:none;")
+          button.title.user-items(type="button" id="exchange-request-btn") After Press here after selection
           .items-div.user-items(id="items-area-recommand")
-
       .main-right
   script(src="/javascripts/items_detail.js")

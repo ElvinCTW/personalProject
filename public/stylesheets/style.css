@@ -177,6 +177,14 @@ main
   justify-content: space-between; 
 }
 
+.item-container-selector {
+  /* display: flex; */
+}
+
+.item-container-selector :focus {
+  background: #000;
+}
+
 .item-container-outside.recommands {
   background-color: #fff;
   border-radius: 15px;
@@ -305,8 +313,12 @@ main
 }
 
 .title.user-items {
-  font-size: 24px;
-  color: #fff;
+  font-size: 30px;
+  color: #000;
+  text-align: center;
+  margin: 15px 0;
+  background: #FAD7AC;
+  border-radius: 16px;
 }
 
 .picture-div.item-detail {

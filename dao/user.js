@@ -1,4 +1,5 @@
 const mysql = require('../util/mysql');
+// change to online crypto in the future ?
 const crypto = require('crypto');
 module.exports = {
   // get user data by log-in_id || token

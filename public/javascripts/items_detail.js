@@ -1,7 +1,12 @@
 let page = 0;
 let user_nickname = null;
-// 確認使用者有登入，如果沒有，跳alert請user登入
-$('#change-btn-item-detail').click(()=>{
+let selectItemIDArr = [];
+/**
+ * 創造申請交換用戶物品列表
+ */
+$('#change-btn-item-detail').click(() => {
+  $('#subdiv-itemdetail-useritems').attr({ style: '' })
+  // 確認使用者有登入，如果沒有，跳alert請user登入
   if (!localStorage.getItem('nickname')) {
     alert('plz sign in to active change function');
     return;
@@ -11,10 +16,27 @@ $('#change-btn-item-detail').click(()=>{
     $.ajax({
       url: `/api/1.0/items/all?page=${page}&user_nickname=${user_nickname}`,
       type: 'get',
-      success: (itemsListArr)=>{
+      success: (itemsListArr) => {
         for (let i = 6 * page; i < (6 * page + itemsListArr.length); i++) {
           // Create link to item detail page
-          let link = $('<a></a>');
+          let link = $('<div></div>').attr({
+            'class': 'item-container-selector',
+            'item_id': itemsListArr[i - 6 * page].id,
+          }).click(() => {
+            if (newItemContainer_Outside.attr('style') === 'background:#ddd') {
+              // 取消點選時將 itemID 移出 selectorListArr
+              newItemContainer_Outside.attr({ 'style': 'background:#fff' });
+              selectItemIDArr.forEach((itemID)=>{
+                if (itemID === parseInt(link.attr('item_id'))) {
+                  selectItemIDArr.splice(selectItemIDArr.indexOf(itemID), 1);
+                }
+              })
+            } else {
+              // 點選時將 itemID 加入 selectorListArr
+              newItemContainer_Outside.attr({ 'style': 'background:#ddd' });
+              selectItemIDArr.push(parseInt(link.attr('item_id')));
+            }
+          });
           $('#items-area-recommand').append(link);
           // Create new Item outside container
           let newItemContainer_Outside = $('<div></div>').attr({ 'class': 'item-container-outside recommands' });
@@ -67,4 +89,31 @@ $('#change-btn-item-detail').click(()=>{
       }
     })
   }
+})
+
+/**
+ * 申請用戶選擇完畢後，點選按鈕送出申請資料
+ */
+$('#exchange-request-btn').click(()=>{
+  // 送出請求 Aajx
+  $.ajax({
+    method: 'post',
+    url: '/api/1.0/want/new',
+    data: {
+      'wantArr': selectItemIDArr.toString(),
+      'want_owner': user_nickname,
+      'required': parseInt(window.location.search.split('=')[1]),
+      'required_owner': $('#required-owner').html(),
+    },
+    success: (successMsg)=>{
+      alert(successMsg);
+      location.reload();
+      // console.log(window.location.href);
+      // window.location.assign(window.location.pathname);
+    },
+    error: (failResponse) => {
+      console.log(failResponse);
+      alert(failResponse);
+    }
+  })
 })

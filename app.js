@@ -3,6 +3,7 @@ const createError = require('http-errors');
 const express = require('express');
 const userAPI = require('./routes/userAPI')
 const itemAPI = require('./routes/itemAPI')
+const wantAPI = require('./routes/wantAPI')
 const itemDAO = require('./dao/item');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -54,6 +55,7 @@ app.get('/boards/:board', async (req,res)=>{
 /* API Routers */
 app.use('/api/1.0/users', userAPI);
 app.use('/api/1.0/items', itemAPI);
+app.use('/api/1.0/want', wantAPI);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

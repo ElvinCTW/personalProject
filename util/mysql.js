@@ -8,4 +8,9 @@ module.exports = {
     password: process.env.DB_PASS,
     database: 'triangle_trade'
   }),
+  // errLog: (err)=>{
+  //   console.log('error in insertWantPromise');
+  //   console.log(err.sqlMessage);
+  //   console.log(err.sql);
+  // }
 }

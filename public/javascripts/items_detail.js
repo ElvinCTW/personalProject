@@ -5,12 +5,16 @@ let selectItemIDArr = [];
  * 創造申請交換用戶物品列表
  */
 $('#change-btn-item-detail').click(() => {
-  $('#subdiv-itemdetail-useritems').attr({ style: '' })
-  // 確認使用者有登入，如果沒有，跳alert請user登入
   if (!localStorage.getItem('nickname')) {
+    // 確認使用者有登入，如果沒有，跳alert請user登入
     alert('plz sign in to active change function');
     return;
+  } else if (localStorage.getItem('nickname') === $('#required-owner').html()) {
+    // 確認使用者沒對自己的物品進行交換
+    alert('do not trade with yourself, dude');
+    return;
   } else {
+    $('#subdiv-itemdetail-useritems').attr({ style: '' })
     user_nickname = localStorage.getItem('nickname');
     // 前端發送 ajax，更新現有頁面為申請者所有物品頁面
     $.ajax({
@@ -100,16 +104,14 @@ $('#exchange-request-btn').click(()=>{
     method: 'post',
     url: '/api/1.0/want/new',
     data: {
-      'wantArr': selectItemIDArr.toString(),
-      'want_owner': user_nickname,
-      'required': parseInt(window.location.search.split('=')[1]),
-      'required_owner': $('#required-owner').html(),
+      'want_items_Arr': selectItemIDArr.toString(),
+      'want_items_owner': user_nickname,
+      'required_item': parseInt(window.location.search.split('=')[1]),
+      'required_item_owner': $('#required-owner').html(),
     },
     success: (successMsg)=>{
-      alert(successMsg);
-      location.reload();
-      // console.log(window.location.href);
-      // window.location.assign(window.location.pathname);
+      alert(successMsg.msg);
+      // location.reload();
     },
     error: (failResponse) => {
       console.log(failResponse);

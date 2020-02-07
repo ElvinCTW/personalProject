@@ -60,6 +60,8 @@ module.exports = {
           }
         })
       })
+    } else {
+      // only search item's wish list
     }
   },
   update: (queryCondition)=>{

@@ -18,7 +18,7 @@ router.post('/new', async (req, res, next) => {
     checkMatchResultArr.forEach((matchedWantRow)=>{
       matchedArr.push(parseInt(matchedWantRow.required_item_id));
     })
-    const updateMatchResult = wantDAO.update({
+    await wantDAO.update({
       matchedArr: matchedArr,
       item_id: req.body.required_item,
     }).catch((err)=>{
@@ -27,6 +27,11 @@ router.post('/new', async (req, res, next) => {
       console.log(err.sql);
       return;
     });
+  } else {
+    // 如果對方沒有想要的，進入三方配對
+    let middleItemWishListArr = await wantDAO.get({
+      item_id: req.body.required_item,
+    })
   }
   // Call wantDAO.insert
   const newWantInsertResult = await wantDAO.insert({

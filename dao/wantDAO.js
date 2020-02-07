@@ -4,7 +4,6 @@ module.exports = {
   insert: (wantData) => {
     return new Promise((resolve, reject) => {
       let insertWantsArr = [];
-      console.log(wantData.matchedArr);
       // make insert rows base on wantItemID
       wantData.wantArr = wantData.wantArr.split(',');
       wantData.wantArr.forEach(wantItemID => {
@@ -14,9 +13,6 @@ module.exports = {
         let wantRow = [wantItemIDInt, wantData.want_owner, requiredInt, wantData.required_owner];
         // push in arr
         insertWantsArr.push(wantRow)
-        console.log(wantItemID);
-        console.log(wantData.matchedArr);
-        console.log(wantData.matchedArr.indexOf(parseInt(wantItemID)));
         if (wantData.matchedArr.indexOf(parseInt(wantItemID)) !== -1) {
           wantRow.push('true');
         } else {
@@ -46,7 +42,14 @@ module.exports = {
     let getQueryCondition;
     queryCondition.item_id = parseInt(queryCondition.item_id);
     // 判斷查詢類型
-    if (queryCondition.wantArr) {
+    if (queryCondition.endItemsArr) {
+      // make 3people match query
+      queryCondition.wantArr.forEach((item_id) => {
+        parseIntArr.push(parseInt(item_id));
+      })
+      queryString = `SELECT * FROM want WHERE want_item_id in (?) AND required_item_id in (?)`;
+      getQueryCondition = [queryCondition.endItemsArr, parseIntArr];
+    } else if (queryCondition.wantArr) {
       // 查詢指定物品有無針對特定物品群表示過 want
       queryCondition.wantArr.forEach((item_id) => {
         parseIntArr.push(parseInt(item_id));

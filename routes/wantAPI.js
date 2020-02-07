@@ -1,17 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const wantDAO = require('../dao/wantDAO');
+const matchDAO = require('../dao/matchDAO');
 
 router.post('/new', async (req, res, next) => {
   // 確認對方是否曾經想要你的物品
   let matched = false;
-  let tripleMatched = false;
   let matchedArr =[];
-  let tripleMatchedArr =[];
   let tripleCounter = 0;
   req.body.required_item = parseInt(req.body.required_item);
+  console.log(req.body.want_items_Arr);
+  console.log(req.body.want_items_Arr.split(', '));
   const checkMatchResultArr = await wantDAO.get({
-    wantArr: req.body.want_items_Arr.split(','),
+    wantArr: req.body.want_items_Arr.split(', '),
     item_id: req.body.required_item,
   })
   // 如果對方曾經有想要的，配對成功，等等要 alert 配對成功訊息
@@ -25,7 +26,6 @@ router.post('/new', async (req, res, next) => {
       matchedArr: matchedArr,
       item_id: req.body.required_item,
     }).catch((err)=>{
-      console.log('error in checkPreviousWantPromise');
       console.log(err.sqlMessage);
       console.log(err.sql);
       return;
@@ -36,32 +36,34 @@ router.post('/new', async (req, res, next) => {
     let middleItemWishListArr = await wantDAO.get({
       item_id: req.body.required_item,
     })
-    // foreach 比對 end_items 的個別 wish list 中有無 first_items 存在
-    middleItemWishListArr.forEach((wantBetweenMiddleAndEnd)=>{
-      const endMatchStartResultArr = wantDAO.get({
-        wantArr: wantArr,
-        want_item_id: wantBetweenMiddleAndEnd.required_item,
+    if (middleItemWishListArr.length > 0) {
+      // required_owner 有想要的東西
+      let _3rdQueryEndItemsIDArray = [];
+      middleItemWishListArr.forEach((want)=>{
+        let item_id = parseInt(want.required_item_id);
+        _3rdQueryEndItemsIDArray.push(item_id)
       })
-      if (endMatchStartResultArr.length !== 0) {
-        // this end_item match something of start_items
-        console.log('triple match true');
-        tripleMatched = true;
-        endMatchStartResultArr.forEach((wantBetweenEndAndStart)=>{
-          // insert data into 
-          tripleMatchedArr.push({
-            start_item_id: wantBetweenEndAndStart.required_item_id,
-            start_owner: wantBetweenEndAndStart.required_owner,
-            middle_item_id: req.body.required_item,
-            middle_owner: req.body.want_items_owner,
-            end_item_id: wantBetweenEndAndStart.want_item_id,
-            end_owner: wantBetweenEndAndStart.want_owner,
-          });
-          tripleCounter += 1;
+      // 取得 end_items 的 wishLists 中有沒有 start_items 的結果
+      let matchedWantBetweenEndAndStart = await wantDAO.get({
+        wantArr: req.body.want_items_Arr.split(','),
+        endItemsArr: _3rdQueryEndItemsIDArray,
+      });
+      if (matchedWantBetweenEndAndStart.length > 0) {
+        // 如果 triple change matched, 加入 matched table
+        tripleCounter = matchedWantBetweenEndAndStart.length;
+        console.log(req.body);
+        console.log(req.body.required_item_owner);
+        console.log(req.body.required_item);
+        await matchDAO.insert({
+          middle_owner: req.body.required_item_owner,
+          middle_item_id : req.body.required_item,
+          bridgeWantArr: matchedWantBetweenEndAndStart,
+        }).catch((err)=>{
+          console.log(err)
+          return;
         })
       } 
-    })
-    // 有 === 三方配對成功，alert訊息並存入 matched table
-    // 無 === 三方配對也失敗， alert 新增訊息
+    } 
   }
   // Call wantDAO.insert
   const newWantInsertResult = await wantDAO.insert({
@@ -80,8 +82,11 @@ router.post('/new', async (req, res, next) => {
       res.status(200).send({
         msg: `Congratulation, ${checkMatchResultArr.length} items have been added to match result page`,
       })
-    } else if (tripleMatched) {
+    } else if (tripleCounter > 0) {
       // alert user for triple match
+      res.status(200).send({
+        msg: `Congratulation, a triple trade is made. ${tripleCounter} items have been added to match result page`,
+      })
     } else {
       // if not match, only return success insertion msg
       res.status(200).send({

@@ -30,7 +30,7 @@ $('#change-btn-item-detail').click(() => {
             if (newItemContainer_Outside.attr('style') === 'background:#ddd') {
               // 取消點選時將 itemID 移出 selectorListArr
               newItemContainer_Outside.attr({ 'style': 'background:#fff' });
-              selectItemIDArr.forEach((itemID)=>{
+              selectItemIDArr.forEach((itemID) => {
                 if (itemID === parseInt(link.attr('item_id'))) {
                   selectItemIDArr.splice(selectItemIDArr.indexOf(itemID), 1);
                 }
@@ -98,24 +98,28 @@ $('#change-btn-item-detail').click(() => {
 /**
  * 申請用戶選擇完畢後，點選按鈕送出申請資料
  */
-$('#exchange-request-btn').click(()=>{
-  // 送出請求 Aajx
-  $.ajax({
-    method: 'post',
-    url: '/api/1.0/want/new',
-    data: {
-      'want_items_Arr': selectItemIDArr.toString(),
-      'want_items_owner': user_nickname,
-      'required_item': parseInt(window.location.search.split('=')[1]),
-      'required_item_owner': $('#required-owner').html(),
-    },
-    success: (successMsg)=>{
-      alert(successMsg.msg);
-      // location.reload();
-    },
-    error: (failResponse) => {
-      console.log(failResponse);
-      alert(failResponse);
-    }
-  })
+$('#exchange-request-btn').click(() => {
+  if (selectItemIDArr.length > 0) {
+    // 送出請求 Aajx
+    $.ajax({
+      method: 'post',
+      url: '/api/1.0/want/new',
+      data: {
+        'want_items_Arr': selectItemIDArr.toString(),
+        'want_items_owner': user_nickname,
+        'required_item': parseInt(window.location.search.split('=')[1]),
+        'required_item_owner': $('#required-owner').html(),
+      },
+      success: (successMsg) => {
+        alert(successMsg.msg);
+        // location.reload();
+      },
+      error: (failResponse) => {
+        console.log(failResponse);
+        alert(failResponse);
+      }
+    })
+  } else {
+    alert('plz check button after select your own item(s)')
+  }
 })

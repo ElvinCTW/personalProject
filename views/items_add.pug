@@ -36,5 +36,7 @@ block content
             input.pictures(type="file", name="pictures" accept="image/*" id="pics-input" multiple required)
             .button-div
               button(type="submit" id="add-items-btn") Add items
+          if successMsg
+            .successMsgDiv=successMsg
       .main-right
   script(src="/javascripts/items_add.js")

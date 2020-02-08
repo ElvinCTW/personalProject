@@ -358,6 +358,18 @@ main
   font-weight: 500;
 }
 
+.successMsgDiv {
+  background: #FAD7AC;
+  color: #000;
+  display: flex;
+  border-radius: 16px;
+  font-size: 20px;
+  text-align: center;
+  margin: 20px;
+  padding : 20px;
+  max-height: 3em;
+}
+
 /* main-right */
 .main-right {
   width: 20%;

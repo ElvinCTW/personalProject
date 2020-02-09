@@ -1,0 +1,53 @@
+extends layout
+block content
+  .main 
+    .container
+      .main-left
+        .sub-main-container
+          .subtext.subscribe Match Results
+            if objectOfmatchesResultArr.length > 0
+              each want in objectOfmatchesResultArr
+                .subscribe-item
+                  .subscribe-content 
+                    span=want.title
+            //- if tripleMatchedResultArr.length > 0
+            //-   for (i=0;i<tripleMatchedResultArr.length;i++)
+            //-     .subscribe-item
+            //-       .subscribe-content 
+            //-         span #Camera
+            else
+              .subscribe-item
+                .subscribe-content 
+                  span No_Matches
+      .main-middle
+        //- .sub-main-container.news
+          //- .subtext.news News
+        .sub-main-container.recommands
+          .subtext.recommand Recommands
+          .items-area.recommands(id="items-area-recommand")
+            //- item div start here 
+            //- - let n = 0;
+            //- while n <6
+            //-   .item-container-outside.recommands
+            //-     .item-container-inside.recommands
+            //-       .based-on
+            //-         span Based on
+            //-         span.item #Shoes
+            //-       .item-img.recommands
+            //-         img(src="", alt="" id="img")
+            //-       .item.content
+            //-         .title Title
+            //-         .item-info 
+            //-           span.nickname aaa
+            //-           //- span.likes 10
+            //-           span.status used
+            //-         .tags tags
+            //-           span tag
+            //-   - n++
+          .nomore-text-div(onclick="createMoreItems()" id="nomore-text-div") Get More Items
+      .main-right
+        .sub-main-container
+        .subtext.ads Advertisement
+        .ads
+          img(src="/images/gad.png", alt="")
+  //- script(src="/javascripts/index.js")

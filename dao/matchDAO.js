@@ -26,5 +26,34 @@ module.exports = {
         }
       })
     })
-  }
+  },
+  get: (queryCondition)=>{
+    return new Promise((resolve,reject)=>{
+      // get matches array for user matches page 
+      let queryString_double = 'SELECT * FROM want JOIN items ON want.want_item_id = items.id WHERE matched = "true" AND want_owner = ?'
+      let queryString_triple = 'SELECT * FROM matched JOIN items ON matched.start_item_id = items.id WHERE matched.start_item_id in (?) UNION SELECT * FROM matched JOIN items ON matched.middle_item_id = items.id WHERE matched.middle_item_id in (?) UNION SELECT * FROM matched JOIN items ON matched.end_item_id = items.id WHERE matched.middle_item_id in (?)'
+      mysql.pool.query(queryString_double, [queryCondition.user_nickname], (err, doubleMatchedResultArr, fields)=>{
+        if (err) {
+          console.log('error in getDoubleMatchedResultPromise');
+          console.log(err.sqlMessage);
+          console.log(err.sql);
+          reject(err);
+        } else {
+          mysql.pool.query(queryString_triple, [queryCondition.user_nickname], (err, tripleMatchedResultArr, fields)=>{
+            if (err) {
+              console.log('error in getTripleMatchedResultPromise');
+              console.log(err.sqlMessage);
+              console.log(err.sql);
+              reject(err);
+            } else {
+              resolve({
+                doubleMatchedResultArr: doubleMatchedResultArr,
+                tripleMatchedResultArr: tripleMatchedResultArr,
+              });
+            }
+          })
+        }
+      })
+    });
+  },
 }

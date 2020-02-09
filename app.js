@@ -1,10 +1,12 @@
 // Settings
 const createError = require('http-errors');
 const express = require('express');
-const userAPI = require('./routes/userAPI')
-const itemAPI = require('./routes/itemAPI')
-const wantAPI = require('./routes/wantAPI')
+const userAPI = require('./routes/userAPI');
+const itemAPI = require('./routes/itemAPI');
+const wantAPI = require('./routes/wantAPI');
+const matchesAPI = require('./routes/matchesAPI');
 const itemDAO = require('./dao/item');
+const wantDAO = require('./dao/wantDAO');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -35,6 +37,14 @@ app.get('/items/detail', async (req,res)=>{
   })
   res.render('items_detail',itemDetailData[0])
 });
+// Match
+app.get('/matches/check', async (req,res)=>{
+  // get data with first match in the list, need to check if no matches at all
+  let objectOfmatchesResultArr = await wantDAO.get({
+    user_nickname: req.query.user_nickname,
+  });
+  res.render('match_check', {objectOfmatchesResultArr: objectOfmatchesResultArr})
+});
 // Boards
 app.get('/boards/:board', async (req,res)=>{
   // call itemDAO to get board items
@@ -56,6 +66,7 @@ app.get('/boards/:board', async (req,res)=>{
 app.use('/api/1.0/users', userAPI);
 app.use('/api/1.0/items', itemAPI);
 app.use('/api/1.0/want', wantAPI);
+app.use('/api/1.0/matches', matchesAPI);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

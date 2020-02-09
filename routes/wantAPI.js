@@ -10,12 +10,14 @@ router.post('/new', async (req, res, next) => {
   let tripleCounter = 0;
   req.body.required_item = parseInt(req.body.required_item);
   console.log(req.body.want_items_Arr);
-  console.log(req.body.want_items_Arr.split(', '));
+  console.log(req.body.want_items_Arr.split(','));
   const checkMatchResultArr = await wantDAO.get({
-    wantArr: req.body.want_items_Arr.split(', '),
+    wantArr: req.body.want_items_Arr.split(','),
     item_id: req.body.required_item,
   })
   // 如果對方曾經有想要的，配對成功，等等要 alert 配對成功訊息
+  console.log('before checkMatchResultArr.length, wantAPI');
+  console.log(checkMatchResultArr.length);
   if (checkMatchResultArr.length !== 0) {
     console.log('match true');
     matched = true;
@@ -67,7 +69,7 @@ router.post('/new', async (req, res, next) => {
   }
   // Call wantDAO.insert
   const newWantInsertResult = await wantDAO.insert({
-    wantArr: req.body.want_items_Arr,
+    wantArr: req.body.want_items_Arr.split(','),
     want_owner: req.body.want_items_owner,
     required: req.body.required_item,
     required_owner: req.body.required_item_owner,
@@ -85,7 +87,7 @@ router.post('/new', async (req, res, next) => {
     } else if (tripleCounter > 0) {
       // alert user for triple match
       res.status(200).send({
-        msg: `Congratulation, a triple trade is made. ${tripleCounter} items have been added to match result page`,
+        msg: `Congratulation, a triple trade is made. ${tripleCounter} ways to change for this item are added to match result page`,
       })
     } else {
       // if not match, only return success insertion msg

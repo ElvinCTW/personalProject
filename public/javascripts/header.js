@@ -13,4 +13,5 @@ if (localStorage.getItem('token')) {
     localStorage.removeItem('token');
     localStorage.removeItem('nickname');
   });
+  $('#match-notification').attr('href', `/matches/information?user_nickname=${nickname}`);
 }

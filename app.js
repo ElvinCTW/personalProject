@@ -7,6 +7,7 @@ const wantAPI = require('./routes/wantAPI');
 const matchesAPI = require('./routes/matchesAPI');
 const itemDAO = require('./dao/item');
 const wantDAO = require('./dao/wantDAO');
+const matchDAO = require('./dao/matchDAO');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -37,13 +38,15 @@ app.get('/items/detail', async (req,res)=>{
   })
   res.render('items_detail',itemDetailData[0])
 });
-// Match
-app.get('/matches/check', async (req,res)=>{
+// Want
+app.get('/matches/information', async (req,res)=>{
   // get data with first match in the list, need to check if no matches at all
-  let objectOfmatchesResultArr = await wantDAO.get({
+  let objectOfmatchesResultArr = await matchDAO.get({
     user_nickname: req.query.user_nickname,
   });
-  res.render('match_check', {objectOfmatchesResultArr: objectOfmatchesResultArr})
+  res.render('match_check', {
+    objectOfmatchesResultArr: objectOfmatchesResultArr,
+  })
 });
 // Boards
 app.get('/boards/:board', async (req,res)=>{

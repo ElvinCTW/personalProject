@@ -177,13 +177,19 @@ main
   justify-content: space-between; 
 }
 
-.item-container-selector {
-  /* display: flex; */
+#items-area-match {
+  flex-direction: column;
 }
 
-.item-container-selector :focus {
-  background: #000;
+.match-container {
+  width: 90%;
+  margin: 10px;
+  background: #1992E2;
 }
+
+/* .item-container-selector :focus {
+  background: #000;
+} */
 
 .item-container-outside.recommands {
   background-color: #fff;

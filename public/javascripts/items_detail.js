@@ -21,6 +21,7 @@ $('#change-btn-item-detail').click(() => {
       url: `/api/1.0/items/all?page=${page}&user_nickname=${user_nickname}`,
       type: 'get',
       success: (itemsListArr) => {
+        // 記得要順便 query wish table，如果 table 有記錄需寫進 lastOfferItems
         for (let i = 6 * page; i < (6 * page + itemsListArr.length); i++) {
           // Create link to item detail page
           let link = $('<div></div>').attr({
@@ -106,9 +107,9 @@ $('#exchange-request-btn').click(() => {
       url: '/api/1.0/want/new',
       data: {
         'want_items_Arr': selectItemIDArr.toString(),
-        'want_items_owner': user_nickname,
+        // 'want_items_owner': user_nickname,
         'required_item': parseInt(window.location.search.split('=')[1]),
-        'required_item_owner': $('#required-owner').html(),
+        // 'required_item_owner': $('#required-owner').html(),
       },
       success: (successMsg) => {
         alert(successMsg.msg);

@@ -152,7 +152,8 @@ main
   margin-bottom: 10px;
 }
 
-.subscribe-item .subscribe-content span {
+.subscribe-item .subscribe-content span,
+.user-check-status {
   background-color: #fff;
   border-radius: 16px;
   color: #1992E2;
@@ -182,11 +183,27 @@ main
 }
 
 .match-container {
-  width: 90%;
+  width: 100%;
   margin: 10px;
   background: #1992E2;
+  display: flex;
+  align-items: center;
+  border-radius: 16px;
 }
 
+.match-interaction-container {
+  width:100%;
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-check-status {
+  margin-bottom: 10px;
+}
 /* .item-container-selector :focus {
   background: #000;
 } */
@@ -197,6 +214,10 @@ main
   width: 240px;
   height: 400px;
   margin-bottom: 10px;
+}
+
+.item-container-outside.recommands.match {
+  margin: 10px;
 }
 
 .item-container-inside.recommands {
@@ -353,7 +374,8 @@ main
   margin: 20px;
 }
 
-.change-button.item-detail button {
+.change-button.item-detail button,
+.match-interaction-container button {
   margin-right: 20px;
   background-color: #FAD7AC;
   border-radius: 14px;
@@ -362,6 +384,11 @@ main
   padding: 2px 6px;
   font-size: 24px;
   font-weight: 500;
+}
+
+.interactionBtnDiv {
+  display: flex;
+  justify-content: space-around;
 }
 
 .successMsgDiv {
@@ -408,6 +435,11 @@ users_register
   width: 100%;
   border-radius: 15px;
 }
+
+.sub-main-container.add-item {
+  flex-direction: row;
+}
+
 
 .main-middle form {
   display: flex;

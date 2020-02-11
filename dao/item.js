@@ -65,6 +65,28 @@ module.exports = {
     })
     /** To do: insert data to db */
     /** Output: Success or error msg*/
+  },
+  update: (queryCondition)=>{
+    let queryString;
+    let updateQueryCondition;
+    // update items // turn item / availability to false
+    queryString = 'UPDATE items SET availability = "false" WHERE id in (?)'
+    if (queryCondition.want_item_id && queryCondition.required_item_id) {
+      updateQueryCondition = [queryCondition.want_item_id, queryCondition.required_item_id]
+    } else {
+      updateQueryCondition = [queryCondition.start_item_id, queryCondition.middle_item_id, queryCondition.end_item_id]
+    }
+    return new Promise((resolve, reject) => {
+      mysql.pool.query(queryString, [updateQueryCondition], (err, updateItemAvailablityResult, fields) => {
+        if (err) {
+          console.log('error in insertItemPromise');
+          console.log(err);
+          reject(err);
+        } else {
+          resolve(updateItemAvailablityResult);
+        }
+      })
+    })
   }
 }
 

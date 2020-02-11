@@ -12,6 +12,7 @@ if (localStorage.getItem('token')) {
   $('#navbar-member-link').text(`${nickname}`).attr('href', '').click(()=>{
     localStorage.removeItem('token');
     localStorage.removeItem('nickname');
+    window.location.assign(`/`)
   });
   $('#match-notification').attr('href', `/matches/information?user_nickname=${nickname}`);
 }

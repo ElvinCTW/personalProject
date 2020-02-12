@@ -9,10 +9,9 @@ function locateToBoard() {
 if (localStorage.getItem('token')) {
   // Sign in status
   const nickname = localStorage.getItem('nickname');
-  $('#navbar-member-link').text(`${nickname}`).attr('href', '').click(()=>{
+  $('#navbar-member-link').text(`${nickname}`).attr('href', '/').click(()=>{
     localStorage.removeItem('token');
     localStorage.removeItem('nickname');
-    window.location.assign(`/`)
   });
   $('#match-notification').attr('href', `/matches/information?user_nickname=${nickname}`);
 }

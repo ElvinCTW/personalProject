@@ -84,7 +84,7 @@ module.exports = {
           }
         })
       })
-    } else if (queryData.user_nickname) {
+    } else if (queryData.user_nickname || queryData.item_id) {
       // queryString = `SELECT w.want_item_id AS item_id, i.title FROM want AS w JOIN items AS i ON w.want_item_id = i.id WHERE w.want_owner = ? AND w.matched = "true"`
       // placeArr.forEach((place) => {
       //   queryString += ` UNION SELECT m.${place}_item_id AS item_id, i.title FROM matched AS m JOIN items AS i ON m.${place}_item_id = i.id WHERE m.${place}_owner = "${queryData.user_nickname}"`
@@ -92,12 +92,18 @@ module.exports = {
       // queryCondition = [queryData.user_nickname];
 
       // 查詢該會員的所有交易資料
-      console.log('search match result of user in wantDAO');
       // 1. 用 user_nickname 取得 AwantB
       return new Promise((resolve, reject) => {
+        if (queryData.user_nickname) {
+          console.log('search match result of user in wantDAO');
+          queryString = `SELECT want_item_id A_id, required_item_id B_id, i.title FROM want w JOIN items i ON w.want_item_id = i.id WHERE i.user_nickname = ?`
+          queryCondition = queryData.user_nickname
+        } else {
+          console.log('search match result of item_id in wantDAO');
+          queryString = `SELECT w.required_item_id B_id, i.* FROM want w JOIN items i ON w.required_item_id = i.id WHERE w.want_item_id = ?`
+          queryCondition = queryData.item_id
+        }
         console.log(queryData);
-        queryString = `SELECT want_item_id A_id, required_item_id B_id, i2.title FROM want w JOIN items i ON w.want_item_id = i.id JOIN items i2 ON w.want_item_id = i2.id WHERE i.user_nickname = ?`
-        queryCondition = queryData.user_nickname
         console.log(queryCondition);
         mysql.pool.query(queryString, [queryCondition], (err, AwantBtable, fileds) => {
           console.log(AwantBtable);
@@ -108,7 +114,11 @@ module.exports = {
             reject(err);
           } else {
             // 2. 用 user_nickname 取得 CwantA , 並取得 DoubleMatchTable
-            queryString = `SELECT want_item_id C_id, required_item_id A_id FROM want w JOIN items i ON w.required_item_id = i.id WHERE i.user_nickname = ?`
+            if (queryData.user_nickname) {
+              queryString = `SELECT want_item_id C_id, required_item_id A_id FROM want w JOIN items i ON w.required_item_id = i.id WHERE i.user_nickname = ?`
+            } else {
+              queryString = `SELECT want_item_id C_id, i.* FROM want w JOIN items i ON w.want_item_id = i.id WHERE w.required_item_id = ?`
+            }
             console.log(queryCondition);
             mysql.pool.query(queryString, [queryCondition], (err, CwantAtable, fileds) => {
               console.log(CwantAtable);
@@ -118,40 +128,49 @@ module.exports = {
                 console.log(err.sql);
                 reject(err);
               } else {
-                let doubleMatchResultArr=[];
-                for (let i = 0; i < CwantAtable.length; i++) {
-                  for (let j = 0; j < AwantBtable.length; j++) {
-                    if (CwantAtable[i].A_id === AwantBtable[j].A_id && CwantAtable[i].C_id === AwantBtable[j].B_id) {
-                      doubleMatchResultArr.push(AwantBtable[j])
-                      break;
-                    }
-                  }
-                }
-                // 3. 用 1 + 2 取得 CwantAwantBtable
+                let doubleMatchResultArr = [];
                 let CwantAwantBtable = [];
-                for (let i = 0; i < CwantAtable.length; i++) {
-                  for (let j = 0; j < AwantBtable.length; j++) {
-                    if (CwantAtable[i].A_id === AwantBtable[j].A_id) {
-                      CwantAwantBtable.push({
-                        A_id: CwantAtable[i].A_id,
-                        B_id: AwantBtable[j].B_id,
-                        C_id: CwantAtable[i].C_id,
-                        title: AwantBtable[j].title,
-                      })
+                if (queryData.user_nickname) {
+                  for (let i = 0; i < CwantAtable.length; i++) {
+                    for (let j = 0; j < AwantBtable.length; j++) {
+                      if (CwantAtable[i].A_id === AwantBtable[j].A_id && CwantAtable[i].C_id === AwantBtable[j].B_id) {
+                        doubleMatchResultArr.push(AwantBtable[j])
+                        break;
+                      }
+                      // if ( queryData.item_id && CwantAtable[i].C_id === AwantBtable[j].B_id) {
+                      //   doubleMatchResultArr.push(AwantBtable[j])
+                      // }
                     }
                   }
+                  // 3. 用 1 + 2 取得 CwantAwantBtable
+                  for (let i = 0; i < CwantAtable.length; i++) {
+                    for (let j = 0; j < AwantBtable.length; j++) {
+                      if (CwantAtable[i].A_id === AwantBtable[j].A_id) {
+                        CwantAwantBtable.push({
+                          A_id: CwantAtable[i].A_id,
+                          B_id: AwantBtable[j].B_id,
+                          C_id: CwantAtable[i].C_id,
+                          title: AwantBtable[j].title,
+                        })
+                      }
+                    }
+                  }
+                  console.log('CwantAwantBtable');
+                  console.log(CwantAwantBtable);
                 }
-                console.log('CwantAwantBtable');
-                console.log(CwantAwantBtable);
                 // 用 AwantB, CwantA 取得 BwantC
                 queryString = `SELECT want_item_id B_id, required_item_id C_id FROM want w WHERE w.want_item_id IN (?) AND w.required_item_id IN (?)`
-                queryCondition= [];
+                queryCondition = [];
                 B_idArr = [];
                 C_idArr = [];
-                AwantBtable.forEach(AwantB => {B_idArr.push(AwantB.B_id)})
-                CwantAtable.forEach(CwantA => {C_idArr.push(CwantA.C_id)})
+                AwantBtable.forEach(AwantB => { B_idArr.push(AwantB.B_id) })
+                CwantAtable.forEach(CwantA => { C_idArr.push(CwantA.C_id) })
                 queryCondition.push(B_idArr);
                 queryCondition.push(C_idArr);
+                if (queryData.item_id) {
+                  // 如果某 id 同時存在於 B,C 兩個 Array, 代表 doubleMatch
+                  doubleMatchResultArr = CwantAtable.filter(CwantA => B_idArr.indexOf(CwantA.C_id) !== -1)
+                }
                 console.log(queryCondition);
                 mysql.pool.query(queryString, queryCondition, (err, BwantCtable, fileds) => {
                   console.log(BwantCtable);
@@ -162,15 +181,24 @@ module.exports = {
                     reject(err);
                   } else {
                     let tripleMatchResultArr = [];
-                    for (let i = 0; i < CwantAwantBtable.length; i++) {
-                      for (let j = 0; j < BwantCtable.length; j++) {
-                        if (CwantAwantBtable[i].C_id === BwantCtable[j].C_id && CwantAwantBtable[i].B_id === BwantCtable[j].B_id) {
-                          tripleMatchResultArr.push(CwantAwantBtable[i])
-                          break;
+                    if (queryData.user_nickname) {
+                      for (let i = 0; i < CwantAwantBtable.length; i++) {
+                        for (let j = 0; j < BwantCtable.length; j++) {
+                          if (CwantAwantBtable[i].C_id === BwantCtable[j].C_id && CwantAwantBtable[i].B_id === BwantCtable[j].B_id) {
+                            tripleMatchResultArr.push(CwantAwantBtable[i])
+                            break;
+                          }
                         }
                       }
+                    } else {
+                      BwantCtable.forEach(BwantC => {
+                        BwantC.A_id = queryData.item_id
+                        BwantC.B_item = AwantBtable.filter(AwantB => AwantB.B_id === BwantC.B_id)[0]
+                        BwantC.C_item = CwantAtable.filter(CwantA => CwantA.C_id === BwantC.C_id)[0]
+                        tripleMatchResultArr.push(BwantC)
+                      })
+                      // tripleMatchResultArr = BwantCtable
                     }
-                    console.log('tripleMatchResultArr');
                     console.log(tripleMatchResultArr);
                     resolve({
                       doubleMatchResultArr: doubleMatchResultArr,
@@ -291,7 +319,7 @@ module.exports = {
 
 
 
-/** 
+/**
 
 // -- O(n^2) loop 產生 CwantAwantB
 let CwantAwantBtable = [];

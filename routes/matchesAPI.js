@@ -2,47 +2,48 @@ const express = require('express');
 const router = express.Router();
 const matchDAO = require('../dao/matchDAO')
 const itemDAO = require('../dao/item')
+const wantDAO = require('../dao/wantDAO')
 
 router.get('/item/:type', async (req, res, next) => {
   // input : item_id, item_type
   console.log('start matchDAO');
-  const checkMatchResultArr = await matchDAO.get({
+  const checkMatchResultArr = await wantDAO.get({
     item_id: req.query.id,
     item_type: req.params.type,
   })
   console.log('end matchDAO');
-  let resArr = [];
-  checkMatchResultArr.forEach(matchResult => {
-    resArr.push({
-      doubleMatchData: {
-        matched: matchResult.matched,
-        ownersArr: [matchResult.want_owner, matchResult.required_owner],
-        owner_checkArr: [matchResult.want_owner_check, matchResult.required_owner_check],
-      },
-      tripleMatchData: {
-        triple_id: matchResult.triple_id,
-        ownersArr: [matchResult.start_owner, matchResult.middle_owner, matchResult.end_owner],
-        owner_checkArr: [matchResult.start_owner_check, matchResult.middle_owner_check, matchResult.end_owner_check],
-      },
-      itemData: {
-        id: matchResult.id,
-        user_id: matchResult.user_id,
-        main_category: matchResult.main_category,
-        sub_category: matchResult.sub_category,
-        tags: matchResult.tags,
-        title: matchResult.title,
-        status: matchResult.status,
-        count: matchResult.count,
-        introduction: matchResult.introduction,
-        pictures: matchResult.pictures,
-        time: matchResult.time,
-        user_nickname: matchResult.user_nickname,
-        availability: matchResult.availability,
-      }
-    })
-  })
-  console.log(resArr);
-  res.send(resArr)
+  // let resArr = [];
+  // checkMatchResultArr.forEach(matchResult => {
+  //   resArr.push({
+  //     doubleMatchData: {
+  //       matched: matchResult.matched,
+  //       ownersArr: [matchResult.want_owner, matchResult.required_owner],
+  //       owner_checkArr: [matchResult.want_owner_check, matchResult.required_owner_check],
+  //     },
+  //     tripleMatchData: {
+  //       triple_id: matchResult.triple_id,
+  //       ownersArr: [matchResult.start_owner, matchResult.middle_owner, matchResult.end_owner],
+  //       owner_checkArr: [matchResult.start_owner_check, matchResult.middle_owner_check, matchResult.end_owner_check],
+  //     },
+  //     itemData: {
+  //       id: matchResult.id,
+  //       user_id: matchResult.user_id,
+  //       main_category: matchResult.main_category,
+  //       sub_category: matchResult.sub_category,
+  //       tags: matchResult.tags,
+  //       title: matchResult.title,
+  //       status: matchResult.status,
+  //       count: matchResult.count,
+  //       introduction: matchResult.introduction,
+  //       pictures: matchResult.pictures,
+  //       time: matchResult.time,
+  //       user_nickname: matchResult.user_nickname,
+  //       availability: matchResult.availability,
+  //     }
+  //   })
+  // })
+  console.log(checkMatchResultArr);
+  res.send(checkMatchResultArr)
   // to do : call matchADO.get() w/ item_id and item_type
   // output : match data of item
 })

@@ -30,13 +30,13 @@ module.exports = {
   },
   get: (queryCondition) => {
     if (queryCondition.user_nickname) {
-      // 查詢該會員的所有交易資料
-      console.log('search match result of user in wantDAO');
-      queryString = `SELECT w.want_item_id AS item_id, i.title FROM want AS w JOIN items AS i ON w.want_item_id = i.id WHERE w.want_owner = ? AND w.matched = "true"`
-      placeArr.forEach((place) => {
-        queryString += ` UNION SELECT m.${place}_item_id AS item_id, i.title FROM matched AS m JOIN items AS i ON m.${place}_item_id = i.id WHERE m.${place}_owner = "${queryCondition.user_nickname}"`
-      })
-      getQueryCondition = [queryCondition.user_nickname];
+      // // 查詢該會員的所有交易資料
+      // console.log('search match result of user in wantDAO');
+      // queryString = `SELECT w.want_item_id AS item_id, i.title FROM want AS w JOIN items AS i ON w.want_item_id = i.id WHERE w.want_owner = ? AND w.matched = "true"`
+      // placeArr.forEach((place) => {
+      //   queryString += ` UNION SELECT m.${place}_item_id AS item_id, i.title FROM matched AS m JOIN items AS i ON m.${place}_item_id = i.id WHERE m.${place}_owner = "${queryCondition.user_nickname}"`
+      // })
+      // getQueryCondition = [queryCondition.user_nickname];
       // 之後還要做 required_item list side bar
     } else if (queryCondition.matched_id && queryCondition.userIndex) {
       // 用 matched_ID 得到 match data

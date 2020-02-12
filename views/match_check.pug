@@ -5,9 +5,9 @@ block content
       .main-left
         .sub-main-container
           .subtext.subscribe Matched Items
-          if objectOfmatchesResultArr.length > 0
-            each want in objectOfmatchesResultArr
-              .subscribe-item(onclick=`getMatchedResultData(${want.item_id}, '${want.title}', 'want')`)
+          if b_itemObjectArr.length > 0
+            each want in b_itemObjectArr
+              .subscribe-item(onclick=`getMatchedResultData(${want.B_id}, '${want.title}', 'want')`)
                 .subscribe-content 
                   span=want.title
             else

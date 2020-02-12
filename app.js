@@ -41,12 +41,35 @@ app.get('/items/detail', async (req,res)=>{
 // Want
 app.get('/matches/information', async (req,res)=>{
   // get data with first match in the list, need to check if no matches at all
-  let objectOfmatchesResultArr = await matchDAO.get({
+  let objectOfmatchesResultArr = await wantDAO.get({
     user_nickname: req.query.user_nickname,
   });
-  res.render('match_check', {
-    objectOfmatchesResultArr: objectOfmatchesResultArr,
+  console.log('objectOfmatchesResultArr');
+  console.log(objectOfmatchesResultArr);
+  console.log('objectOfmatchesResultArr.doubleMatchResultArr');
+  console.log(objectOfmatchesResultArr.doubleMatchResultArr);
+  console.log('objectOfmatchesResultArr.tripleMatchResultArr');
+  console.log(objectOfmatchesResultArr.tripleMatchResultArr);
+
+  let tempArr = [];
+  objectOfmatchesResultArr.doubleMatchResultArr.forEach(doubleMatch=>{
+    tempArr.push( doubleMatch.B_id )
   })
+  objectOfmatchesResultArr.tripleMatchResultArr.forEach(tripleMatch=>{
+    tempArr.push( tripleMatch.B_id)
+  })
+  console.log('tempArr');
+  console.log(tempArr);
+  let setTempArr = [...new Set(tempArr)];
+  console.log(setTempArr);
+
+  objectOfmatchesResultArr.b_itemObjectArr = await itemDAO.get({
+    type: 'all',
+    id_Arr: setTempArr,
+  });
+  console.log(objectOfmatchesResultArr.b_itemObjectArr);
+
+  res.render('match_check', objectOfmatchesResultArr)
 });
 // Boards
 app.get('/boards/:board', async (req,res)=>{

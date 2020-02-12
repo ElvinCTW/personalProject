@@ -4,11 +4,22 @@ module.exports = {
     return new Promise((resolve, reject)=>{
       let queryString = 'SELECT * FROM items ';
       if (queryCondition.type === 'all') {
-        if (queryCondition.main_category) {
+        if (queryCondition.id_Arr) {
+          // get data for id_Arr
+          queryString += 'WHERE id IN (?)';
+          mysql.pool.query(queryString, [queryCondition.id_Arr], (err, getItemResultArr, fields)=>{
+            if (err) {
+              console.log(err.sqlMessage);
+              console.log(err.sql);
+              reject(err)
+            };
+            resolve(getItemResultArr);
+          }) 
+        } else if (queryCondition.main_category) {
           if (!queryCondition.sub_category) {
             // select all by main category only
             queryString += 'WHERE main_category = ? ORDER BY time DESC LIMIT ?, 6';
-            let q = mysql.pool.query(queryString, [queryCondition.main_category, queryCondition.page*6], (err, getItemResultArr, fields)=>{
+            mysql.pool.query(queryString, [queryCondition.main_category, queryCondition.page*6], (err, getItemResultArr, fields)=>{
               if (err) {reject(err)};
               resolve(getItemResultArr);
             }) 

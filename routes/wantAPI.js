@@ -109,6 +109,7 @@ router.get('/matches/:type', async (req, res, next) => {
   const checkMatchResultArr = await wantDAO.get({
     item_id: req.query.id,
     item_type: req.params.type,
+    user_nickname: req.query.nickname,
   })
   // // input: want_item_id
   // // to do: call wantDAO.get(want_item_id)

@@ -1,4 +1,4 @@
-const alphabetArr = ['A', 'B', 'C']
+// const alphabetArr = ['A', 'B', 'C']
 if (!localStorage.getItem('nickname')) {
   // 確認使用者有登入，如果沒有，跳alert請user登入
   alert('plz sign in to active change function');
@@ -8,15 +8,15 @@ if (!localStorage.getItem('nickname')) {
 
 function getMatchedResultData(want_item_id, want_title, item_type) {
   // call wantAPI get matched data (by want_item_id)
-  let itemData;
-  $.ajax({
-    url: `/api/1.0/items/detail?item_id=${want_item_id}`,
-    type: 'get',
-    success: (getItemData) => {
+  // let itemData;
+  // $.ajax({
+  //   url: `/api/1.0/items/detail?item_id=${want_item_id}`,
+  //   type: 'get',
+  //   success: (getItemData) => {
       // 取得 query item data
-      itemData = getItemData;
+      // itemData = getItemData;
       $.ajax({
-        url: `/api/1.0/want/matches/${item_type}?id=${want_item_id}`,
+        url: `/api/1.0/want/matches/${item_type}?id=${want_item_id}&nickname=${localStorage.getItem('nickname')}`,
         type: 'get',
         success: (matchedItemsDataArr) => {
           // 取得所有 match result of item
@@ -211,11 +211,11 @@ function getMatchedResultData(want_item_id, want_title, item_type) {
 
         }
       })
-    },
-    error: (err) => {
-      console.log(err);
-    }
-  })
+  //   },
+  //   error: (err) => {
+  //     console.log(err);
+  //   }
+  // })
 
   // create boxes after get data 
 }

@@ -12,15 +12,15 @@ function getMatchedResultData(want_item_id, want_title, item_type) {
     type: 'get',
     success: (objOfDnTMatchArr) => {
       console.log(objOfDnTMatchArr);
-      // $('#subtext-matched-result-page').html(`Matched Results of ${want_title}`);
-      // $('#items-area-match').empty();
-      // for (let i = 0; i < matchedItemsDataArr.length; i++) {
-      //   // 點擊後可以送出配對確認給對方
-      //   let match = $('<div></div>').attr({ 'class': 'match-container' });
-      //   $('#items-area-match').append(match);
-      //   /**
-      //    * 商品資訊區
-      //    */
+      $('#subtext-matched-result-page').html(`Matched Results of ${want_title}`);
+      $('#items-area-match').empty();
+      for (let i = 0; i < matchedItemsDataArr.length; i++) {
+        // 點擊後可以送出配對確認給對方
+        let match = $('<div></div>').attr({ 'class': 'match-container' });
+        $('#items-area-match').append(match);
+        /**
+         * 商品資訊區
+         */
       //   let link = $('<a></a>').attr({ 'href': `/items/detail?item_id=${matchedItemsDataArr[i].itemData.id}` });
       //   match.append(link);
       //   // Create new Item outside container
@@ -180,7 +180,7 @@ function getMatchedResultData(want_item_id, want_title, item_type) {
       //     interactionBtnDiv.append(confirmBtn);
       //     interactionBtnDiv.append(denyBtn);
       //   }
-      // }
+      }
     },
     error: () => {
 

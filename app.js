@@ -58,10 +58,8 @@ app.get('/matches/information', async (req,res)=>{
   objectOfmatchesResultArr.tripleMatchResultArr.forEach(tripleMatch=>{
     tempArr.push( tripleMatch.B_id)
   })
-  console.log('tempArr');
-  console.log(tempArr);
+  // 取得不重複 Array
   let setTempArr = [...new Set(tempArr)];
-  console.log(setTempArr);
 
   objectOfmatchesResultArr.b_itemObjectArr = await itemDAO.get({
     type: 'all',

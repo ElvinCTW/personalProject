@@ -91,6 +91,11 @@ module.exports = {
       // })
       // queryCondition = [queryData.user_nickname];
 
+      /**
+       * user_nickname query : A 是當前 user 資料，B 是 user 想要的資料， C 是想要 user 東西的資料
+       * item_id query : A 是 user 想要的東西資料，B 是想要 user 東西的資料， C 是 user 的東西
+       * => 以 query 條件的進入點為 A
+       */
       // 查詢該會員的所有交易資料
       // 1. 用 user_nickname 取得 AwantB
       return new Promise((resolve, reject) => {
@@ -169,7 +174,14 @@ module.exports = {
                 queryCondition.push(C_idArr);
                 if (queryData.item_id) {
                   // 如果某 id 同時存在於 B,C 兩個 Array, 代表 doubleMatch
-                  doubleMatchResultArr = CwantAtable.filter(CwantA => B_idArr.indexOf(CwantA.C_id) !== -1)
+                  tempArr = AwantBtable.filter(AwantB => C_idArr.indexOf(AwantB.B_id) !== -1)
+                  tempArr.forEach(AwantB => {
+                    doubleMatchResultArr.push({
+                      B_id: AwantB.B_id,
+                      A_id: queryData.item_id,
+                      B_item: AwantB,
+                    })
+                  })
                 }
                 console.log(queryCondition);
                 mysql.pool.query(queryString, queryCondition, (err, BwantCtable, fileds) => {

@@ -8,7 +8,7 @@ if (!localStorage.getItem('nickname')) {
 function getMatchedResultData(want_item_id, want_title, item_type) {
   // call wantAPI get matched data (by want_item_id)
   $.ajax({
-    url: `/api/1.0/matches/item/${item_type}?id=${want_item_id}`,
+    url: `/api/1.0/want/matches/${item_type}?id=${want_item_id}`,
     type: 'get',
     success: (objOfDnTMatchArr) => {
       console.log(objOfDnTMatchArr);

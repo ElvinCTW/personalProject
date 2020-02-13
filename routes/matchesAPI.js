@@ -2,16 +2,16 @@ const express = require('express');
 const router = express.Router();
 const matchDAO = require('../dao/matchDAO')
 const itemDAO = require('../dao/item')
-const wantDAO = require('../dao/wantDAO')
+// const wantDAO = require('../dao/wantDAO')
 
 router.get('/item/:type', async (req, res, next) => {
-  // input : item_id, item_type
-  console.log('start matchDAO');
-  const checkMatchResultArr = await wantDAO.get({
-    item_id: req.query.id,
-    item_type: req.params.type,
-  })
-  console.log('end matchDAO');
+  // // input : item_id, item_type
+  // console.log('start matchDAO');
+  // const checkMatchResultArr = await wantDAO.get({
+  //   item_id: req.query.id,
+  //   item_type: req.params.type,
+  // })
+  // console.log('end matchDAO');
   // let resArr = [];
   // checkMatchResultArr.forEach(matchResult => {
   //   resArr.push({

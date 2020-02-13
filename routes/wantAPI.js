@@ -104,6 +104,10 @@ router.post('/new', async (req, res, next) => {
   }
 });
 
+router.post('/checked', async (req, res, next) => {
+  await wantDAO.update(req.body);
+})
+
 // get item matches result
 router.get('/matches/:type', async (req, res, next) => {
   const checkMatchResultArr = await wantDAO.get({

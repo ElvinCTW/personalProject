@@ -178,9 +178,9 @@ module.exports = {
                   tempArr = AwantBtable.filter(AwantB => C_idArr.indexOf(AwantB.B_id) !== -1)
                   tempArr.forEach(AwantB => {
                     doubleMatchResultArr.push({
-                      B_item: AwantB, // check in B_item = AwantB check
+                      C_item: AwantB, // check in B_item = AwantB check
                       A_item: CwantAtable.filter(e=>e.C_id === AwantB.B_id)[0], // check in A_item = BwantA check
-                      B_id: AwantB.B_id,
+                      C_id: AwantB.B_id,
                       A_id: queryData.item_id,
                       // A_check: AwantB.checked,
                       // B_check: AwantB.checked,
@@ -330,13 +330,70 @@ module.exports = {
     // }) 
   },
   update: (queryData) => {
-    // 更新 matched column
+    // 更新 want/checked column
     return new Promise((resolve, reject) => {
-      mysql.pool.query(`UPDATE want SET matched = 'true' WHERE want_item_id = ? AND required_item_id in (?)`, [queryData.item_id, queryData.matchedArr], (err, updateMatchResult, fileds) => {
+      let queryString = `UPDATE want SET checked = ? WHERE want_item_id = ? AND required_item_id = ?`;
+      let queryCondition = [queryData.type, queryData.want_item_id, queryData.required_item_id]
+      mysql.pool.query(queryString, queryCondition, (err, updateCheckedResult, fileds) => {
         if (err) {
+          mysql.errLog(err,'updateCheckedPromise','wantDAO')
           reject(err);
         } else {
-          resolve(updateMatchResult);
+          // resolve(updateMatchResult);
+          /**
+           * 檢查是否有成功的 confirmed 配對，若有查到則進行以下動作
+           * 1.物品下架
+           * 2.新增交換紀錄
+           * 3.對影響用戶進行通知
+           * 4.為成交用戶建立討論區
+           */
+          // 檢查 double 是否成功配對 :
+          queryString = `SELECT w.required_item_id, w.want_item_id FROM want w WHERE w.want_item_id = ? AND w.required_item_id = ? AND w.checked = "confirm"`;
+          queryCondition.length = 0
+          queryCondition.push(queryData.required_item_id, queryData.want_item_id)
+          mysql.pool.query(queryString, queryCondition, (err, doubleSelectMatchResult, fileds) => {
+            if (err) {
+              mysql.errLog(err,'doubleSelectMatchResult','wantDAO')
+              reject(err);
+            } else {
+              console.log('doubleSelectMatchResult');
+              console.log(doubleSelectMatchResult);
+              if (doubleSelectMatchResult.length > 0){
+                console.log('double confirmed match, update item availability');
+              } else {
+                // 檢查 Triple confirmed match
+                queryString = `SELECT * FROM want WHERE ( want_item_id = ? AND checked = "confirm") OR (required_item_id = ? AND checked = "confirm")`;
+                // queryCondition.length = 0
+                // queryCondition.push(queryData.want_item_id, queryData.required_item_id)
+                console.log(queryCondition);
+                mysql.pool.query(queryString, queryCondition, (err, getConfirmedwantResult, fileds) => {
+                  if (err) {
+                    mysql.errLog(err,'getConfirmedwantResult','wantDAO')
+                    reject(err);
+                  } else {
+                    console.log('getConfirmedwantResult');
+                    console.log(getConfirmedwantResult);
+                    wantC_Arr = [];
+                    wantC_Arr2 = [];
+                    getConfirmedwantResult.forEach(want=>{
+                      console.log(want.want_item_id);
+                      console.log(parseInt(queryData.required_item_id));
+                      if (want.want_item_id === parseInt(queryData.required_item_id)) {
+                        wantC_Arr.push(want.required_item_id);
+                      } else {
+                        wantC_Arr2.push(want.want_item_id);
+                      }
+                    })
+                    console.log(wantC_Arr);
+                    console.log(wantC_Arr2);
+                    let itemC_idArr = wantC_Arr.filter(value => wantC_Arr2.includes(value))
+                    console.log('itemC_idArr');
+                    console.log(itemC_idArr);
+                  }
+                })
+              }
+            }
+          })
         }
       })
     })

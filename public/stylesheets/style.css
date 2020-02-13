@@ -171,6 +171,10 @@ main
   margin: 0 2%;
 }
 
+.main-middle.matches-page {
+  width: 76%;
+}
+
 .items-area.recommands,
 .items-div.user-items {
   display: flex;

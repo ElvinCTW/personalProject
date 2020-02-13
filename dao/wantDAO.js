@@ -57,7 +57,7 @@ module.exports = {
       queryCondition = [queryData.item_id, parseIntArr];
       return new Promise((resolve, reject) => {
         mysql.pool.query(queryString, queryCondition, (err, doubleMatchResultArr, fileds) => {
-          console.log(doubleMatchResultArr);
+          // console.log(doubleMatchResultArr);
           if (err) {
             console.log('error in doubleMatchResultPromise');
             console.log(err.sqlMessage);
@@ -67,7 +67,7 @@ module.exports = {
             queryString = `SELECT * FROM want WHERE want_item_id IN ( SELECT required_item_id FROM want WHERE want_item_id = ? ) AND required_item_id in (?)`;
             // return new Promise((resolve, reject) => {
             mysql.pool.query(queryString, queryCondition, (err, tripleMatchResultArr, fileds) => {
-              console.log(tripleMatchResultArr);
+              // console.log(tripleMatchResultArr);
               if (err) {
                 console.log('error in tripleMatchResultPromise');
                 console.log(err.sqlMessage);
@@ -108,10 +108,10 @@ module.exports = {
           queryString = `SELECT w.required_item_id B_id, i.* FROM want w JOIN items i ON w.required_item_id = i.id WHERE w.want_item_id = ?`
           queryCondition = queryData.item_id
         }
-        console.log(queryData);
-        console.log(queryCondition);
+        // console.log(queryData);
+        // console.log(queryCondition);
         mysql.pool.query(queryString, [queryCondition], (err, AwantBtable, fileds) => {
-          console.log(AwantBtable);
+          // console.log(AwantBtable);
           if (err) {
             console.log('error in AwantBtablePromise');
             console.log(err.sqlMessage);
@@ -124,9 +124,9 @@ module.exports = {
             } else {
               queryString = `SELECT want_item_id C_id, i.* FROM want w JOIN items i ON w.required_item_id = i.id WHERE w.required_item_id = ?`
             }
-            console.log(queryCondition);
+            // console.log(queryCondition);
             mysql.pool.query(queryString, [queryCondition], (err, CwantAtable, fileds) => {
-              console.log(CwantAtable);
+              // console.log(CwantAtable);
               if (err) {
                 console.log('error in CwantAtablePromise');
                 console.log(err.sqlMessage);
@@ -160,8 +160,8 @@ module.exports = {
                       }
                     }
                   }
-                  console.log('CwantAwantBtable');
-                  console.log(CwantAwantBtable);
+                  // console.log('CwantAwantBtable');
+                  // console.log(CwantAwantBtable);
                 }
                 // 用 AwantB, CwantA 取得 BwantC
                 queryString = `SELECT want_item_id B_id, required_item_id C_id, i.* FROM want w JOIN items i ON i.id = w.required_item_id WHERE w.want_item_id IN (?) AND w.required_item_id IN (?)`
@@ -177,16 +177,16 @@ module.exports = {
                   tempArr = AwantBtable.filter(AwantB => C_idArr.indexOf(AwantB.B_id) !== -1)
                   tempArr.forEach(AwantB => {
                     doubleMatchResultArr.push({
-                      A_id: queryData.item_id,
-                      B_id: AwantB.B_id,
                       A_item: CwantAtable[0],
                       B_item: AwantB,
+                      A_id: queryData.item_id,
+                      B_id: AwantB.B_id,
                     })
                   })
                 }
-                console.log(queryCondition);
+                // console.log(queryCondition);
                 mysql.pool.query(queryString, queryCondition, (err, BwantCtable, fileds) => {
-                  console.log(BwantCtable);
+                  // console.log(BwantCtable);
                   if (err) {
                     console.log('error in BwantCtablePromise');
                     console.log(err.sqlMessage);
@@ -212,17 +212,17 @@ module.exports = {
                         // change
                         // BwantC.C_item = CwantAtable.filter(CwantA => CwantA.C_id === BwantC.C_id)[0]
                         tripleMatchResultArr.push({
-                          A_id: queryData.item_id,
-                          B_id: BwantC.B_id,
-                          C_id: BwantC.C_id,
                           A_item: CwantAtable.filter(CwantA => CwantA.C_id === BwantC.C_id)[0],
                           B_item: AwantBtable.filter(AwantB => AwantB.B_id === BwantC.B_id)[0],
                           C_item: BwantC,
+                          A_id: queryData.item_id,
+                          B_id: BwantC.B_id,
+                          C_id: BwantC.C_id,
                         })
                       })
                       // tripleMatchResultArr = BwantCtable
                     }
-                    console.log(tripleMatchResultArr);
+                    // console.log(tripleMatchResultArr);
                     resolve({
                       doubleMatchResultArr: doubleMatchResultArr,
                       tripleMatchResultArr: tripleMatchResultArr,
@@ -299,7 +299,7 @@ module.exports = {
       queryCondition = [queryData.item_id];
       return new Promise((resolve, reject) => {
         mysql.pool.query(queryString, queryCondition, (err, checkPreviousWantResult, fileds) => {
-          console.log(checkPreviousWantResult);
+          // console.log(checkPreviousWantResult);
           if (err) {
             console.log('error in checkPreviousWantPromise');
             console.log(err.sqlMessage);

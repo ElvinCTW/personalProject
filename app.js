@@ -44,12 +44,12 @@ app.get('/matches/information', async (req,res)=>{
   let objectOfmatchesResultArr = await wantDAO.get({
     user_nickname: req.query.user_nickname,
   });
-  console.log('objectOfmatchesResultArr');
-  console.log(objectOfmatchesResultArr);
-  console.log('objectOfmatchesResultArr.doubleMatchResultArr');
-  console.log(objectOfmatchesResultArr.doubleMatchResultArr);
-  console.log('objectOfmatchesResultArr.tripleMatchResultArr');
-  console.log(objectOfmatchesResultArr.tripleMatchResultArr);
+  // console.log('objectOfmatchesResultArr');
+  // console.log(objectOfmatchesResultArr);
+  // console.log('objectOfmatchesResultArr.doubleMatchResultArr');
+  // console.log(objectOfmatchesResultArr.doubleMatchResultArr);
+  // console.log('objectOfmatchesResultArr.tripleMatchResultArr');
+  // console.log(objectOfmatchesResultArr.tripleMatchResultArr);
 
   let tempArr = [];
   objectOfmatchesResultArr.doubleMatchResultArr.forEach(doubleMatch=>{
@@ -65,7 +65,7 @@ app.get('/matches/information', async (req,res)=>{
     type: 'all',
     id_Arr: setTempArr,
   });
-  console.log(objectOfmatchesResultArr.b_itemObjectArr);
+  // console.log(objectOfmatchesResultArr.b_itemObjectArr);
 
   res.render('match_check', objectOfmatchesResultArr)
 });

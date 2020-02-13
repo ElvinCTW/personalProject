@@ -128,7 +128,7 @@ router.get('/matches/:type', async (req, res, next) => {
   checkMatchResultArr.tripleMatchResultArr.forEach(element=>{
     resArr.push(element)
   })
-  console.log(resArr);
+  // console.log(resArr);
   res.send(resArr)
 })
 

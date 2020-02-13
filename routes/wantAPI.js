@@ -121,8 +121,15 @@ router.get('/matches/:type', async (req, res, next) => {
   // } else {
   //   res.status(200).send(matchesRequiredItemsDataArr)
   // }
-  console.log(checkMatchResultArr);
-  res.send(checkMatchResultArr)
+  let resArr = [];
+  checkMatchResultArr.doubleMatchResultArr.forEach(element => {    
+    resArr.push(element)
+  });
+  checkMatchResultArr.tripleMatchResultArr.forEach(element=>{
+    resArr.push(element)
+  })
+  console.log(resArr);
+  res.send(resArr)
 })
 
 module.exports = router;

@@ -122,7 +122,7 @@ module.exports = {
             if (queryData.user_nickname) {
               queryString = `SELECT want_item_id C_id, required_item_id A_id FROM want w JOIN items i ON w.required_item_id = i.id WHERE i.user_nickname = ?`
             } else {
-              queryString = `SELECT want_item_id C_id, i.* FROM want w JOIN items i ON w.want_item_id = i.id WHERE w.required_item_id = ?`
+              queryString = `SELECT want_item_id C_id, i.* FROM want w JOIN items i ON w.required_item_id = i.id WHERE w.required_item_id = ?`
             }
             console.log(queryCondition);
             mysql.pool.query(queryString, [queryCondition], (err, CwantAtable, fileds) => {
@@ -164,7 +164,7 @@ module.exports = {
                   console.log(CwantAwantBtable);
                 }
                 // 用 AwantB, CwantA 取得 BwantC
-                queryString = `SELECT want_item_id B_id, required_item_id C_id FROM want w WHERE w.want_item_id IN (?) AND w.required_item_id IN (?)`
+                queryString = `SELECT want_item_id B_id, required_item_id C_id, i.* FROM want w JOIN items i ON i.id = w.required_item_id WHERE w.want_item_id IN (?) AND w.required_item_id IN (?)`
                 queryCondition = [];
                 B_idArr = [];
                 C_idArr = [];
@@ -177,8 +177,9 @@ module.exports = {
                   tempArr = AwantBtable.filter(AwantB => C_idArr.indexOf(AwantB.B_id) !== -1)
                   tempArr.forEach(AwantB => {
                     doubleMatchResultArr.push({
-                      B_id: AwantB.B_id,
                       A_id: queryData.item_id,
+                      B_id: AwantB.B_id,
+                      A_item: CwantAtable[0],
                       B_item: AwantB,
                     })
                   })
@@ -204,10 +205,20 @@ module.exports = {
                       }
                     } else {
                       BwantCtable.forEach(BwantC => {
-                        BwantC.A_id = queryData.item_id
-                        BwantC.B_item = AwantBtable.filter(AwantB => AwantB.B_id === BwantC.B_id)[0]
-                        BwantC.C_item = CwantAtable.filter(CwantA => CwantA.C_id === BwantC.C_id)[0]
-                        tripleMatchResultArr.push(BwantC)
+                        // BwantC.A_id = queryData.item_id
+                        // // BwantC.A_item
+                        // BwantC.A_item = CwantAtable.filter(CwantA => CwantA.C_id === BwantC.C_id)[0]
+                        // BwantC.B_item = AwantBtable.filter(AwantB => AwantB.B_id === BwantC.B_id)[0]
+                        // change
+                        // BwantC.C_item = CwantAtable.filter(CwantA => CwantA.C_id === BwantC.C_id)[0]
+                        tripleMatchResultArr.push({
+                          A_id: queryData.item_id,
+                          B_id: BwantC.B_id,
+                          C_id: BwantC.C_id,
+                          A_item: CwantAtable.filter(CwantA => CwantA.C_id === BwantC.C_id)[0],
+                          B_item: AwantBtable.filter(AwantB => AwantB.B_id === BwantC.B_id)[0],
+                          C_item: BwantC,
+                        })
                       })
                       // tripleMatchResultArr = BwantCtable
                     }

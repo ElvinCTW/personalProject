@@ -48,13 +48,18 @@ function getMatchedResultData(want_item_id, want_title, item_type) {
             success: (checkAllConfirmResultArr) => {
               checkStatusNodeArr[1].html(`User : 您, Check : ${data.type}`)
               interactionBtnDiv.attr({ 'style': 'display:none;' })
+              // 若有配對成功，alert 成功訊息
+              alert(checkAllConfirmResultArr.msg);
             },
             error: (error) => {
               console.log(error);
             },
           })
         });
-        let interactors = 0;
+        /**
+         * 還要做 deny btn
+         */
+        // let interactors = 0;
         let checkStatusNodeArr = [];
         let ownersArr;
         if (!matchedItemsDataArr[i].B_id) {

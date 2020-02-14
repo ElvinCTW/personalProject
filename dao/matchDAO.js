@@ -4,28 +4,48 @@ const placeArr = ['start', 'middle', 'end'];
 module.exports = {
   insert: (matchData) => {
     return new Promise((resolve, reject) => {
-      let insertMatchedArr = [];
-      matchData.bridgeWantArr.forEach((bridgeWantFromEndToStart) => {
-        let insertedMatchRow =
-          [bridgeWantFromEndToStart.required_item_id,
-          bridgeWantFromEndToStart.required_owner,
-          matchData.middle_item_id,
-          matchData.middle_owner,
-          bridgeWantFromEndToStart.want_item_id,
-          bridgeWantFromEndToStart.want_owner]
-        insertMatchedArr.push(insertedMatchRow);
-      })
-      let queryString = 'INSERT INTO matched (start_item_id, start_owner, middle_item_id, middle_owner, end_item_id, end_owner) VALUES ?'
-      mysql.pool.query(queryString, [insertMatchedArr], (err, insertMatchResult, fields) => {
-        if (err) {
-          console.log('error in insertMatchedRowPromise');
-          console.log(err.sqlMessage);
-          console.log(err.sql);
-          reject(err);
-        } else {
-          resolve(insertMatchResult);
+      let queryString = '';
+      if (matchData.id_Arr) {
+        if (matchData.id_Arr.length === 3 ) {
+          queryString = 'INSERT INTO matched(start_item_id, middle_item_id, end_item_id) VALUES(?)';
+        } else if (matchData.id_Arr.length === 2) {
+          queryString = 'INSERT INTO matched(start_item_id, end_item_id) VALUES(?)';
         }
-      })
+        mysql.pool.query(queryString, [matchData.id_Arr], (err, insertMatchTableResult, fileds) => {
+          if (err) {
+            mysql.errLog(err,'insertMatchTableResult','matchDAO')
+            reject(err)
+          } else {
+            console.log('insertMatchTableResult')
+            console.log(insertMatchTableResult)
+            console.log('insertMatchTableResult.insertId')
+            console.log(insertMatchTableResult.insertId)
+            resolve(insertMatchTableResult.insertId);
+          }
+        });
+      }
+      // let insertMatchedArr = [];
+      // matchData.bridgeWantArr.forEach((bridgeWantFromEndToStart) => {
+      //   let insertedMatchRow =
+      //     [bridgeWantFromEndToStart.required_item_id,
+      //     bridgeWantFromEndToStart.required_owner,
+      //     matchData.middle_item_id,
+      //     matchData.middle_owner,
+      //     bridgeWantFromEndToStart.want_item_id,
+      //     bridgeWantFromEndToStart.want_owner]
+      //   insertMatchedArr.push(insertedMatchRow);
+      // })
+      // let queryString = 'INSERT INTO matched (start_item_id, start_owner, middle_item_id, middle_owner, end_item_id, end_owner) VALUES ?'
+      // mysql.pool.query(queryString, [insertMatchedArr], (err, insertMatchResult, fields) => {
+      //   if (err) {
+      //     console.log('error in insertMatchedRowPromise');
+      //     console.log(err.sqlMessage);
+      //     console.log(err.sql);
+      //     reject(err);
+      //   } else {
+      //     resolve(insertMatchResult);
+      //   }
+      // })
     })
   },
   get: (queryCondition) => {

@@ -5,15 +5,16 @@ block content
       .main-left
         .sub-main-container
           .subtext.subscribe Matched Items
+          - console.log(b_itemObjectArr.length)
           if b_itemObjectArr.length > 0
             each want in b_itemObjectArr
               .subscribe-item(onclick=`getMatchedResultData(${want.id}, '${want.title}', 'want')`)
                 .subscribe-content 
                   span=want.title
-            else
-              .subscribe-item
-                .subscribe-content 
-                  span No_Matches
+          else
+            .subscribe-item
+              .subscribe-content 
+                span No_Matches
       .main-middle.matches-page
         //- .sub-main-container.news
           //- .subtext.news News

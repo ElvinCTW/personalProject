@@ -6,7 +6,7 @@ module.exports = {
       if (queryCondition.type === 'all') {
         if (queryCondition.id_Arr) {
           // get data for id_Arr
-          queryString += 'WHERE id IN (?)';
+          queryString += 'WHERE id IN (?) AND availability = "true"';
           mysql.pool.query(queryString, [queryCondition.id_Arr], (err, getItemResultArr, fields)=>{
             if (err) {
               console.log(err.sqlMessage);
@@ -18,14 +18,14 @@ module.exports = {
         } else if (queryCondition.main_category) {
           if (!queryCondition.sub_category) {
             // select all by main category only
-            queryString += 'WHERE main_category = ? ORDER BY time DESC LIMIT ?, 6';
+            queryString += 'WHERE main_category = ? AND availability = "true" ORDER BY time DESC LIMIT ?, 6';
             mysql.pool.query(queryString, [queryCondition.main_category, queryCondition.page*6], (err, getItemResultArr, fields)=>{
               if (err) {reject(err)};
               resolve(getItemResultArr);
             }) 
           } else {
             // select all by main and sub category
-            queryString += 'WHERE main_category = ? AND sub_category = ? ORDER BY time DESC LIMIT ?, 6';
+            queryString += 'WHERE main_category = ? AND sub_category = ? AND availability = "true" ORDER BY time DESC LIMIT ?, 6';
             mysql.pool.query(queryString, queryCondition.main_category, queryCondition.sub_category, queryCondition.page*6, (err, getItemResultArr, fields)=>{
               if (err) {reject(err)};
               resolve(getItemResultArr);
@@ -33,7 +33,7 @@ module.exports = {
           }
         } else if (!queryCondition.user_nickname) {
           // lastest
-          queryString += 'ORDER BY time DESC LIMIT ?, 6';
+          queryString += 'WHERE availability = "true" ORDER BY time DESC LIMIT ?, 6';
           mysql.pool.query(queryString, queryCondition.page*6, (err, getItemResultArr, fields)=>{
             // if (err) {reject(err)};
             // resolve(getItemResultArr);
@@ -41,14 +41,14 @@ module.exports = {
           })
         } else {
           // recommand
-          queryString += 'WHERE user_nickname = ? ORDER BY time DESC LIMIT ?, 6';
+          queryString += 'WHERE user_nickname = ? AND availability = "true" ORDER BY time DESC LIMIT ?, 6';
           mysql.pool.query(queryString, [queryCondition.user_nickname, queryCondition.page*6], (err, getItemResultArr, fields)=>{
             afterItemsQuery(err, queryCondition, getItemResultArr, resolve, reject);
           })
         } 
       } else if (queryCondition.type === 'detail') {
         // item detail info page
-        queryString += 'WHERE id = ?'
+        queryString += 'WHERE id = ? AND availability = "true"'
         mysql.pool.query(queryString, queryCondition.item_id, (err, getItemResultArr, fields)=>{
           if (err) {reject(err)};
           resolve(getItemResultArr);
@@ -77,26 +77,25 @@ module.exports = {
     /** To do: insert data to db */
     /** Output: Success or error msg*/
   },
-  update: (queryCondition)=>{
-    let queryString;
-    let updateQueryCondition;
+  update: (queryData)=>{
     // update items // turn item / availability to false
-    queryString = 'UPDATE items SET availability = "false" WHERE id in (?)'
-    if (queryCondition.want_item_id && queryCondition.required_item_id) {
-      updateQueryCondition = [queryCondition.want_item_id, queryCondition.required_item_id]
-    } else {
-      updateQueryCondition = [queryCondition.start_item_id, queryCondition.middle_item_id, queryCondition.end_item_id]
-    }
+    let queryString;
+    let queryCondition = [];
     return new Promise((resolve, reject) => {
-      mysql.pool.query(queryString, [updateQueryCondition], (err, updateItemAvailablityResult, fields) => {
+      queryString = 'UPDATE items SET availability = "false" WHERE id in (?)';
+      queryCondition.length = 0;
+      console.log('queryCondition')
+      console.log(queryData.id_Arr)
+      mysql.pool.query(queryString, [queryData.id_Arr], (err, updateAvailbilityResult, fileds) => {
         if (err) {
-          console.log('error in insertItemPromise');
-          console.log(err);
-          reject(err);
+          mysql.errLog(err,'updateAvailbilityResult','itemDAO')
+          reject(err)
         } else {
-          resolve(updateItemAvailablityResult);
+          console.log('updateAvailbilityResult')
+          console.log(updateAvailbilityResult)
+          resolve(updateAvailbilityResult.affectedRows)
         }
-      })
+      });
     })
   }
 }

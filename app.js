@@ -50,23 +50,31 @@ app.get('/matches/information', async (req,res)=>{
   // console.log(objectOfmatchesResultArr.doubleMatchResultArr);
   // console.log('objectOfmatchesResultArr.tripleMatchResultArr');
   // console.log(objectOfmatchesResultArr.tripleMatchResultArr);
-
-  let tempArr = [];
-  objectOfmatchesResultArr.doubleMatchResultArr.forEach(doubleMatch=>{
-    tempArr.push( doubleMatch.B_id )
-  })
-  objectOfmatchesResultArr.tripleMatchResultArr.forEach(tripleMatch=>{
-    tempArr.push( tripleMatch.B_id)
-  })
-  // 取得不重複 Array
-  let setTempArr = [...new Set(tempArr)];
-
-  objectOfmatchesResultArr.b_itemObjectArr = await itemDAO.get({
-    type: 'all',
-    id_Arr: setTempArr,
-  });
-  // console.log(objectOfmatchesResultArr.b_itemObjectArr);
-
+  console.log('(objectOfmatchesResultArr.doubleMatchResultArr.length > 0 && objectOfmatchesResultArr.tripleMatchResultArr.length > 0)')
+  console.log((objectOfmatchesResultArr.doubleMatchResultArr.length > 0 && objectOfmatchesResultArr.tripleMatchResultArr.length > 0))
+  if (objectOfmatchesResultArr.doubleMatchResultArr.length > 0 && objectOfmatchesResultArr.tripleMatchResultArr.length > 0) {
+    let tempArr = [];
+    objectOfmatchesResultArr.doubleMatchResultArr.forEach(doubleMatch=>{
+      tempArr.push( doubleMatch.B_id )
+    })
+    objectOfmatchesResultArr.tripleMatchResultArr.forEach(tripleMatch=>{
+      tempArr.push( tripleMatch.B_id)
+    })
+    // 取得不重複 Array
+    let setTempArr = [...new Set(tempArr)];
+  
+    objectOfmatchesResultArr.b_itemObjectArr = await itemDAO.get({
+      type: 'all',
+      id_Arr: setTempArr,
+    });
+    // console.log(objectOfmatchesResultArr.b_itemObjectArr);
+  } else {
+    objectOfmatchesResultArr.b_itemObjectArr = [];
+  }
+  console.log('objectOfmatchesResultArr.b_itemObjectArr')
+  console.log(objectOfmatchesResultArr.b_itemObjectArr)
+  console.log('objectOfmatchesResultArr')
+  console.log(objectOfmatchesResultArr)
   res.render('match_check', objectOfmatchesResultArr)
 });
 // Boards

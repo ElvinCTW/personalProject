@@ -43,7 +43,7 @@ module.exports = {
       console.log('search users that need to be notificate when other items gone, wantDAO, get');
       return new Promise((resolve, reject) => {
         // 取得 required item id in (id_Arr) && check = confirmed 的 want，作為通知人候選名單
-        queryString = 'SELECT w.want_item_id notificated_item_id, i.user_nickname notificated_user, w.required_item_id gone_item_id, i2.title gone_item_title FROM want w JOIN items i ON i.id = w.want_item_id JOIN items i2 ON i2.id = w.required_item_id WHERE w.required_item_id in (?) AND w.checked = "confirm"';
+        queryString = 'SELECT w.want_item_id notificated_item_id, i.title notificated_item_title, i.user_nickname notificated_user, w.required_item_id gone_item_id, i2.title gone_item_title FROM want w JOIN items i ON i.id = w.want_item_id JOIN items i2 ON i2.id = w.required_item_id WHERE w.required_item_id in (?) AND w.checked = "confirm"';
         queryCondition.length = 0;
         queryCondition.push(queryData.id_Arr);
         mysql.pool.query(queryString, queryCondition, (err, notificationResult, fileds) => {
@@ -71,12 +71,12 @@ module.exports = {
       // queryString = `SELECT * FROM want WHERE want_item_id in (?) AND required_item_id in (?)`;
       // queryCondition = [queryData.endItemsArr, parseIntArr];
     } else if (queryData.wantArr) {
-      console.log('search required_item want want_items or not in wantDAO');
+      console.log('search double or triple non-confirmed match in wantDAO');
       // 查詢 required_item 有無針對 offer_items 表示過 want (item_detail 新增 want 用)
       queryData.wantArr.forEach((item_id) => {
         parseIntArr.push(parseInt(item_id));
       })
-      queryString = `SELECT * FROM want WHERE want_item_id = ? AND required_item_id in (?)`;
+      queryString = `SELECT w.* FROM want w JOIN items i ON i.id = w.want_item_id WHERE want_item_id = ? AND required_item_id in (?) AND i.availability = "true"`;
       queryCondition = [queryData.item_id, parseIntArr];
       return new Promise((resolve, reject) => {
         mysql.pool.query(queryString, queryCondition, (err, doubleMatchResultArr, fileds) => {
@@ -87,7 +87,7 @@ module.exports = {
             console.log(err.sql);
             reject(err);
           } else {
-            queryString = `SELECT * FROM want WHERE want_item_id IN ( SELECT required_item_id FROM want WHERE want_item_id = ? ) AND required_item_id in (?)`;
+            queryString = `SELECT w.* FROM want w JOIN items i ON i.id = w.want_item_id WHERE want_item_id IN ( SELECT w.required_item_id FROM want w JOIN items i ON i.id = w.required_item_id WHERE want_item_id = ? AND i.availability = "true" ) AND required_item_id in (?) AND i.availability = "true"`;
             // return new Promise((resolve, reject) => {
             mysql.pool.query(queryString, queryCondition, (err, tripleMatchResultArr, fileds) => {
               // console.log(tripleMatchResultArr);

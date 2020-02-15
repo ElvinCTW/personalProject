@@ -5,7 +5,7 @@ module.exports = {
     let queryString = '';
     return new Promise((resolve, reject) => {
       if (queryData.action === 'insertItemGoneMsgToUser') {
-        queryString = 'INSERT INTO message(content, sender, receiver, mentioned_item_id, time) VALUES ?';
+        queryString = 'INSERT INTO message(content, sender, receiver, mentioned_item_id, matched_id, time) VALUES ?';
         // queryCondition.length = 0;
         // queryCondition.push(queryData.insertMsgQueryDataArr);
         // console.log('queryCondition')

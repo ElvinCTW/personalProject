@@ -407,10 +407,11 @@ main
   max-height: 3em;
 }
 
+
 /* main-right */
 .main-right {
   width: 20%;
-  max-width: 240px;
+  max-width: 260px;
 }
 
 .ads img {
@@ -419,11 +420,20 @@ main
   border-radius: 15px;
 }
 
+#main-right-inside-container {
+  max-height: 650px;
+  overflow: scroll;
+}
+
 /* 
 users_register
 */
 .main-middle.sign {
   align-items: center;
+}
+
+.main-middle.confirmed {
+  min-width: 600px;
 }
 
 .subtext.sign {
@@ -439,6 +449,11 @@ users_register
   background-color: #fff;
   width: 100%;
   border-radius: 15px;
+}
+
+.items-area.talk {
+  min-width: 600px;
+  min-height: 650px;
 }
 
 .sub-main-container.add-item {
@@ -495,7 +510,3 @@ users_register
   margin-left: 10px;
   width: 50%;
 }
-
-/*
-add_item  
-*/

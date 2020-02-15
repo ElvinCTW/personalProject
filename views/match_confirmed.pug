@@ -8,14 +8,14 @@ block content
           - console.log(getConfirmedMatchesResultArr.length)
           if getConfirmedMatchesResultArr.length > 0
             each match in getConfirmedMatchesResultArr
-              .subscribe-item(onclick=`getMatchedResultData(${match.matched_id})`)
+              .subscribe-item(onclick=`getMatchedResultData(${match.matched_id}, '${match.required_item_title}')`)
                 .subscribe-content 
                   span=match.required_item_title
           else
             .subscribe-item
               .subscribe-content 
                 span 目前沒有配對
-      .main-middle.recommands
+      .main-middle.confirmed
         //- .sub-main-container.news
           //- .subtext.news News
         .sub-main-container.recommands
@@ -42,8 +42,8 @@ block content
             //-   - n++
           //- .nomore-text-div(id="nomore-text-div") 請點選左方配對列查看更多配對
       .main-right
-        .sub-main-container
-        .subtext.ads Advertisement
-        .ads(id="main-right-inside-container")
+        .subtext.ads 物品資訊
+        .sub-main-container(id="main-right-inside-container")
+        //- .ads(id="main-right-inside-container")
           
   script(src="/javascripts/match_confirmed.js")

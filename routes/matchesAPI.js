@@ -60,33 +60,27 @@ router.get('/confirmed', async (req, res, next) => {
   let matchedItemsIdObj = await matchDAO.get({
     action: 'getConfirmedMatchItemsId',
     matched_id: parseInt(req.query.matched_id),
-  }).catch((err)=>{console.log(err)});
+  }).catch((err) => { console.log(err) });
   // 整理取得 item Data
-  let itemDataArr = [];
   console.log('matchedItemsIdObj')
   console.log(matchedItemsIdObj)
   // let idArr = Object.values(matchedItemsIdObj).filter(id=> typeof id === 'number')
   let idArr = Object.values(matchedItemsIdObj)
-  idArr.forEach( async (id)=> {
-    let itemData = await itemDAO.get({
-      action: 'getConfirmedMatchItemsData',
-      item_id: id,
-    });
-    itemDataArr.push(itemData[0]);
-    if (idArr.indexOf(id) === (idArr.length-1)) {
-      res.send({
-        msgArr:msgArr,
-        itemDataArr:itemDataArr,
-      })
-    }
+  let itemDataArr = await itemDAO.get({
+    action: 'getConfirmedMatchItemsData',
+    idArr: idArr,
   });
+  res.send({
+    msgArr: msgArr,
+    itemDataArr: itemDataArr,
+  })
   // idArr.forEach()
 })
 
 router.post('/status', async (req, res, next) => {
   let checkAllConfirmResultArr = await matchDAO.update(req.body)
   console.log(checkAllConfirmResultArr);
-  console.log('checkAllConfirmResultArr.length is '+checkAllConfirmResultArr.length);
+  console.log('checkAllConfirmResultArr.length is ' + checkAllConfirmResultArr.length);
   if (checkAllConfirmResultArr.length > 0) {
     // 假如 all users confirmed, update item availability to false
     let updateAvailabilityresult
@@ -94,7 +88,7 @@ router.post('/status', async (req, res, next) => {
       updateAvailabilityresult = await itemDAO.update({
         want_item_id: req.body.want_item_id,
         required_item_id: req.body.required_item_id,
-      }).catch((err)=>{
+      }).catch((err) => {
         console.log(err);
       })
     } else {
@@ -102,7 +96,7 @@ router.post('/status', async (req, res, next) => {
         start_item_id: checkAllConfirmResultArr[0].start_item_id,
         middle_item_id: checkAllConfirmResultArr[0].middle_item_id,
         end_item_id: checkAllConfirmResultArr[0].end_item_id,
-      }).catch((err)=>{
+      }).catch((err) => {
         console.log(err);
       })
     }

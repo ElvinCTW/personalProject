@@ -4,8 +4,8 @@ module.exports = {
     return new Promise((resolve, reject)=>{
       let queryString = 'SELECT * FROM items ';
       if (queryCondition.action === 'getConfirmedMatchItemsData') {
-        queryString = 'SELECT * FROM items WHERE items.id = ?';
-        mysql.pool.query(queryString, queryCondition.item_id, (err, getConfirmedMatchItemsDataResult, fileds) => {
+        queryString = 'SELECT * FROM items WHERE items.id in (?)';
+        mysql.pool.query(queryString, [queryCondition.idArr], (err, getConfirmedMatchItemsDataResult, fileds) => {
           if (err) {
             mysql.errLog(err,'getConfirmedMatchItemsDataResult','itemDAO')
             reject(err)
@@ -13,7 +13,6 @@ module.exports = {
             console.log('getConfirmedMatchItemsDataResult')
             console.log(getConfirmedMatchItemsDataResult)
             resolve(getConfirmedMatchItemsDataResult)
-            
           }
         });
       } else if (queryCondition.type === 'all') {

@@ -119,22 +119,25 @@ router.post('/checked', async (req, res, next) => {
   // 更新 want table check，並檢查有無 confirmed match，回傳需下架名單
   let checkConfirmedMatchResult = await wantDAO.update(req.body);
   if (checkConfirmedMatchResult.msg) {
-    // 若有配對成功，繼續後續動作
-    let id_Arr = [parseInt(req.body.required_item_id), parseInt(req.body.want_item_id)];
+    // 若有配對成功，繼續後續動作 id_Arr = [user, user_want, (3)]
+    let id_Arr = [parseInt(req.body.want_item_id), parseInt(req.body.required_item_id)];
     if (checkConfirmedMatchResult.msg === 'tripleConfirmedMatch') {
       // 已按照時間排列，會選擇最先提出 want 的配對
       id_Arr.push(checkConfirmedMatchResult.itemC_idArr[0])
-    } 
+    }
     console.log('id_Arr');
     console.log(id_Arr);
-    // 1.物品下架
-    let updateAvailabilitiesCount = await itemDAO.update({ id_Arr: id_Arr })
+    // 1.新增交換紀錄，並取得交易紀錄 ID (之後建立配對成功者聊天訊息和查詢配對紀錄用)**
+    let insertMatchId = await matchDAO.insert({ id_Arr: id_Arr });
+    // 2.物品下架
+    let updateAvailabilitiesCount = await itemDAO.update({
+      id_Arr: id_Arr,
+      insertMatchId: insertMatchId,
+    })
     if (updateAvailabilitiesCount !== id_Arr.length) {
       console.log('updateAvailabilitiesCount is not identical with id_Arr.length, updateAvailabilitiesCount is :');
       console.log(updateAvailabilitiesCount);
     }
-    // 2.新增交換紀錄，並取得交易紀錄 ID (之後建立配對成功者聊天訊息和查詢配對紀錄用)**
-    let insertMatchId = await matchDAO.insert({ id_Arr: id_Arr });
     // 3.取得製作通知訊息的資訊 (被通知物品id、被通知人暱稱、下架物品id、下架物品 title)
     let notificationResult = await wantDAO.get({ id_Arr: id_Arr })
     // 3.1 過濾通知名單，製作 msg 內容

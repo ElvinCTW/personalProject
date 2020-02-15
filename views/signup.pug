@@ -4,26 +4,26 @@ block content
     .container
       .main-left
       .main-middle.sign
-        .subtext.sign Member Sign Up
+        .subtext.sign 會員註冊
         .sub-main-container.sign
           form(action="/api/1.0/users/register", method="post" id="sign-form")
-            p ID for Sign In
+            p 會員ID （登入用）
             input.id(name="id" type="text" max=10 placeholder="ID for Sign In" required)
-            p Password
+            p 會員密碼
             input.password(name="password" type="password" placeholder="Password" value="123" required)
-            p Nickname
+            p 會員暱稱
             input.name(name="name" type="text" placeholder="Nickname" value="aaa" required)
-            p Cell Phone Number
+            p 手機號碼
             input.phone(type="tel", name="phone" placeholder="Cell Phone Number" value="51051133" required)
-            p Email Address
+            p 電子信箱
             input.email(type="email", name="email" placeholder="Email Address" value="111@dasd.com" required)
-            p City
+            p 居住縣市
             input.city(type="text", name="city" placeholder="city" value="taipei")
-            p Address
+            p 地址
             input.address(type="text", name="address" placeholder="Address" value="asdasd64056asd")
             .button-div
-              button(type="button" id="submit-btn") Register
+              button(type="button" id="submit-btn") 點此註冊
           .button-div.sign
-            button(type="button" onclick="location.href='/users/signin'") Sign In
+            button(type="button" onclick="location.href='/users/signin'") 我要登入
       .main-right
   script(src="/javascripts/signup.js")

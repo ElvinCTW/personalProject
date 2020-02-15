@@ -4,7 +4,7 @@ block content
     .container
       .main-left
         .sub-main-container
-          .subtext.subscribe Subscribes
+          .subtext.subscribe 訂閱看板
             //- for (i=0;i<6;i++)
           .subscribe-item
             .subscribe-content 
@@ -23,7 +23,7 @@ block content
         //- .sub-main-container.news
           //- .subtext.news News
         .sub-main-container.recommands
-          .subtext.recommand Recommands
+          .subtext.recommand 新商品清單
           .items-area.recommands(id="items-area-recommand")
             //- item div start here 
             //- - let n = 0;
@@ -44,10 +44,10 @@ block content
             //-         .tags tags
             //-           span tag
             //-   - n++
-          .nomore-text-div(onclick="createMoreItems()" id="nomore-text-div") Get More Items
+          .nomore-text-div(onclick="createMoreItems()" id="nomore-text-div") 點此查看更多物品
       .main-right
         .sub-main-container
-        .subtext.ads Advertisement
+        .subtext.ads 廣告
         .ads
           img(src="/images/gad.png", alt="")
   script(src="/javascripts/index.js")

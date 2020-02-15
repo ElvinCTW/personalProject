@@ -4,7 +4,7 @@ block content
     .container
       .main-left
       .main-middle.item-detail
-        .subtext.item-detail Item Detail
+        .subtext.item-detail 物品詳細資料
         .sub-main-container.item-detail
           .title.item-detail(id="item-detail-title")=title
           .picture-div.item-detail
@@ -13,10 +13,10 @@ block content
           .interaction.item-detail
             .nickname.item-detail(id="required-owner")=user_nickname
             .change-button.item-detail
-              button(id="change-btn-item-detail") Change⬇︎
+              button(id="change-btn-item-detail") 點此進行交換⬇︎
           .introduction-div.item-detail=introduction
         .sub-main-container.user-items(id="subdiv-itemdetail-useritems" style="display:none;")
-          button.title.user-items(type="button" id="exchange-request-btn") After Press here after selection
+          button.title.user-items(type="button" id="exchange-request-btn") 請在點選自己的物品後點擊此處
           .items-div.user-items(id="items-area-recommand")
       .main-right
   script(src="/javascripts/items_detail.js")

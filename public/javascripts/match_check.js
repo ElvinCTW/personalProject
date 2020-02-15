@@ -50,15 +50,15 @@ function getMatchedResultData(want_item_id, want_title, item_type) {
               interactionBtnDiv.attr({ 'style': 'display:none;' })
               // 若有配對成功，alert 成功訊息
               alert(checkAllConfirmResultArr.msg);
+              if (checkAllConfirmResultArr.msg = '配對成功！商品已自動為您下架，請至配對頁查詢配對結果') {
+                match.attr({ 'style': 'display:none;' })
+              }
             },
             error: (error) => {
               console.log(error);
             },
           })
         });
-        /**
-         * 還要做 deny btn
-         */
         // let interactors = 0;
         let checkStatusNodeArr = [];
         let ownersArr;

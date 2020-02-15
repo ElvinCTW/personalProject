@@ -51,8 +51,8 @@ app.get('/matches/information', async (req,res)=>{
   // console.log('objectOfmatchesResultArr.tripleMatchResultArr');
   // console.log(objectOfmatchesResultArr.tripleMatchResultArr);
   console.log('(objectOfmatchesResultArr.doubleMatchResultArr.length > 0 && objectOfmatchesResultArr.tripleMatchResultArr.length > 0)')
-  console.log((objectOfmatchesResultArr.doubleMatchResultArr.length > 0 && objectOfmatchesResultArr.tripleMatchResultArr.length > 0))
-  if (objectOfmatchesResultArr.doubleMatchResultArr.length > 0 && objectOfmatchesResultArr.tripleMatchResultArr.length > 0) {
+  console.log((objectOfmatchesResultArr.doubleMatchResultArr.length > 0 || objectOfmatchesResultArr.tripleMatchResultArr.length > 0))
+  if (objectOfmatchesResultArr.doubleMatchResultArr.length > 0 || objectOfmatchesResultArr.tripleMatchResultArr.length > 0) {
     let tempArr = [];
     objectOfmatchesResultArr.doubleMatchResultArr.forEach(doubleMatch=>{
       tempArr.push( doubleMatch.B_id )
@@ -62,7 +62,7 @@ app.get('/matches/information', async (req,res)=>{
     })
     // 取得不重複 Array
     let setTempArr = [...new Set(tempArr)];
-  
+    // 過濾仍可取用之物品並取得資料
     objectOfmatchesResultArr.b_itemObjectArr = await itemDAO.get({
       type: 'all',
       id_Arr: setTempArr,

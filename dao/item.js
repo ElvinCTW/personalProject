@@ -82,11 +82,11 @@ module.exports = {
     let queryString;
     let queryCondition = [];
     return new Promise((resolve, reject) => {
-      queryString = 'UPDATE items SET availability = "false" WHERE id in (?)';
+      queryString = 'UPDATE items SET availability = "false", matched_id = ? WHERE id in (?)';
       queryCondition.length = 0;
       console.log('queryCondition')
       console.log(queryData.id_Arr)
-      mysql.pool.query(queryString, [queryData.id_Arr], (err, updateAvailbilityResult, fileds) => {
+      mysql.pool.query(queryString, [ queryData.insertMatchId ,queryData.id_Arr], (err, updateAvailbilityResult, fileds) => {
         if (err) {
           mysql.errLog(err,'updateAvailbilityResult','itemDAO')
           reject(err)

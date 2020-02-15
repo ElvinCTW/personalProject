@@ -4,16 +4,16 @@ block content
     .container
       .main-left
       .main-middle.sign
-        .subtext.sign Member Sign In
+        .subtext.sign 會員登錄
         .sub-main-container.sign
           form(action="/api/1.0/users/signin", method="post" id="sign-form")
-            p ID for Sign In
+            p 會員ID（登入用）
             input.id(name="id" type="text" max=10 placeholder="ID for Sign In" value="test")
-            p Password
+            p 會員密碼
             input.password(name="password" type="password" placeholder="Password" value="123")
             .button-div
-              button(type="button" id="signin-btn") Sign In
+              button(type="button" id="signin-btn") 點此登入
           .button-div.sign
-            button(type="button" onclick="location.href='/users/signup'") Register
+            button(type="button" onclick="location.href='/users/signup'") 我要註冊
       .main-right
   script(src="/javascripts/signin.js")

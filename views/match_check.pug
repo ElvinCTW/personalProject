@@ -4,7 +4,7 @@ block content
     .container
       .main-left
         .sub-main-container
-          .subtext.subscribe Matched Items
+          .subtext.subscribe 已配對物品
           - console.log(b_itemObjectArr.length)
           if b_itemObjectArr.length > 0
             each want in b_itemObjectArr
@@ -14,12 +14,12 @@ block content
           else
             .subscribe-item
               .subscribe-content 
-                span No_Matches
+                span 目前沒有配對
       .main-middle.matches-page
         //- .sub-main-container.news
           //- .subtext.news News
         .sub-main-container.recommands
-          .subtext.recommand(id="subtext-matched-result-page") Matched Results
+          .subtext.recommand(id="subtext-matched-result-page") 配對結果
           .items-area.recommands(id="items-area-match")
             //- item div start here 
             //- - let n = 0;
@@ -40,7 +40,7 @@ block content
             //-         .tags tags
             //-           span tag
             //-   - n++
-          .nomore-text-div(id="nomore-text-div") No More Matches
+          .nomore-text-div(id="nomore-text-div") 請點選左方商品列查看更多配對
       //- .main-right
       //-   .sub-main-container
       //-   .subtext.ads Advertisement

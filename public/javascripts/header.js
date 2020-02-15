@@ -14,4 +14,8 @@ if (localStorage.getItem('token')) {
     localStorage.removeItem('nickname');
   });
   $('#match-notification').attr('href', `/matches/information?user_nickname=${nickname}`);
+} else {
+  $('.fast-btn').attr('href', '/users/signin').click(()=>{
+    alert('請先登入或註冊以使用會員功能');
+  })
 }

@@ -4,35 +4,35 @@ block content
     .container
       .main-left
       .main-middle.add-item
-        .subtext.add-item Add items
+        .subtext.add-item 新增物品
         .sub-main-container.add-item
           form(action="/api/1.0/items/new" method="post" id="add-items-form" enctype="multipart/form-data")
             input(type="text" name="token" id="token-input" style="display:none;")
-            p Main Category
+            p 主分類
             //- input.main-category(name="main_category" type="text" placeholder="Basketball" value="basketball" required)
             select(name="main_category" id="main_category" onchange="changeSubOption()")
-              option(value="basketball") Basketball
-              option(value="photograph") Photograph
-            p Sub Category
+              option(value="basketball") 籃球
+              option(value="photograph") 攝影
+            p 次分類
             select(name="sub_category" id="sub_category")
             //- input.sub-category(name="sub_category" type="text" placeholder="Shoes" value="shoes")
-            p Tags(start with #, seperate by space)
+            p 標籤(請由"#"開始，並以空格區隔)
             input.tags(name="tags" type="text" placeholder="Max 40 words" value="\#Basketball \#Kobe" maxlength="40")
-            p Title
+            p 物品名稱
             - let randomTitle = 'R-Title '+`${Math.round(Math.random()*99999)}`
             input.title(name="title" type="text" placeholder="Max 30 words" value=randomTitle required maxlength="30")
             //- input.status(name="status" type="text" placeholder="Used" value="Used" required)
-            p Count
+            p 數量
             - let randomCount = Math.round(Math.random()*9)+1
             input.count(name="count" type="number" placeholder="At least one item" value=randomCount min=1 required)
-            p Item Status
+            p 商品狀態
             select(name="status")
-              option(value="new") New
-              option(value="used") Used
-              option(value="lookonly") Look Only
-            p Introduction
+              option(value="new") 全新
+              option(value="used") 二手
+              option(value="lookonly") 收藏
+            p 簡介
             input.introduction(name="introduction" type="text" placeholder="Say something about this item" value="yoyoyo")
-            p Pictures (up to 6)
+            p 圖片 (最多六張)
             input.pictures(type="file", name="pictures" accept="image/*" id="pics-input" multiple required)
             .button-div
               button(type="submit" id="add-items-btn") Add items

@@ -1,0 +1,49 @@
+extends layout
+block content
+  .main 
+    .container
+      .main-left
+        .sub-main-container
+          .subtext.subscribe 已確認的配對物品
+          - console.log(getConfirmedMatchesResultArr.length)
+          if getConfirmedMatchesResultArr.length > 0
+            each match in getConfirmedMatchesResultArr
+              .subscribe-item(onclick=`getMatchedResultData(${match.matched_id})`)
+                .subscribe-content 
+                  span=match.required_item_title
+          else
+            .subscribe-item
+              .subscribe-content 
+                span 目前沒有配對
+      .main-middle.recommands
+        //- .sub-main-container.news
+          //- .subtext.news News
+        .sub-main-container.recommands
+          .subtext.recommand(id="subtext-matched-result-page") 交易討論區
+          .items-area.talk
+            //- //- item div start here 
+            //- - let n = 0;
+            //- while n <6
+            //-   .item-container-outside.recommands
+            //-     .item-container-inside.recommands
+            //-       .based-on
+            //-         span Based on
+            //-         span.item #Shoes
+            //-       .item-img.recommands
+            //-         img(src="", alt="" id="img")
+            //-       .item.content
+            //-         .title Title
+            //-         .item-info 
+            //-           span.nickname aaa
+            //-           //- span.likes 10
+            //-           span.status used
+            //-         .tags tags
+            //-           span tag
+            //-   - n++
+          //- .nomore-text-div(id="nomore-text-div") 請點選左方配對列查看更多配對
+      .main-right
+        .sub-main-container
+        .subtext.ads Advertisement
+        .ads(id="main-right-inside-container")
+          
+  script(src="/javascripts/match_confirmed.js")

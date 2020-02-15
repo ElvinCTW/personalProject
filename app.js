@@ -38,7 +38,7 @@ app.get('/items/detail', async (req,res)=>{
   })
   res.render('items_detail',itemDetailData[0])
 });
-// Want
+// Check non-confirmed matches
 app.get('/matches/information', async (req,res)=>{
   // get data with first match in the list, need to check if no matches at all
   let objectOfmatchesResultArr = await wantDAO.get({
@@ -77,6 +77,19 @@ app.get('/matches/information', async (req,res)=>{
   console.log(objectOfmatchesResultArr)
   res.render('match_check', objectOfmatchesResultArr)
 });
+// Check confirmed matches
+app.get('/matches/confirmed', async (req,res)=>{
+  let getConfirmedMatchesResultArr = await itemDAO.get({
+    action: 'getConfirmedMatches',
+    user_nickname: req.query.user_nickname,
+    type: 'all',
+  });
+
+  res.render('match_confirmed', {
+    getConfirmedMatchesResultArr:getConfirmedMatchesResultArr,
+  });
+})
+
 // Boards
 app.get('/boards/:board', async (req,res)=>{
   // call itemDAO to get board items

@@ -434,7 +434,8 @@ users_register
 }
 
 .sub-main-container.sign,
-.sub-main-container.add-item {
+.sub-main-container.add-item,
+.items-area.talk {
   background-color: #fff;
   width: 100%;
   border-radius: 15px;

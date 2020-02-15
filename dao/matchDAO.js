@@ -58,39 +58,59 @@ module.exports = {
       // })
       // getQueryCondition = [queryCondition.user_nickname];
       // 之後還要做 required_item list side bar
-    } else if (queryCondition.matched_id && queryCondition.userIndex) {
+    } else if (queryCondition.action === 'getConfirmedMatchItemsId') {
       // 用 matched_ID 得到 match data
-
-    } else {
-      // 根據物品 ID 查詢該物品的配對結果和詳細物品資料
-      queryCondition.item_id = parseInt(queryCondition.item_id)
-      if (queryCondition.item_type === 'want') {
-        console.log('search match result of item as want_item in matchDAO');
-        queryString = `SELECT w.matched, w.want_owner, w.required_owner, w.want_owner_check, w.required_owner_check, null AS triple_id,null AS start_owner, null AS middle_owner, null AS end_owner, null AS start_owner_check, null AS middle_owner_check, null AS end_owner_check, i.* FROM want AS w JOIN items AS i ON w.required_item_id = i.id WHERE w.want_item_id = ? AND w.matched = "true"`
-        for (index in placeArr) {
-          let want_place = placeArr[index % 3];
-          let required_place = placeArr[(index + 1) % 3];
-          queryString += ` UNION SELECT null AS matched, null, null, null, null, m.id AS triple_id ,start_owner, middle_owner, end_owner, start_owner_check, middle_owner_check, end_owner_check, i.* FROM matched AS m JOIN items AS i ON m.${required_place}_item_id = i.id WHERE m.${want_place}_item_id = ${queryCondition.item_id}`
-        }
-        getQueryCondition = [queryCondition.item_id];
-      } else {
-        console.log('search match result of item as reuired_item in matchDAO');
-      }
-    }
-    return new Promise((resolve, reject) => {
-      // get matches array for user matches page 
-      mysql.pool.query(queryString, getQueryCondition, (err, checkMatchResultArr, fileds) => {
-        console.log(checkMatchResultArr);
-        if (err) {
-          console.log('error in checkMatchResultPromise');
-          console.log(err.sqlMessage);
-          console.log(err.sql);
-          reject(err);
-        } else {
-          resolve(checkMatchResultArr);
-        }
+      return new Promise((resolve, reject)=>{
+        let queryString;
+        queryString = 'SELECT start_item_id, middle_item_id, end_item_id FROM matched WHERE matched.id = ?';
+        mysql.pool.query(queryString, queryCondition.matched_id, (err, getConfirmedMatchItemsDataResult, fileds) => {
+          if (err) {
+            mysql.errLog(err,'getConfirmedMatchItemsDataResult','itemDAO')
+            reject(err)
+          } else {
+            // console.log('getConfirmedMatchItemsDataResult[0]')
+            // console.log(getConfirmedMatchItemsDataResult[0])
+            if (typeof getConfirmedMatchItemsDataResult[0].middle_item_id !== 'number') {
+              resolve({
+                start_item_id: getConfirmedMatchItemsDataResult[0].start_item_id,
+                end_item_id: getConfirmedMatchItemsDataResult[0].end_item_id,
+              })
+            } else {
+              resolve(getConfirmedMatchItemsDataResult[0])
+            }
+          }
+        });
       })
-    });
+    } else {
+      // // 根據物品 ID 查詢該物品的配對結果和詳細物品資料
+      // queryCondition.item_id = parseInt(queryCondition.item_id)
+      // if (queryCondition.item_type === 'want') {
+      //   console.log('search match result of item as want_item in matchDAO');
+      //   queryString = `SELECT w.matched, w.want_owner, w.required_owner, w.want_owner_check, w.required_owner_check, null AS triple_id,null AS start_owner, null AS middle_owner, null AS end_owner, null AS start_owner_check, null AS middle_owner_check, null AS end_owner_check, i.* FROM want AS w JOIN items AS i ON w.required_item_id = i.id WHERE w.want_item_id = ? AND w.matched = "true"`
+      //   for (index in placeArr) {
+      //     let want_place = placeArr[index % 3];
+      //     let required_place = placeArr[(index + 1) % 3];
+      //     queryString += ` UNION SELECT null AS matched, null, null, null, null, m.id AS triple_id ,start_owner, middle_owner, end_owner, start_owner_check, middle_owner_check, end_owner_check, i.* FROM matched AS m JOIN items AS i ON m.${required_place}_item_id = i.id WHERE m.${want_place}_item_id = ${queryCondition.item_id}`
+      //   }
+      //   getQueryCondition = [queryCondition.item_id];
+      // } else {
+      //   console.log('search match result of item as reuired_item in matchDAO');
+      // }
+    }
+    // return new Promise((resolve, reject) => {
+    //   // get matches array for user matches page 
+    //   mysql.pool.query(queryString, getQueryCondition, (err, checkMatchResultArr, fileds) => {
+    //     console.log(checkMatchResultArr);
+    //     if (err) {
+    //       console.log('error in checkMatchResultPromise');
+    //       console.log(err.sqlMessage);
+    //       console.log(err.sql);
+    //       reject(err);
+    //     } else {
+    //       resolve(checkMatchResultArr);
+    //     }
+    //   })
+    // });
   },
   update: (queryCondition) => {
     return new Promise((resolve, reject) => {

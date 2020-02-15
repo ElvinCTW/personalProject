@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const matchDAO = require('../dao/matchDAO')
 const itemDAO = require('../dao/item')
+const msgDAO = require('../dao/msgDAO')
 // const wantDAO = require('../dao/wantDAO')
 
 router.get('/item/:type', async (req, res, next) => {
@@ -46,6 +47,40 @@ router.get('/item/:type', async (req, res, next) => {
   res.send(checkMatchResultArr)
   // to do : call matchADO.get() w/ item_id and item_type
   // output : match data of item
+})
+
+router.get('/confirmed', async (req, res, next) => {
+  //取得 matched table 的資料 及對應 matched_id 的 msg table 資料
+  // content, sender, time
+  let msgArr = await msgDAO.get({
+    action: 'getConfirmedMatchMsg',
+    matched_id: parseInt(req.query.matched_id),
+  })
+  // 取得 matched_items_id
+  let matchedItemsIdObj = await matchDAO.get({
+    action: 'getConfirmedMatchItemsId',
+    matched_id: parseInt(req.query.matched_id),
+  }).catch((err)=>{console.log(err)});
+  // 整理取得 item Data
+  let itemDataArr = [];
+  console.log('matchedItemsIdObj')
+  console.log(matchedItemsIdObj)
+  // let idArr = Object.values(matchedItemsIdObj).filter(id=> typeof id === 'number')
+  let idArr = Object.values(matchedItemsIdObj)
+  idArr.forEach( async (id)=> {
+    let itemData = await itemDAO.get({
+      action: 'getConfirmedMatchItemsData',
+      item_id: id,
+    });
+    itemDataArr.push(itemData[0]);
+    if (idArr.indexOf(id) === (idArr.length-1)) {
+      res.send({
+        msgArr:msgArr,
+        itemDataArr:itemDataArr,
+      })
+    }
+  });
+  // idArr.forEach()
 })
 
 router.post('/status', async (req, res, next) => {

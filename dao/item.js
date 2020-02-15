@@ -3,7 +3,20 @@ module.exports = {
   get: (queryCondition) => {
     return new Promise((resolve, reject)=>{
       let queryString = 'SELECT * FROM items ';
-      if (queryCondition.type === 'all') {
+      if (queryCondition.action === 'getConfirmedMatchItemsData') {
+        queryString = 'SELECT * FROM items WHERE items.id = ?';
+        mysql.pool.query(queryString, queryCondition.item_id, (err, getConfirmedMatchItemsDataResult, fileds) => {
+          if (err) {
+            mysql.errLog(err,'getConfirmedMatchItemsDataResult','itemDAO')
+            reject(err)
+          } else {
+            console.log('getConfirmedMatchItemsDataResult')
+            console.log(getConfirmedMatchItemsDataResult)
+            resolve(getConfirmedMatchItemsDataResult)
+            
+          }
+        });
+      } else if (queryCondition.type === 'all') {
         if (queryCondition.id_Arr) {
           // get data for id_Arr
           queryString += 'WHERE id IN (?) AND availability = "true"';
@@ -31,6 +44,18 @@ module.exports = {
               resolve(getItemResultArr);
             })
           }
+        } else if (queryCondition.action === 'getConfirmedMatches') { 
+          queryString = 'SELECT i.matched_id, i2.title required_item_title FROM items i JOIN items i2 ON i.matched_item_id = i2.id WHERE i.availability = "false" AND i.matched_id > 0 AND i.user_nickname = ?';
+          mysql.pool.query(queryString, [queryCondition.user_nickname], (err, getConfirmedMatchesResult, fileds) => {
+            if (err) {
+              mysql.errLog(err,'getConfirmedMatchesResult','itemDAO')
+              reject(err)
+            } else {
+              console.log('getConfirmedMatchesResult')
+              console.log(getConfirmedMatchesResult)
+              resolve(getConfirmedMatchesResult);
+            }
+          });
         } else if (!queryCondition.user_nickname) {
           // lastest
           queryString += 'WHERE availability = "true" ORDER BY time DESC LIMIT ?, 6';

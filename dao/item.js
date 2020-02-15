@@ -80,22 +80,26 @@ module.exports = {
   update: (queryData)=>{
     // update items // turn item / availability to false
     let queryString;
-    let queryCondition = [];
+    let updateAvailabilitiesCount = 0;
+    let id_Arr = queryData.id_Arr;
     return new Promise((resolve, reject) => {
-      queryString = 'UPDATE items SET availability = "false", matched_id = ? WHERE id in (?)';
-      queryCondition.length = 0;
-      console.log('queryCondition')
-      console.log(queryData.id_Arr)
-      mysql.pool.query(queryString, [ queryData.insertMatchId ,queryData.id_Arr], (err, updateAvailbilityResult, fileds) => {
-        if (err) {
-          mysql.errLog(err,'updateAvailbilityResult','itemDAO')
-          reject(err)
-        } else {
-          console.log('updateAvailbilityResult')
-          console.log(updateAvailbilityResult)
-          resolve(updateAvailbilityResult.affectedRows)
-        }
-      });
+      for (let i =0; i < id_Arr.length; i++ ) {
+        // queryString = 'UPDATE items SET availability = "false", matched_id = ? WHERE id in (?)';
+        queryString = 'UPDATE items SET availability = "false", matched_id = ?, matched_item_id = ? WHERE id = ?';
+        mysql.pool.query(queryString, [ queryData.insertMatchId ,id_Arr[(i+1)%id_Arr.length] ,id_Arr[i%id_Arr.length]], (err, updateAvailbilityResult, fileds) => {
+          if (err) {
+            mysql.errLog(err,'updateAvailbilityResult','itemDAO')
+            reject(err)
+          } else {
+            console.log('updateAvailbilityResult')
+            console.log(updateAvailbilityResult)
+            updateAvailabilitiesCount += updateAvailbilityResult.affectedRows
+            if (i = id_Arr.length-1) {
+              resolve(updateAvailabilitiesCount);
+            }
+          }
+        });
+      }
     })
   }
 }

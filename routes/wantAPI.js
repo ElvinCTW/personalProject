@@ -131,7 +131,7 @@ router.post('/checked', async (req, res, next) => {
     let insertMatchId = await matchDAO.insert({ id_Arr: id_Arr });
     // 2.物品下架
     let updateAvailabilitiesCount = await itemDAO.update({
-      id_Arr: id_Arr,
+      id_Arr: id_Arr, // [user, user_want, (3)]
       insertMatchId: insertMatchId,
     })
     if (updateAvailabilitiesCount !== id_Arr.length) {

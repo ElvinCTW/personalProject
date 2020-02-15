@@ -33,8 +33,8 @@ function getMatchedResultData(want_item_id, want_title, item_type) {
         let interactionBtnDiv = $('<div></div>').attr({ 'class': 'interaction-btn-div' });
         interaction.append(interactionBtnDiv);
         let data = {};
-        data.required_item_id = want_item_id;
-        data.want_item_id = matchedItemsDataArr[i].C_id;
+        data.required_item_id = want_item_id; // 2_item_id
+        data.want_item_id = matchedItemsDataArr[i].C_id; // user_item_id
         let confirmBtn = $('<button></button>').attr({
           'class': 'interaction-btn',
         }).html('Confirm').click(() => {
@@ -51,7 +51,8 @@ function getMatchedResultData(want_item_id, want_title, item_type) {
               // 若有配對成功，alert 成功訊息
               alert(checkAllConfirmResultArr.msg);
               if (checkAllConfirmResultArr.msg = '配對成功！商品已自動為您下架，請至配對頁查詢配對結果') {
-                match.attr({ 'style': 'display:none;' })
+                // match.attr({ 'style': 'display:none;' })
+                location.reload()
               }
             },
             error: (error) => {

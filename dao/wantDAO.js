@@ -76,7 +76,7 @@ module.exports = {
       queryData.wantArr.forEach((item_id) => {
         parseIntArr.push(parseInt(item_id));
       })
-      queryString = `SELECT w.* FROM want w JOIN items i ON i.id = w.want_item_id WHERE want_item_id = ? AND required_item_id in (?) AND i.availability = "true"`;
+      queryString = `SELECT w.* FROM want w JOIN items i ON i.id = w.want_item_id WHERE w.want_item_id = ? AND w.required_item_id in (?) AND i.availability = "true"`;
       queryCondition = [queryData.item_id, parseIntArr];
       return new Promise((resolve, reject) => {
         mysql.pool.query(queryString, queryCondition, (err, doubleMatchResultArr, fileds) => {
@@ -87,7 +87,7 @@ module.exports = {
             console.log(err.sql);
             reject(err);
           } else {
-            queryString = `SELECT w.* FROM want w JOIN items i ON i.id = w.want_item_id WHERE want_item_id IN ( SELECT w.required_item_id FROM want w JOIN items i ON i.id = w.required_item_id WHERE want_item_id = ? AND i.availability = "true" ) AND required_item_id in (?) AND i.availability = "true"`;
+            queryString = `SELECT w.* FROM want w JOIN items i ON i.id = w.want_item_id WHERE w.want_item_id IN ( SELECT w.required_item_id FROM want w JOIN items i ON i.id = w.required_item_id WHERE want_item_id = ? AND i.availability = "true" ) AND w.required_item_id in (?) AND i.availability = "true"`;
             // return new Promise((resolve, reject) => {
             mysql.pool.query(queryString, queryCondition, (err, tripleMatchResultArr, fileds) => {
               // console.log(tripleMatchResultArr);

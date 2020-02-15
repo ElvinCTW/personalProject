@@ -50,7 +50,7 @@ app.get('/matches/information', async (req,res)=>{
   // console.log(objectOfmatchesResultArr.doubleMatchResultArr);
   // console.log('objectOfmatchesResultArr.tripleMatchResultArr');
   // console.log(objectOfmatchesResultArr.tripleMatchResultArr);
-  console.log('(objectOfmatchesResultArr.doubleMatchResultArr.length > 0 && objectOfmatchesResultArr.tripleMatchResultArr.length > 0)')
+  console.log('(objectOfmatchesResultArr.doubleMatchResultArr.length > 0 || objectOfmatchesResultArr.tripleMatchResultArr.length > 0)')
   console.log((objectOfmatchesResultArr.doubleMatchResultArr.length > 0 || objectOfmatchesResultArr.tripleMatchResultArr.length > 0))
   if (objectOfmatchesResultArr.doubleMatchResultArr.length > 0 || objectOfmatchesResultArr.tripleMatchResultArr.length > 0) {
     let tempArr = [];

@@ -30,7 +30,7 @@ block content
                   .msg-content 請點選左邊配對物品，開啟對話視窗～
             .horizental-line
             .user-interact-area
-              textarea.user-type-div(placeholder="請在此輸入訊息" name="user-type-content" id="user-type-content")
+              textarea.user-type-div(placeholder="請在此輸入訊息，最多250字元" name="user-type-content" id="user-type-content" maxlength="250")
               button.msg-send-btn(onclick="sendMsg()") 傳送訊息
             //- //- item div start here 
             //- - let n = 0;

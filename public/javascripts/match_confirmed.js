@@ -22,7 +22,7 @@ function getMatchedResultData(matched_id, required_item_title) {
       // 根據物品數創造框框
       for (let i = 0; i < confirmedMatchObj.itemDataArr.length; i++) {
         // Create link to item detail page
-        let link = $('<a></a>').attr({ 'href': `/items/detail?item_id=${confirmedMatchObj.itemDataArr[i].id}` });
+        let link = $('<a></a>');
         $('#main-right-inside-container').append(link);
         // Create new Item outside container
         let newItemContainer_Outside = $('<div></div>').attr({ 'class': 'item-container-outside recommands' });

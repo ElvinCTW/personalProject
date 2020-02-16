@@ -21,6 +21,17 @@ block content
         .sub-main-container.recommands
           .subtext.recommand(id="subtext-matched-result-page") 交易討論區
           .items-area.talk
+            .msg-area(id="msg-area")
+              .msg-line
+                .msg-div 
+                  .msg-topbar
+                    .msg-name System
+                    .msg-time 2020/02/16
+                  .msg-content 請點選左邊配對物品，開啟對話視窗～
+            .horizental-line
+            .user-interact-area
+              textarea.user-type-div(placeholder="請在此輸入訊息" name="user-type-content" id="user-type-content")
+              button.msg-send-btn(onclick="sendMsg()") 傳送訊息
             //- //- item div start here 
             //- - let n = 0;
             //- while n <6
@@ -42,7 +53,7 @@ block content
             //-   - n++
           //- .nomore-text-div(id="nomore-text-div") 請點選左方配對列查看更多配對
       .main-right
-        .subtext.ads 物品資訊
+        .subtext.ads 物品資訊(可捲動)
         .sub-main-container(id="main-right-inside-container")
         //- .ads(id="main-right-inside-container")
           

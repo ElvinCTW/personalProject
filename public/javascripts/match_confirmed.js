@@ -1,3 +1,5 @@
+let currentMatchedId;
+
 // const alphabetArr = ['A', 'B', 'C']
 if (!localStorage.getItem('nickname')) {
   // 確認使用者有登入，如果沒有，跳alert請user登入
@@ -11,6 +13,7 @@ function getMatchedResultData(matched_id, required_item_title) {
     url: `/api/1.0/matches/confirmed?matched_id=${matched_id}`,
     type: 'get',
     success: (confirmedMatchObj) => {
+      currentMatchedId = matched_id;
       // 取得帶有訊息 array 和物品資料 array 的 obj
       console.log(confirmedMatchObj);
       $('#subtext-matched-result-page').html(`交易討論區 (當前交易編號: ${required_item_title} ,當前交易編號 : ${matched_id})`);
@@ -69,9 +72,86 @@ function getMatchedResultData(matched_id, required_item_title) {
           tagsDiv.append(tagSpan);
         }
       }
+      /**
+       * 配置對話框
+       */
+      // make msg line and append to msg-area
+      $('#msg-area').empty()
+      confirmedMatchObj.msgArr.forEach(msg=>{
+        let msgDivClass = 'msg-div'
+        let who;
+        if (msg.sender === localStorage.getItem('nickname')) {
+          msgDivClass += ' current-user'
+          who = '您'
+        }
+        let msgLine = $('<div></div>').attr({ 'class': 'msg-line' });
+        $('#msg-area').append(msgLine);
+        // make msg div and contents inside
+        let msgDiv = $('<div></div>').attr({ 'class': msgDivClass });
+        msgLine.append(msgDiv);
+        let msgTopbar = $('<div></div>').attr({ 'class': 'msg-topbar' });
+        let msgContent = $('<div></div>').attr({ 'class': 'msg-content' }).html(msg.content);
+        msgDiv.append(msgTopbar);
+        msgDiv.append(msgContent);
+        let msgName = $('<div></div>').attr({ 'class': 'msg-name' }).html(who || msg.sender);
+        let msgTime = $('<div></div>').attr({ 'class': 'msg-time' }).html(new Date(parseInt(msg.time)).toString().slice(4, 24));
+        msgTopbar.append(msgName);
+        msgTopbar.append(msgTime);
+      })
     },
-    error: () => {
-
+    error: (err) => {
+      alert(err)
     }
   })
+}
+
+function sendMsg() {
+  // get user input msg
+  let userInputContent = $('#user-type-content').val();
+  let currentTime = Date.now();
+  // send msg to front end page
+  if (userInputContent.length > 0 && currentMatchedId) {
+    console.log('userInputContent')
+    console.log(userInputContent)
+    // make msg line and append to msg-area
+    let msgLine = $('<div></div>').attr({ 'class': 'msg-line current-user' });
+    $('#msg-area').append(msgLine);
+    // make msg div and contents inside
+    let msgDiv = $('<div></div>').attr({ 'class': 'msg-div current-user' });
+    msgLine.append(msgDiv);
+    let msgTopbar = $('<div></div>').attr({ 'class': 'msg-topbar current-user' });
+    let msgContent = $('<div></div>').attr({ 'class': 'msg-content current-user' }).html(userInputContent);
+    msgDiv.append(msgTopbar);
+    msgDiv.append(msgContent);
+    let msgName = $('<div></div>').attr({ 'class': 'msg-name current-user' }).html('您');
+    let msgTime = $('<div></div>').attr({ 'class': 'msg-time current-user' }).html(new Date(currentTime).toString().slice(4, 24));
+    msgTopbar.append(msgName);
+    msgTopbar.append(msgTime);
+    // clean msg after send msg
+    $('#user-type-content').val('')
+    // save msg into DB
+    $.ajax({
+      url: `/api/1.0/message/new`,
+      type: 'post',
+      data: {
+        action: 'addNewMatchedPageMsg',
+        content: userInputContent,
+        sender: localStorage.getItem('nickname'),
+        time: currentTime,
+        matched_id: currentMatchedId,
+      },
+      success: (success) => {
+        if (success.errorMsg) {
+          alert(success.errorMsg)
+        } else {
+          console.log(success.msg);
+        }
+      },
+      error: (err) => {
+        alert('很抱歉，系統沒有成功儲存您的對話，若持續發生，請聯繫我們');
+      }
+    })
+  } else {
+    alert('請確認已點選左方配對物，並填入對話內容')
+  }
 }

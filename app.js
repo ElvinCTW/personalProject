@@ -5,6 +5,7 @@ const userAPI = require('./routes/userAPI');
 const itemAPI = require('./routes/itemAPI');
 const wantAPI = require('./routes/wantAPI');
 const matchesAPI = require('./routes/matchesAPI');
+const msgAPI = require('./routes/msgAPI');
 const itemDAO = require('./dao/item');
 const wantDAO = require('./dao/wantDAO');
 // const matchDAO = require('./dao/matchDAO');
@@ -112,6 +113,7 @@ app.use('/api/1.0/users', userAPI);
 app.use('/api/1.0/items', itemAPI);
 app.use('/api/1.0/want', wantAPI);
 app.use('/api/1.0/matches', matchesAPI);
+app.use('/api/1.0/message', msgAPI);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

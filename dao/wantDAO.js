@@ -24,7 +24,7 @@ module.exports = {
       })
     });
   },
-  get: (queryData) => {
+  get: (queryData, connection) => {
     // settings
     let parseIntArr = [];
     let queryString = '';
@@ -38,9 +38,12 @@ module.exports = {
       console.log('queryCondition');
       console.log(queryCondition);
       return new Promise((resolve, reject) => {
-        mysql.pool.query(queryString, queryCondition, (err, doubleSelectMatchResult, fileds) => {
+        connection.query(queryString, queryCondition, (err, doubleSelectMatchResult, fileds) => {
           if (err) {
             mysql.errLog(err, 'doubleSelectMatchResult', 'wantDAO')
+            connection.rollback(()=>{
+              connection.release()
+            })
             reject(err);
           } else {
             console.log('doubleSelectMatchResult');
@@ -64,6 +67,9 @@ module.exports = {
               mysql.pool.query(queryString, queryCondition, (err, getConfirmedwantResult, fileds) => {
                 if (err) {
                   mysql.errLog(err, 'getConfirmedwantResult', 'wantDAO')
+                  connection.rollback(()=>{
+                    connection.release()
+                  })
                   reject(err);
                 } else {
                   console.log('getConfirmedwantResult');
@@ -126,9 +132,12 @@ module.exports = {
         queryString = 'SELECT w.want_item_id notificated_item_id, i.title notificated_item_title, i.user_nickname notificated_user, w.required_item_id gone_item_id, i2.title gone_item_title FROM want w JOIN items i ON i.id = w.want_item_id JOIN items i2 ON i2.id = w.required_item_id WHERE w.required_item_id in (?) AND w.checked = "confirm"';
         queryCondition.length = 0;
         queryCondition.push(queryData.id_Arr);
-        mysql.pool.query(queryString, queryCondition, (err, notificationResult, fileds) => {
+        connection.query(queryString, queryCondition, (err, notificationResult, fileds) => {
           if (err) {
             mysql.errLog(err, 'notificationResult', 'wantDAO')
+            connection.rollback(()=>{
+              connection.release()
+            })
             reject(err)
           } else {
             console.log('notificationResult')
@@ -374,7 +383,7 @@ module.exports = {
       })
     }
   },
-  update: (queryData) => {
+  update: (queryData, connection) => {
     // 更新 want/checked column
     console.log('queryData');
     console.log(queryData);
@@ -383,9 +392,12 @@ module.exports = {
       let queryCondition = [queryData.type, queryData.want_item_id, queryData.required_item_id]
       console.log('queryCondition');
       console.log(queryCondition);
-      mysql.pool.query(queryString, queryCondition, (err, updateCheckedResult, fileds) => {
+      connection.query(queryString, queryCondition, (err, updateCheckedResult, fileds) => {
         if (err) {
           mysql.errLog(err, 'updateCheckedPromise', 'wantDAO')
+          connection.rollback(()=>{
+            connection.release()
+          })
           reject(err);
         } else {
           console.log('updateCheckedResult');

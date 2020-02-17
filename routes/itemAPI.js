@@ -6,6 +6,7 @@ const aws = require('aws-sdk');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 const awsConfig = require('../util/awsConfig')
+const mysql = require('../util/mysql');
 
 // multer setting
 const s3 = new aws.S3({
@@ -85,21 +86,67 @@ router.get('/:type', async (req, res, next) => {
     if (req.query.user_nickname) {
       user_nickname = req.query.user_nickname
     }
-    const getItemResultArr = await itemDAO.get({
-      type: req.params.type || null,
-      page: req.query.page || 0,
-      main_category: req.query.main_category || null,
-      sub_category: req.query.sub_category || null,
-      item_id: req.query.item_id || null,
-      token: token,
-      user_nickname: user_nickname,
+    let getItemResultArr;
+    mysql.pool.getConnection(function(err, connection) {
+      // console.log('connection')
+      // console.log(connection)
+      connection.beginTransaction( async function(err) {
+        if (err) {                  //Transaction Error (Rollback and release connection)
+          connection.rollback(function() {
+              connection.release();
+              //Failure
+          });
+        } else {
+          // getItemResultArr = await itemDAO.get({
+          //   type: req.params.type || null,
+          //   page: req.query.page || 0,
+          //   main_category: req.query.main_category || null,
+          //   sub_category: req.query.sub_category || null,
+          //   item_id: req.query.item_id || null,
+          //   token: token,
+          //   user_nickname: user_nickname,
+          //   connection: connection,
+          // })
+          
+          let queryString = 'SELECT * FROM items WHERE availability = "true" ORDER BY time DESC LIMIT ?, 6'
+          connection.query(queryString, req.query.page*6, (err, getItemResultArr, fields) => {
+            if (err) { 
+              connection.rollback(()=>{
+                connection.release()
+              })
+              reject(err) 
+            } else {
+              connection.commit(function (err) {
+                if (err) {
+                  connection.rollback(function () {
+                    connection.release();
+                    //Failure
+                  });
+                } else {
+                  connection.release();
+                  res.send(getItemResultArr)
+                }
+              });
+            }
+          });
+        }
+      })
     })
-    if (!getItemResultArr.errorMsg) {
-      res.status(200).send(getItemResultArr);
-    } else {
-      console.log(getItemResultArr.errorMsg);
-      res.status(500).send(insertItemResult.errorMsg);
-    }
+    // const getItemResultArr = await itemDAO.get({
+    //   type: req.params.type || null,
+    //   page: req.query.page || 0,
+    //   main_category: req.query.main_category || null,
+    //   sub_category: req.query.sub_category || null,
+    //   item_id: req.query.item_id || null,
+    //   token: token,
+    //   user_nickname: user_nickname,
+    // })
+    // if (!getItemResultArr.errorMsg) {
+    //   res.status(200).send(getItemResultArr);
+    // } else {
+    //   console.log(getItemResultArr.errorMsg);
+    //   res.status(500).send(insertItemResult.errorMsg);
+    // }
   } else {
     res.status(400).send('plz choose correct type : /all /detail');
   }

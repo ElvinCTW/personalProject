@@ -76,24 +76,24 @@ router.post('/checked', async (req, res, next) => {
  */
   // 更新 want table check，並檢查有無 confirmed match，回傳配對成功名單(需下架名單)
   // 避免兩個人配到同一個東西，用 transaction 確保交易
-  // mysql.pool.getConnection((err, connection) => {
-  //   connection.beginTransaction((err) => {
-      // if (err) {                  //Transaction Error (Rollback and release connection)
-      //   connection.rollback(function () {
-      //     connection.release();
-      //     //Failure
-      //     console.log('err')
-      //     console.log(err)
-      //   });
-      // } else {
+  mysql.pool.getConnection( (err, connection) => {
+    connection.beginTransaction( async (err) => {
+      if (err) {                  //Transaction Error (Rollback and release connection)
+        connection.rollback(()=>{
+          connection.release();
+        });
+        //Failure
+        console.log('err')
+        console.log(err)
+      } else {
         // 0. 更新 want / check => confirmed
-        await wantDAO.update(req.body);
+        await wantDAO.update(req.body, connection);
         // 0-1. 確認有無成功配對
         let checkConfirmedMatchResult = await wantDAO.get({
           action: 'checkConfirmedMatch',
           required_item_id: req.body.required_item_id,
           want_item_id: req.body.want_item_id,
-        })
+        }, connection)
         if (checkConfirmedMatchResult.msg) {
           // 若有配對成功，繼續後續動作 id_Arr = [user, user_want, (3)]
           let id_Arr = [parseInt(req.body.want_item_id), parseInt(req.body.required_item_id)];
@@ -104,18 +104,18 @@ router.post('/checked', async (req, res, next) => {
           console.log('id_Arr');
           console.log(id_Arr);
           // 1.新增交換紀錄，並取得交易紀錄 ID (之後建立配對成功者聊天訊息和查詢配對紀錄用)**
-          let insertMatchId = await matchDAO.insert({ id_Arr: id_Arr });
+          let insertMatchId = await matchDAO.insert({ id_Arr: id_Arr }, connection);
           // 2.物品下架
           let updateAvailabilitiesCount = await itemDAO.update({
             id_Arr: id_Arr, // [user, user_want, (3)]
             insertMatchId: insertMatchId,
-          })
+          }, connection)
           if (updateAvailabilitiesCount !== id_Arr.length) {
             console.log('updateAvailabilitiesCount is not identical with id_Arr.length, updateAvailabilitiesCount is :');
             console.log(updateAvailabilitiesCount);
           }
           // 3.取得製作通知訊息的資訊 (被通知物品id、被通知人暱稱、下架物品id、下架物品 title)
-          let notificationResult = await wantDAO.get({ id_Arr: id_Arr })
+          let notificationResult = await wantDAO.get({ id_Arr: id_Arr }, connection)
           // 3.1 過濾通知名單，製作 msg 內容
           // 取得通知配對成功名單 && 配對取消名單
           // let tempArr = notificationResult.filter(result => id_Arr.indexOf(result.notificated_item_id) === -1)
@@ -148,7 +148,7 @@ router.post('/checked', async (req, res, next) => {
             insertedRowsCount = await msgDAO.insert({
               insertMsgQueryDataArr: insertMsgQueryDataArr,
               action: 'insertItemGoneMsgToUser',
-            })
+            }, connection)
           }
           if (insertedRowsCount !== insertMsgQueryDataArr.length) {
             console.log('something wrong when inserting gone msg in msgDAO');
@@ -170,9 +170,9 @@ router.post('/checked', async (req, res, next) => {
           })
         }
 
-      // }
-  //   })
-  // })
+      }
+    })
+  })
 
 })
 

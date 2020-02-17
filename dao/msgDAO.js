@@ -1,19 +1,33 @@
 const mysql = require('../util/mysql');
 module.exports = {
-  insert: (queryData)=>{
+  insert: (queryData, connection)=>{
     let queryCondition = [];
     let queryString = '';
     return new Promise((resolve, reject) => {
       if (queryData.action === 'insertItemGoneMsgToUser') {
         queryString = 'INSERT INTO message(content, sender, receiver, mentioned_item_id, matched_id, time) VALUES ?';
-        mysql.pool.query(queryString, [queryData.insertMsgQueryDataArr], (err, insertMsgResult, fileds) => {
+        connection.query(queryString, [queryData.insertMsgQueryDataArr], (err, insertMsgResult, fileds) => {
           if (err) {
             mysql.errLog(err,'insertMsgResult','msgDAO')
+            connection.rollback(()=>{
+              connection.release()
+            })
             reject(err)
           } else {
-            console.log('insertMsgResult')
-            console.log(insertMsgResult)
-            resolve(insertMsgResult.affectedRows)
+            connection.commit((err)=>{
+              if (err) {
+                mysql.errLog(err,'commit','msgDAO')
+                connection.rollback(()=>{
+                  connection.release()
+                })
+                reject(err)
+              } else {
+                connection.release();
+                console.log('insertMsgResult')
+                console.log(insertMsgResult)
+                resolve(insertMsgResult.affectedRows)
+              }
+            })
           }
         });
       } else if (queryData.action === 'addNewMatchedPageMsg') {

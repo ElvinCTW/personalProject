@@ -2,7 +2,7 @@ const mysql = require('../util/mysql');
 const placeArr = ['start', 'middle', 'end'];
 
 module.exports = {
-  insert: (matchData) => {
+  insert: (matchData, connection) => {
     return new Promise((resolve, reject) => {
       let queryString = '';
       if (matchData.id_Arr) {
@@ -11,9 +11,12 @@ module.exports = {
         } else if (matchData.id_Arr.length === 2) {
           queryString = 'INSERT INTO matched(start_item_id, end_item_id) VALUES(?)';
         }
-        mysql.pool.query(queryString, [matchData.id_Arr], (err, insertMatchTableResult, fileds) => {
+        connection.query(queryString, [matchData.id_Arr], (err, insertMatchTableResult, fileds) => {
           if (err) {
             mysql.errLog(err,'insertMatchTableResult','matchDAO')
+            connection.rollback(()=>{
+              connection.release()
+            })
             reject(err)
           } else {
             console.log('insertMatchTableResult')

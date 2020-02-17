@@ -68,12 +68,12 @@ router.post('/checked', async (req, res, next) => {
   console.log(req.body);
   /**
  * 檢查是否有成功的 confirmed 配對，若有查到則進行以下動作
- * 1.confirmed match 物品下架
- * 2.新增交換紀錄 ( in matched table)**
+ * 1.新增交換紀錄 ( in matched table)**
+ * 2.confirmed match 物品下架
  * 3.對影響用戶進行通知 (只對 required_item_id = 下架產品 && check = confirmed 的用戶通知)**
  * 4.為成交用戶建立討論頁面 **
  */
-  // 更新 want table check，並檢查有無 confirmed match，回傳需下架名單
+  // 更新 want table check，並檢查有無 confirmed match，回傳配對成功名單(需下架名單)
   let checkConfirmedMatchResult = await wantDAO.update(req.body);
   if (checkConfirmedMatchResult.msg) {
     // 若有配對成功，繼續後續動作 id_Arr = [user, user_want, (3)]

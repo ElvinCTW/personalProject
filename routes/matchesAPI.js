@@ -35,36 +35,37 @@ router.get('/confirmed', async (req, res, next) => {
     msgArr: msgArr,
     itemDataArr: itemDataArr,
   })
-  // idArr.forEach()
 })
 
-router.post('/status', async (req, res, next) => {
-  let checkAllConfirmResultArr = await matchDAO.update(req.body)
-  console.log(checkAllConfirmResultArr);
-  console.log('checkAllConfirmResultArr.length is ' + checkAllConfirmResultArr.length);
-  if (checkAllConfirmResultArr.length > 0) {
-    // 假如 all users confirmed, update item availability to false
-    let updateAvailabilityresult
-    if (req.body.want_item_id && req.body.required_item_id) {
-      updateAvailabilityresult = await itemDAO.update({
-        want_item_id: req.body.want_item_id,
-        required_item_id: req.body.required_item_id,
-      }).catch((err) => {
-        console.log(err);
-      })
-    } else {
-      updateAvailabilityresult = await itemDAO.update({
-        start_item_id: checkAllConfirmResultArr[0].start_item_id,
-        middle_item_id: checkAllConfirmResultArr[0].middle_item_id,
-        end_item_id: checkAllConfirmResultArr[0].end_item_id,
-      }).catch((err) => {
-        console.log(err);
-      })
-    }
-    res.send(updateAvailabilityresult);
-    // notificate users 
-  } else {
-    res.send(checkAllConfirmResultArr);
-  }
-})
+// router.post('/status', async (req, res, next) => {
+//   let checkAllConfirmResultArr = await matchDAO.update(req.body)
+//   console.log(checkAllConfirmResultArr);
+//   console.log('checkAllConfirmResultArr.length is ' + checkAllConfirmResultArr.length);
+//   if (checkAllConfirmResultArr.length > 0) {
+//     // 假如 all users confirmed, update item availability to false
+//     let updateAvailabilityresult
+//     if (req.body.want_item_id && req.body.required_item_id) {
+//       // double match
+//       updateAvailabilityresult = await itemDAO.update({
+//         want_item_id: req.body.want_item_id,
+//         required_item_id: req.body.required_item_id,
+//       }).catch((err) => {
+//         console.log(err);
+//       })
+//     } else {
+//       // triple match
+//       updateAvailabilityresult = await itemDAO.update({
+//         start_item_id: checkAllConfirmResultArr[0].start_item_id,
+//         middle_item_id: checkAllConfirmResultArr[0].middle_item_id,
+//         end_item_id: checkAllConfirmResultArr[0].end_item_id,
+//       }).catch((err) => {
+//         console.log(err);
+//       })
+//     }
+//     res.send(updateAvailabilityresult);
+//     // notificate users 
+//   } else {
+//     res.send(checkAllConfirmResultArr);
+//   }
+// })
 module.exports = router;

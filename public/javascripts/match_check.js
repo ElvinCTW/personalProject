@@ -158,25 +158,25 @@ function getMatchedResultData(want_item_id, want_title, item_type) {
   })
 }
 
-function updateCheckStatus(ownersArr, chcek) {
-  if (check) {
-    // user click btn "check"
+// function updateCheckStatus(ownersArr, chcek) {
+//   if (check) {
+//     // user click btn "check"
 
-  } else {
+//   } else {
 
-  }
-  $.ajax({
-    url: `/api/1.0/matches/status`,
-    type: 'update',
-    data: {
-      tradeType: tradeType,
-    },
-    success: () => {
-      checkStatusNodeArr[userIndex].html(`User : ${user_nickname}, Check : true`)
-      interactionBtnDiv.attr({ 'style': 'display:none;' })
-    },
-    error: () => {
+//   }
+//   $.ajax({
+//     url: `/api/1.0/matches/status`,
+//     type: 'update',
+//     data: {
+//       tradeType: tradeType,
+//     },
+//     success: () => {
+//       checkStatusNodeArr[userIndex].html(`User : ${user_nickname}, Check : true`)
+//       interactionBtnDiv.attr({ 'style': 'display:none;' })
+//     },
+//     error: () => {
 
-    },
-  })
-}
+//     },
+//   })
+// }

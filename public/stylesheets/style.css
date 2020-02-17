@@ -123,7 +123,7 @@ nav .container {
 }
 
 .notification-div.outer {
-  min-height: 75px;
+  min-height: 90px;
   padding: 0 5px;
   background: #fff;
   display: flex;

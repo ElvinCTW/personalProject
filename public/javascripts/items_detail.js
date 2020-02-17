@@ -135,7 +135,7 @@ $('#exchange-request-btn').click(() => {
         },
         success: (successMsg) => {
           alert(successMsg.msg);
-          // location.reload();
+          location.reload();
         },
         error: (failResponse) => {
           console.log(failResponse);

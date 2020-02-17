@@ -66,10 +66,6 @@ router.post('/new', async (req, res, next) => {
     if (insertItemResult.errorMsg) {
       res.status(500).send(insertItemResult.errorMsg)
     } else {
-      // res.status(200).send({
-      //   insertStatus: 'success',
-      // })
-      // let insertNewItemSuccessMsg = 
       res.status(200).render('items_add', {
         successMsg : 'Insert New Item success!'
       })

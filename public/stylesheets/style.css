@@ -97,9 +97,18 @@ nav .container {
 
 #general-notification {
   position: relative;
-  display: inline-block;
+  display: flex;
   font-weight: 500;
   color: red;
+}
+
+#notification-count {
+  background: #fff;
+  width: 15px;
+  height: 15px;
+  line-height: 15px;
+  text-align: center;
+  border-radius: 10px;
 }
 
 .notification-area {
@@ -108,7 +117,7 @@ nav .container {
   max-height: 225px;
   background: #ccc;
   position: absolute;
-  margin: 8px auto auto -280px;
+  margin: 36px auto auto -270px;
   overflow: scroll;
   /* display: inline-block; */
 }

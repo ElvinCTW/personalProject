@@ -52,7 +52,7 @@ function showNotification(nickname) {
       console.log(unreadMsgArr);
       if (unreadMsgArr.length > 0) {
         // update number of fast btn
-        let notificationCount = $('<span></span>').attr({'id': 'notification-count'}).html(`${unreadMsgArr.length}`);
+        let notificationCount = $('<div></div>').attr({'id': 'notification-count'}).html(`${unreadMsgArr.length}`);
         notificationCount.insertAfter($('#notification-pic'))
         // insert msg into msg area
         unreadMsgArr.forEach(msgObj=>{

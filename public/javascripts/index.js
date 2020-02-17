@@ -1,14 +1,9 @@
-// Set s3 base url
-$('#img').attr({
-  'src': s3_url + 'userUpload/aaa/aaa-1580695614591',
-})
-
 let page = 0;
 let nomoreUpdate = false;
 createMoreItems();
-// $('#nomore-text-div').click(
-//   createMoreItems()
-// );
+/**
+ * 捲動時自動帶入新物件
+ */
 $(window).scroll(function () {
   // 判斷整體網頁的高度
   const $BodyHeight = $(document).height();
@@ -16,7 +11,6 @@ $(window).scroll(function () {
   const $ViewportHeight = $(window).height();
   // 偵測目前捲軸頂點
   $ScrollTop = $(this).scrollTop();
-
   if ($BodyHeight - ($ViewportHeight + $ScrollTop) < 10 ) {
     if (page !== 'end') {
       createMoreItems();
@@ -28,7 +22,9 @@ $(window).scroll(function () {
     }
   };
 });
-
+/**
+ * 取得更多物件的 function，一次六件
+ */
 function createMoreItems() {
   $.ajax({
     url: `/api/1.0/items/all?page=${page}`,

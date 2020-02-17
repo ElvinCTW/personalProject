@@ -17,7 +17,7 @@ if (localStorage.getItem('token')) {
   $('#general-notification').click(()=>{
     $('#notification-area').toggle()
     // call msgDAO change watched => true
-    if ($('#notification-count').val()) {
+    if ($('#notification-count').html()) {
       $('#notification-count').remove();
       $.ajax({
         url: `/api/1.0/message/watched?nickname=${nickname}`,

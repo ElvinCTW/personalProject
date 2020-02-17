@@ -15,10 +15,10 @@ block content
             p 次分類
             select(name="sub_category" id="sub_category")
             p 標籤(請由"#"開始，並以空格區隔)
-            input.tags(name="tags" type="text" placeholder="Max 40 words" value="\#Basketball \#Kobe" maxlength="40")
+            input.tags(name="tags" type="text" placeholder="e.q. \#Basketball \#Kobe ,Max 40 words" maxlength="40")
             p 物品名稱
             - let randomTitle = 'R-Title '+`${Math.round(Math.random()*99999)}`
-            input.title(name="title" type="text" placeholder="Max 30 words" value=randomTitle required maxlength="30")
+            input.title(name="title" type="text" placeholder="Max 30 words" required maxlength="30")
             p 數量
             - let randomCount = Math.round(Math.random()*9)+1
             input.count(name="count" type="number" placeholder="At least one item" value=randomCount min=1 required)

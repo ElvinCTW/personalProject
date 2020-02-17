@@ -99,11 +99,11 @@ nav .container {
   position: relative;
   display: flex;
   font-weight: 500;
-  color: red;
+  color: white;
 }
 
 #notification-count {
-  background: #fff;
+  background: red;
   width: 15px;
   height: 15px;
   line-height: 15px;
@@ -386,7 +386,7 @@ main
 
 .title.item-detail,
 .title.user-items {
-  font-size: 36px;
+  font-size: 28px;
   color: #1992E2;
   width: 100%;
   font-weight: 600;
@@ -422,10 +422,14 @@ main
 
 .nickname.item-detail,
 .introduction-div.item-detail {
-  font-size: 24px;
+  font-size: 16px;
   color: #1992E2;
   font-weight: 600;
   margin: 20px;
+}
+
+.nickname.item-detail {
+  font-size: 28px;
 }
 
 .change-button.item-detail button,
@@ -450,10 +454,10 @@ main
   color: #000;
   display: flex;
   border-radius: 16px;
-  font-size: 20px;
+  font-size: 18px;
   text-align: center;
-  margin: 20px;
-  padding : 20px;
+  margin: 10px;
+  padding : 10px;
   max-height: 3em;
 }
 
@@ -505,10 +509,6 @@ users_register
   background-color: #fff;
   width: 100%;
   border-radius: 15px;
-}
-
-.sub-main-container.add-item {
-  flex-direction: row;
 }
 
 /* msg */
@@ -603,7 +603,7 @@ users_register
 .main-middle form {
   display: flex;
   flex-direction: column;
-  width: 50%;
+  width: 90%;
   margin-left: 10px;
 }
 
@@ -615,6 +615,7 @@ users_register
 }
 
 .main-middle form input,
+.main-middle form textarea.introduction,
 .main-middle form select {
   width: 100%;
   border-radius: 15px;
@@ -622,7 +623,7 @@ users_register
   height: 24px;
 }
 
-.main-middle form input.introduction {
+.main-middle form textarea.introduction {
   min-height: 100px;
 }
 
@@ -647,6 +648,6 @@ users_register
 
 .sub-main-container.sign .button-div.sign {
   margin-left: 10px;
-  width: 50%;
+  width: 90%;
 }
 

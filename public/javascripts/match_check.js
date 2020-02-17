@@ -1,7 +1,7 @@
 // const alphabetArr = ['A', 'B', 'C']
 if (!localStorage.getItem('nickname')) {
   // 確認使用者有登入，如果沒有，跳alert請user登入
-  alert('plz sign in to active change function');
+  alert('請登入以進行物品交換確認');
   window.location.assign('/');
   // 應確認使用者為指定 user_nickname 的使用者
 }

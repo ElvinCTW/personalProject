@@ -3,7 +3,7 @@ let currentMatchedId;
 // const alphabetArr = ['A', 'B', 'C']
 if (!localStorage.getItem('nickname')) {
   // 確認使用者有登入，如果沒有，跳alert請user登入
-  alert('plz sign in to active change function');
+  alert('請登入以進入交換討論頁面');
   window.location.assign('/');
   // 應確認使用者為指定 user_nickname 的使用者
 }
@@ -77,6 +77,14 @@ function getMatchedResultData(matched_id, required_item_title) {
        */
       // make msg line and append to msg-area
       $('#msg-area').empty()
+      if (confirmedMatchObj.msgArr.length === 0) {
+        let msgLine = $('<div></div>').attr({ 'class': 'msg-line' });
+        $('#msg-area').append(msgLine);
+        let msgDiv = $('<div></div>').attr({ 'class': 'msg-div' });
+        msgLine.append(msgDiv);
+        let msgContent = $('<div></div>').attr({ 'class': 'msg-content' }).html('目前沒有對話喔，快和交換的對方商量交換細節吧！');
+        msgDiv.append(msgContent);
+      }
       confirmedMatchObj.msgArr.forEach(msg=>{
         let msgDivClass = 'msg-div'
         let who;

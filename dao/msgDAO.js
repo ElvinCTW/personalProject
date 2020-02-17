@@ -39,6 +39,22 @@ module.exports = {
             resolve(insertNewMatchedPageMsgResult.affectedRows)
           }
         });
+      } else if (queryData.action === 'insertNewMatchMsg') {
+        console.log('queryData')
+        console.log(queryData)
+        queryString = 'INSERT INTO message (content, sender, receiver, time, mentioned_item_id) values ?';
+        queryCondition.length = 0;
+        queryCondition.push(queryData.msgArr);
+        mysql.pool.query(queryString, queryCondition, (err, insertNewMatchedPageMsgResult, fileds) => {
+          if (err) {
+            mysql.errLog(err,'insertNewMatchedPageMsgResult','msgDAO')
+            reject(err)
+          } else {
+            console.log('insertNewMatchedPageMsgResult.affectedRows')
+            console.log(insertNewMatchedPageMsgResult.affectedRows)
+            resolve(insertNewMatchedPageMsgResult.affectedRows)
+          }
+        });
       }
     })
   },

@@ -94,6 +94,22 @@ nav .container {
 .container-inside a {
   height: 24px;
 }
+
+#general-notification {
+  position: relative;
+  display: inline-block;
+}
+
+.notification-area {
+  /* float: left; */
+  width: 300px;
+  height: 225px;
+  background: #fff;
+  position: absolute;
+  margin: 8px auto auto -280px;
+  /* display: inline-block; */
+}
+
 /* 
 main
  */

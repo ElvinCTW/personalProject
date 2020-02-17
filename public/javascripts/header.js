@@ -20,3 +20,9 @@ if (localStorage.getItem('token')) {
     alert('請先登入或註冊以使用會員功能');
   })
 }
+$('#notification-area').toggle();
+
+function showNotification() {
+  // toggle notification div when click fast-btn
+  $('#notification-area').toggle();
+}

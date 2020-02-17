@@ -76,7 +76,8 @@ module.exports = {
       queryData.wantArr.forEach((item_id) => {
         parseIntArr.push(parseInt(item_id));
       })
-      queryString = `SELECT w.* FROM want w JOIN items i ON i.id = w.want_item_id WHERE w.want_item_id = ? AND w.required_item_id in (?) AND i.availability = "true"`;
+      // B_nickname 在裡面
+      queryString = `SELECT w.*, i.user_nickname B_nickname, i2.title A_title FROM want w JOIN items i ON i.id = w.want_item_id JOIN items i2 ON i2.id = w.required_item_id WHERE w.want_item_id = ? AND w.required_item_id in (?) AND i.availability = "true"`;
       queryCondition = [queryData.item_id, parseIntArr];
       return new Promise((resolve, reject) => {
         mysql.pool.query(queryString, queryCondition, (err, doubleMatchResultArr, fileds) => {
@@ -87,7 +88,8 @@ module.exports = {
             console.log(err.sql);
             reject(err);
           } else {
-            queryString = `SELECT w.* FROM want w JOIN items i ON i.id = w.want_item_id WHERE w.want_item_id IN ( SELECT w.required_item_id FROM want w JOIN items i ON i.id = w.required_item_id WHERE want_item_id = ? AND i.availability = "true" ) AND w.required_item_id in (?) AND i.availability = "true"`;
+            // C_nickname, C_title, A_title 缺 B_nickname
+            queryString = `SELECT w.*, i.user_nickname C_nickname, i.title C_title, i2.title A_title FROM want w JOIN items i ON i.id = w.want_item_id JOIN items i2 ON i2.id = w.required_item_id WHERE w.want_item_id IN ( SELECT w1.required_item_id FROM want w1 JOIN items i3 ON i3.id = w1.required_item_id WHERE w1.want_item_id = ? AND i3.availability = "true" ) AND w.required_item_id in (?) AND i.availability = "true"`;
             // return new Promise((resolve, reject) => {
             mysql.pool.query(queryString, queryCondition, (err, tripleMatchResultArr, fileds) => {
               // console.log(tripleMatchResultArr);
@@ -270,12 +272,6 @@ module.exports = {
                           }
                         } else {
                           BwantCtable.forEach(BwantC => {
-                            // BwantC.A_id = queryData.item_id
-                            // // BwantC.A_item
-                            // BwantC.A_item = CwantAtable.filter(CwantA => CwantA.C_id === BwantC.C_id)[0]
-                            // BwantC.B_item = AwantBtable.filter(AwantB => AwantB.B_id === BwantC.B_id)[0]
-                            // change
-                            // BwantC.C_item = CwantAtable.filter(CwantA => CwantA.C_id === BwantC.C_id)[0]
                             tripleMatchResultArr.push({
                               C_item: BwantC,
                               A_item: CwantAtable.filter(CwantA => CwantA.C_id === BwantC.C_id)[0],
@@ -285,7 +281,6 @@ module.exports = {
                               B_id: BwantC.B_id,
                             })
                           })
-                          // tripleMatchResultArr = BwantCtable
                         }
                         // console.log(tripleMatchResultArr);
                         resolve({
@@ -299,65 +294,7 @@ module.exports = {
               })
             }
           }
-          // } else {
-          //   // resolve(checkPreviousWantResult);
-          //   // 取的 BwantC
-          //   queryCondition = [];
-          //   AwantBtable.forEach(AwantB => {
-          //     queryCondition.push(AwantB.B_id);
-          //   })
-          //   console.log(queryCondition);
-          //   queryString = `SELECT w.required_item_id C_id, w.want_item_id B_id, i.title FROM want w JOIN items i ON w.want_item_id = i.id WHERE want_item_id in (?)`
-          //   mysql.pool.query(queryString, [queryCondition], (err, BwantCtable, fileds) => {
-          //     console.log(BwantCtable);
-          //     if (err) {
-          //       console.log('error in BwantCtablePromise');
-          //       console.log(err.sqlMessage);
-          //       console.log(err.sql);
-          //       reject(err);
-          //     } else {
-          //       // queryCondition.length = 0;
-          //       // BwantCtable.forEach(BwantC =>{
-          //       //   queryCondition.push(BwantC.required_item_id);
-          //       // })
-          //       // queryString = `SELECT want_item_id B_id, required_item_id C_id FROM want WHERE want_item_id in (?)`
-          //       const AmatchBArr = [];
-          //       for (let i = 0; i < AwantBtable.length; i++) {
-          //         for (let j = 0; j < BwantCtable.length; j++) {
-          //           if (AwantBtable[i].A_id === BwantCtable[j].C_id && AwantBtable[i].B_id === BwantCtable[j].B_id) {
-          //             AmatchBArr.push(BwantCtable[j]);
-          //             break;
-          //           }
-          //         }
-          //       }
-          //       console.log(AmatchBArr);
-          //       // resolve(AmatchBArr);
-          //       queryString = `SELECT w.required_item_id D_id, w.want_item_id C_id, i.title FROM want w JOIN items i ON w.want_item_id = i.id WHERE want_item_id in (?)`
-          //       queryCondition.length = 0;
-          //       BwantCtable.forEach(BwantC => {
-          //         queryCondition.push(BwantC.C_id);
-          //       })
-          //       mysql.pool.query(queryString, [queryCondition], (err, CwantDtable, fileds) => {
-          //         console.log(CwantDtable);
-          //         if (err) {
-          //           console.log('error in CwantDtablePromise');
-          //           console.log(err.sqlMessage);
-          //           console.log(err.sql);
-          //           reject(err);
-          //         } else {
-          //           const AmatchCArr = [];
-          //           for (let i = 0; i < AwantBtable.length; i++) {
-          //             for (let j = 0; j < BwantCtable.length; j++) {
-          //               if (AwantBtable[i].A_id === BwantCtable[j].C_id && AwantBtable[i].B_id === BwantCtable[j].B_id) {
-          //                 AmatchBArr.push(BwantCtable[j]);
-          //               }
-          //             }
-          //           }
-          //         }
-          //       })
-          //     }
-          //   })
-          // }
+          
         })
       })
     } else {
@@ -378,20 +315,6 @@ module.exports = {
         })
       })
     }
-    // 有 user 申請交換請求時，確認對方有無對自己的商品提出過交換請求
-    // return new Promise((resolve, reject) => {
-    //   mysql.pool.query(queryString, queryCondition, (err, checkPreviousWantResult, fileds) => {
-    //     console.log(checkPreviousWantResult);
-    //     if (err) {
-    //       console.log('error in checkPreviousWantPromise');
-    //       console.log(err.sqlMessage);
-    //       console.log(err.sql);
-    //       reject(err);
-    //     } else {
-    //       resolve(checkPreviousWantResult);
-    //     }
-    //   })
-    // }) 
   },
   update: (queryData) => {
     // 更新 want/checked column

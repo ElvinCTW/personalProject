@@ -25,10 +25,11 @@ nav.top-navbar
                     //-     //- link to user page
                     //-     a(href="/")=nickname
                     //-     //- drop down list
-                a(href="/" id="match-notification" class="fast-btn")
+                a(id="general-notification" class="fast-btn" onclick="showNotification()")
                     //- link to notification page
                     img.notification(src="/images/notification.png", alt="")
-                a(href="/" class="fast-btn")
+                    .notification-area(id="notification-area")
+                a(href="/" id="match-notification" class="fast-btn")
                     //- link to favorite page
                     img.likes(src="/images/likes.png", alt="")
                 a(href="/" class="fast-btn" id="match-confirmed")

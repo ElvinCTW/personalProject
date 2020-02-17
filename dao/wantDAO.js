@@ -39,7 +39,28 @@ module.exports = {
     let queryString = '';
     let queryCondition = [];
     queryData.item_id = parseInt(queryData.item_id);
-    if (queryData.id_Arr) {
+    if (queryData.action === 'getUserSelectedItemIdArr') {
+      return new Promise((resolve, reject) => {
+        let queryString = 'SELECT i.id FROM want w JOIN items i ON i.id = w.want_item_id WHERE required_item_id = ? AND i.user_nickname = ?';
+        let queryCondition = [queryData.item_id, queryData.user_nickname];
+        mysql.pool.query(queryString, queryCondition, (err, userSelectedItemIdResult, fileds) => {
+          if (err) {
+            mysql.errLog(err, 'userSelectedItemIdResult', 'wantDAO')
+            reject(err)
+          } else {
+            console.log('userSelectedItemIdResult')
+            console.log(userSelectedItemIdResult)
+            let resultArr = [];
+            userSelectedItemIdResult.forEach(obj => {
+              resultArr.push(obj.id);
+            })
+            console.log('resultArr')
+            console.log(resultArr)
+            resolve(resultArr);
+          }
+        });
+      })
+    } else if (queryData.id_Arr) {
       console.log('search users that need to be notificate when other items gone, wantDAO, get');
       return new Promise((resolve, reject) => {
         // 取得 required item id in (id_Arr) && check = confirmed 的 want，作為通知人候選名單
@@ -294,7 +315,7 @@ module.exports = {
               })
             }
           }
-          
+
         })
       })
     } else {

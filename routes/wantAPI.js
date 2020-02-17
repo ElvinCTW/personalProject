@@ -58,7 +58,7 @@ router.post('/new', async (req, res, next) => {
     }
     // Send back success or fail msg
     res.send({
-      msg: ` Match Result: \n Insert ${newWantInsertResult.affectedRows} trade requrst, \n Find ${_2n3MatchResultObj.doubleMatchResultArr.length} double matches, \n Find ${_2n3MatchResultObj.tripleMatchResultArr.length} triple matches.`
+      msg: ` 配對結果: \n 已新增 ${newWantInsertResult.affectedRows} 個交換請求, \n 為您找到 ${_2n3MatchResultObj.doubleMatchResultArr.length} 個雙人交換, \n 找到 ${_2n3MatchResultObj.tripleMatchResultArr.length} 三人交換`
     })
   }
 });
@@ -180,6 +180,15 @@ router.get('/matches/:type', async (req, res, next) => {
   })
   // console.log(resArr);
   res.send(resArr)
+})
+
+router.get('/last', async (req, res, next) => {
+  let userSelectedItemIdArr = await wantDAO.get({
+    action: 'getUserSelectedItemIdArr',
+    item_id: req.query.required_item_id,
+    user_nickname: req.query.user_nickname,
+  })
+  res.send(userSelectedItemIdArr);
 })
 
 module.exports = router;

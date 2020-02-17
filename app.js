@@ -8,7 +8,6 @@ const matchesAPI = require('./routes/matchesAPI');
 const msgAPI = require('./routes/msgAPI');
 const itemDAO = require('./dao/item');
 const wantDAO = require('./dao/wantDAO');
-// const matchDAO = require('./dao/matchDAO');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -45,12 +44,6 @@ app.get('/matches/information', async (req,res)=>{
   let objectOfmatchesResultArr = await wantDAO.get({
     user_nickname: req.query.user_nickname,
   });
-  // console.log('objectOfmatchesResultArr');
-  // console.log(objectOfmatchesResultArr);
-  // console.log('objectOfmatchesResultArr.doubleMatchResultArr');
-  // console.log(objectOfmatchesResultArr.doubleMatchResultArr);
-  // console.log('objectOfmatchesResultArr.tripleMatchResultArr');
-  // console.log(objectOfmatchesResultArr.tripleMatchResultArr);
   console.log('(objectOfmatchesResultArr.doubleMatchResultArr.length > 0 || objectOfmatchesResultArr.tripleMatchResultArr.length > 0)')
   console.log((objectOfmatchesResultArr.doubleMatchResultArr.length > 0 || objectOfmatchesResultArr.tripleMatchResultArr.length > 0))
   if (objectOfmatchesResultArr.doubleMatchResultArr.length > 0 || objectOfmatchesResultArr.tripleMatchResultArr.length > 0) {
@@ -68,7 +61,6 @@ app.get('/matches/information', async (req,res)=>{
       type: 'all',
       id_Arr: setTempArr,
     });
-    // console.log(objectOfmatchesResultArr.b_itemObjectArr);
   } else {
     objectOfmatchesResultArr.b_itemObjectArr = [];
   }

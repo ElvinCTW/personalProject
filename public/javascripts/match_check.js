@@ -8,13 +8,6 @@ if (!localStorage.getItem('nickname')) {
 
 function getMatchedResultData(want_item_id, want_title, item_type) {
   // call wantAPI get matched data (by want_item_id)
-  // let itemData;
-  // $.ajax({
-  //   url: `/api/1.0/items/detail?item_id=${want_item_id}`,
-  //   type: 'get',
-  //   success: (getItemData) => {
-  // 取得 query item data
-  // itemData = getItemData;
   $.ajax({
     url: `/api/1.0/want/matches/${item_type}?id=${want_item_id}&nickname=${localStorage.getItem('nickname')}`,
     type: 'get',
@@ -96,21 +89,6 @@ function getMatchedResultData(want_item_id, want_title, item_type) {
             newItemContainer_Inside.append(itemContentDiv);
             // basedonDiv text spans
             let basedonSpan = $('<span />')
-            // let interactors = 0;
-            // let ownerStatusArr = [];
-            // let ownersArr=['您想要的物品', '您提供的物品', '第三人的物品'];
-            // let owner_checkArr;
-            // if (!matchedItemsDataArr[i].C_id) {
-            //   basedonSpan.html('Double Matched');
-            //   // interactors = 2;
-            //   ownersArr = matchedItemsDataArr[i].doubleMatchData.ownersArr;
-            //   owner_checkArr = matchedItemsDataArr[i].doubleMatchData.owner_checkArr;
-            // } else {
-            //   basedonSpan.html('Triple Matched');
-            //   // interactors = 3;
-            //   ownersArr = matchedItemsDataArr[i].tripleMatchData.ownersArr;
-            //   owner_checkArr = matchedItemsDataArr[i].tripleMatchData.owner_checkArr;
-            // }
             if (e === 'A_item') {
               basedonSpan.html('您想要的物品');
             } else if (e === 'B_item') {
@@ -157,88 +135,6 @@ function getMatchedResultData(want_item_id, want_title, item_type) {
             }
             checkStatusNodeArr.push(ownercheckStatsus);
             ownercheckStatsus.insertBefore(interactionBtnDiv);
-            //   let user_nickname = localStorage.getItem('nickname');
-            //   let userIndex = ownersArr.indexOf(user_nickname)
-            // let userIndex = 1;
-            //   console.log(userIndex);
-            // let data = {};
-            // if (!matchedItemsDataArr[i].B_id) {  //interactors === 2
-            //   // 雙方
-            //   data.want_item_id = want_item_id;
-            //   data.required_item_id = matchedItemsDataArr[i].itemData.id;
-            // } else {
-            //   // triple
-            //   data.userIndex = userIndex;
-            //   data.matched_id = matchedItemsDataArr[i].tripleMatchData.triple_id;
-            // }
-            // let confirmBtn = $('<button></button>').attr({
-            //   'class': 'interaction-btn',
-            // }).html('Confirm').click(() => {
-            //   data.type = 'confirm';
-            //   console.log('data is:');
-            //   console.log(data);
-            //   $.ajax({
-            //     url: `/api/1.0/matches/status`,
-            //     type: 'post',
-            //     data: data,
-            //     success: (checkAllConfirmResultArr) => {
-            //       if (interactors === 2) {
-            //         // 雙方
-            //         console.log(checkAllConfirmResultArr);
-            //       } else {
-            //         // 三方
-            //         console.log(checkAllConfirmResultArr);
-            //       }
-            //       checkStatusNodeArr[userIndex].html(`User : ${user_nickname}, Check : ${data.type}`)
-            //       interactionBtnDiv.attr({'style': 'display:none;'})
-            //     },
-            //     error: (error) => {
-            //       console.log(error);
-            //     },
-            //   })
-            // });
-            //   let denyBtn = $('<button></button>').attr({
-            //     'class': 'interaction-btn',
-            //   }).html('Deny').click(() => {
-            //     data.type = 'deny';
-            //     $.ajax({
-            //       url: `/api/1.0/matches/status`,
-            //       type: 'post',
-            //       data: data,
-            //       // 雙方 input: 
-            //       // 三方 input: triple_id, userIndex
-            //       success: (checkAllConfirmResultArr) => {
-            //         if (interactors === 2) {
-            //           // 雙方
-            //           console.log(checkAllConfirmResultArr);
-            //         } else {
-            //           // 三方
-            //           console.log(checkAllConfirmResultArr);
-            //         }
-            //         checkStatusNodeArr[userIndex].attr({
-            //           'class': 'user-check-status',
-            //           'style': 'background: #FAD7AC; color: #000'
-            //         }).html(`User : ${user_nickname}, Check : ${data.type}`)
-            //         interactionBtnDiv.attr({'style': 'display:none;'})
-            //       },
-            //       error: (error) => {
-            //         console.log(error);
-            //       },
-            //     })
-            //   });
-            //   let show = true;
-            //   owner_checkArr.forEach(checkstatus =>{
-            //     if (checkstatus === "deny") {
-            //       show = false;
-            //     }
-            //   })
-            //   if (owner_checkArr[userIndex] === "confirm") {
-            //     show = false;
-            //   }
-            //   if (show) {
-            //     interactionBtnDiv.append(confirmBtn);
-            //     interactionBtnDiv.append(denyBtn);
-            //   }
             if (matchedItemsDataArr[i][e].checked === "deny") {
               show = false;
             }
@@ -260,20 +156,9 @@ function getMatchedResultData(want_item_id, want_title, item_type) {
 
     }
   })
-  //   },
-  //   error: (err) => {
-  //     console.log(err);
-  //   }
-  // })
-
-  // create boxes after get data 
 }
 
 function updateCheckStatus(ownersArr, chcek) {
-  // let user_nickname = localStorage.getItem('nickname');
-  // let userIndex = ownersArr.indexOf(user_nickname)
-  // // find which user on which index 
-  // console.log(userIndex);
   if (check) {
     // user click btn "check"
 

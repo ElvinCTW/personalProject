@@ -14,9 +14,6 @@ const s3 = new aws.S3({
 });
 // Add new item API
 router.post('/new', async (req, res, next) => {
-  /** Input : req.body from add items page */
-  /** To Do : get user data add item into db */
-  // upload pictures to s3 and get pics name
   let userID;
   let userNickname;
   const upload = multer({
@@ -27,14 +24,6 @@ router.post('/new', async (req, res, next) => {
       acl: 'public-read',
       key: async function (req, file, cb) {
         // check picture uploaded
-        // if (!file) {
-        //   console.log('no file');
-        //   res.status(400).send('plz select picture');
-        // }
-        // if (file.length === 0) {
-        //   console.log(file.length === 0);
-        //   res.status(400).send('plz select picture');
-        // }
         // get user data
         const userDataArr = await userDAO.get(req.body.token);
         userID = userDataArr[0].sign_id;

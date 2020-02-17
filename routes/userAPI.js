@@ -3,9 +3,6 @@ const router = express.Router();
 const userDAO = require('../dao/user');
 
 router.post('/register', async (req, res, next)=>{
-  /* Input : req.body from register page */
-  /* To Do : check user exist && register users */
-  // check no double account
   const checkUserResult = await userDAO.get(req.body.id);
   if (checkUserResult.length !== 0) {
     res.status(500).send('double account, does not insert user.')

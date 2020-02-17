@@ -6,10 +6,6 @@ module.exports = {
     return new Promise((resolve, reject) => {
       if (queryData.action === 'insertItemGoneMsgToUser') {
         queryString = 'INSERT INTO message(content, sender, receiver, mentioned_item_id, matched_id, time) VALUES ?';
-        // queryCondition.length = 0;
-        // queryCondition.push(queryData.insertMsgQueryDataArr);
-        // console.log('queryCondition')
-        // console.log(queryCondition)
         mysql.pool.query(queryString, [queryData.insertMsgQueryDataArr], (err, insertMsgResult, fileds) => {
           if (err) {
             mysql.errLog(err,'insertMsgResult','msgDAO')

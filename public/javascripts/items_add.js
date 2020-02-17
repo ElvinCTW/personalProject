@@ -48,9 +48,6 @@ $('#pics-input').bind('change', function() {
         alert(`${files[i].name}的檔案大小超過 3MB ，請取消選用或更換其他圖片`)
       }
     }
-    // if (!vaildImageUpload) {
-    //   alert(`${files.name}的檔案大小超過 3MB ，請取消選用或更換其他圖片`)
-    // }
   }
 
   if (vaildImageUpload) {

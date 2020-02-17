@@ -160,17 +160,6 @@ router.get('/matches/:type', async (req, res, next) => {
     // item_type: req.params.type,
     user_nickname: req.query.nickname,
   })
-  // // input: want_item_id
-  // // to do: call wantDAO.get(want_item_id)
-  // let matchesRequiredItemsDataArr = await wantDAO.get({
-  //   item_id: parseInt(req.query.want_item_id),
-  // })
-  // // output: Items (which user gets) data of matches or errorMsg
-  // if (matchesRequiredItemsDataArr.errorMsg) {
-  //   res.status(500).send(matchesRequiredItemsDataArr.errorMsg)
-  // } else {
-  //   res.status(200).send(matchesRequiredItemsDataArr)
-  // }
   let resArr = [];
   checkMatchResultArr.doubleMatchResultArr.forEach(element => {
     resArr.push(element)

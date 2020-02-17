@@ -6,11 +6,6 @@ nav.top-navbar
         .navbar-middle
             .container-inside
                 input.search(type="text", name="search", placeholder="搜尋...")
-                //- drop down list
-                //- div.list()
-                //-     span Board List
-                //- select.list(onchange=`window.location.assign('/board/${this.value}')`)
-                //- select.list(onchange=`locateToBoard(${this})`)
                 select.list(onchange='locateToBoard()' id="select-list")
                     option(value="boardlist") 看板清單
                     option(value="basketball") 籃球
@@ -19,20 +14,10 @@ nav.top-navbar
             .container-inside
                 div.member
                     a(href="/users/signin" id="navbar-member-link") 登入/註冊
-                    //- if !nickname
-                        //- link to sign_in / sign_up page
-                    //- else 
-                    //-     //- link to user page
-                    //-     a(href="/")=nickname
-                    //-     //- drop down list
                 a(id="general-notification" class="fast-btn")
                     //- link to notification page
                     img.notification(src="/images/notification.png", alt="" id="notification-pic")
                     .notification-area(id="notification-area")
-                        //- - let i = 0
-                        //- while i < 2
-                        //-     .notification-div.new
-                        //-     - i++
                 a(href="/" id="match-notification" class="fast-btn")
                     //- link to favorite page
                     img.likes(src="/images/likes.png", alt="")
@@ -43,21 +28,3 @@ nav.top-navbar
                     //- link to new item page
                     img.plus(src="/images/plus.png", alt="")
 script(src="/javascripts/header.js")
-            //- ul.nav.navbar-nav.navbar-right
-            //-     if user
-            //-         li.dropdown
-            //-             a.navbar-avatar.dropdown-toggle(href='#', data-toggle='dropdown')
-            //-                 span #{user.name || user.email} &nbsp;
-            //-                 i.caret
-            //-             ul.dropdown-menu
-            //-                 li
-            //-                     a(href='/profile') Profile
-            //-                 li.divider(role='separator')
-            //-                 li
-            //-                     a(href='/logout') Logout
-            //-     else
-            //-         li(class=(title == 'Log in') ? 'active' : null)
-            //-             a(href='/login') Log-in
-            //-         li(class=(title == 'Register') ? 'active' : null)
-            //-             a(href='/register') Register
-//- /.nav-collapse

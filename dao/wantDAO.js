@@ -4,20 +4,11 @@ module.exports = {
   insert: (queryData) => {
     return new Promise((resolve, reject) => {
       let insertWantsArr = [];
-      // make insert rows base on wantItemID
-      // queryData.wantArr = queryData.wantArr.split(',');
       queryData.wantArr.forEach(wantItemID => {
         // make want row
-        // let wantItemIDInt = parseInt(wantItemID)
-        // let requiredItemInt = parseInt(queryData.required_item_id)
         let wantRow = [parseInt(wantItemID), parseInt(queryData.required_item_id)];
         // push in arr
         insertWantsArr.push(wantRow)
-        // if (queryData.matchedArr.indexOf(parseInt(wantItemID)) !== -1) {
-        //   wantRow.push('true');
-        // } else {
-        //   wantRow.push('false');
-        // }
       });
       mysql.pool.query('INSERT INTO want(want_item_id, required_item_id) VALUES ?', [insertWantsArr], (err, insertWantResult, fields) => {
         if (err) {
@@ -74,23 +65,12 @@ module.exports = {
           } else {
             console.log('notificationResult')
             console.log(notificationResult)
-            // let tempArr = notificationResult.filter(result=>queryData.id_Arr.indexOf(result.notificated_item_id) === -1)
-            // let insertMsgQueryDataArr = [];
-            // tempArr.forEach(notification=>{
-            //   insertMsgQueryDataArr.push([`您對 ${notification.gone_item_title} 的交換請求，因該物品下架已被取消`, 'system', notification.notificated_user, notification.gone_item_id, Date.now().toString() ])
-            // })
             resolve(notificationResult)
           }
         });
       })
     } else if (queryData.endItemsArr) {
       // 三方配對時，用 end_item 作為 want_item 搜尋 WishList，結果數字代表三方配對完成方式數量
-      // console.log('search wish list of end_items in wantDAO');
-      // queryData.wantArr.forEach((item_id) => {
-      //   parseIntArr.push(parseInt(item_id));
-      // })
-      // queryString = `SELECT * FROM want WHERE want_item_id in (?) AND required_item_id in (?)`;
-      // queryCondition = [queryData.endItemsArr, parseIntArr];
     } else if (queryData.wantArr) {
       console.log('search double or triple non-confirmed match in wantDAO');
       // 查詢 required_item 有無針對 offer_items 表示過 want (item_detail 新增 want 用)
@@ -133,12 +113,6 @@ module.exports = {
     } else if (queryData.user_nickname || queryData.item_id) {
       let doubleMatchResultArr = [];
       let tripleMatchResultArr = [];
-      // queryString = `SELECT w.want_item_id AS item_id, i.title FROM want AS w JOIN items AS i ON w.want_item_id = i.id WHERE w.want_owner = ? AND w.matched = "true"`
-      // placeArr.forEach((place) => {
-      //   queryString += ` UNION SELECT m.${place}_item_id AS item_id, i.title FROM matched AS m JOIN items AS i ON m.${place}_item_id = i.id WHERE m.${place}_owner = "${queryData.user_nickname}"`
-      // })
-      // queryCondition = [queryData.user_nickname];
-
       /**
        * user_nickname query : A 是當前 user 資料，B 是 user 想要的資料， C 是想要 user 東西的資料
        * item_id query : A 是 user 想要的東西資料，B 是想要 user 東西的資料， C 是 user 的東西
@@ -222,9 +196,6 @@ module.exports = {
                             doubleMatchResultArr.push(AwantBtable[j])
                             break;
                           }
-                          // if ( queryData.item_id && CwantAtable[i].C_id === AwantBtable[j].B_id) {
-                          //   doubleMatchResultArr.push(AwantBtable[j])
-                          // }
                         }
                       }
                       // 3. 用 1 + 2 取得 CwantAwantBtable
@@ -261,8 +232,6 @@ module.exports = {
                           A_item: CwantAtable.filter(e => e.C_id === AwantB.B_id)[0], // check in A_item = BwantA check
                           C_id: AwantB.B_id,
                           A_id: queryData.item_id,
-                          // A_check: AwantB.checked,
-                          // B_check: AwantB.checked,
                         })
                       })
                     }

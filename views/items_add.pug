@@ -9,19 +9,16 @@ block content
           form(action="/api/1.0/items/new" method="post" id="add-items-form" enctype="multipart/form-data")
             input(type="text" name="token" id="token-input" style="display:none;")
             p 主分類
-            //- input.main-category(name="main_category" type="text" placeholder="Basketball" value="basketball" required)
             select(name="main_category" id="main_category" onchange="changeSubOption()")
               option(value="basketball") 籃球
               option(value="photograph") 攝影
             p 次分類
             select(name="sub_category" id="sub_category")
-            //- input.sub-category(name="sub_category" type="text" placeholder="Shoes" value="shoes")
             p 標籤(請由"#"開始，並以空格區隔)
             input.tags(name="tags" type="text" placeholder="Max 40 words" value="\#Basketball \#Kobe" maxlength="40")
             p 物品名稱
             - let randomTitle = 'R-Title '+`${Math.round(Math.random()*99999)}`
             input.title(name="title" type="text" placeholder="Max 30 words" value=randomTitle required maxlength="30")
-            //- input.status(name="status" type="text" placeholder="Used" value="Used" required)
             p 數量
             - let randomCount = Math.round(Math.random()*9)+1
             input.count(name="count" type="number" placeholder="At least one item" value=randomCount min=1 required)

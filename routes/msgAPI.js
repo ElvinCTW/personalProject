@@ -14,4 +14,21 @@ router.post('/new', async (req, res, next)=>{
   }
 })
 
+router.post('/watched', async (req, res, next)=>{
+  let affectedRows = await msgDAO.update({
+    action: 'markedAsWatched',
+    nickname: req.query.nickname,
+  })
+  res.send(`${affectedRows}`);
+})
+
+router.get('/header', async (req, res, next)=>{
+  // get new notification from msgDAO
+  let unreadMsgArr = await msgDAO.get({
+    action: 'getMsgForHeader',
+    nickname: req.query.nickname,
+  })
+  res.send(unreadMsgArr);
+})
+
 module.exports = router;

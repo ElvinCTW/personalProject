@@ -76,7 +76,45 @@ module.exports = {
             resolve(getConfirmedMatchMsgResult)
           }
         });
+      } else if (queryData.action === 'getMsgForHeader') {
+        queryString = 'SELECT * FROM message WHERE receiver = ? AND watched = "false"';
+        queryCondition.length = 0;
+        queryCondition.push(queryData.nickname);
+        console.log('queryData.nickname')
+        console.log(queryData.nickname)
+        console.log('queryCondition')
+        console.log(queryCondition)
+        mysql.pool.query(queryString, queryCondition, (err, getMsgResult, fileds) => {
+          if (err) {
+            mysql.errLog(err,'getMsgResult','msgDAO')
+            reject(err)
+          } else {
+            console.log('getMsgResult')
+            console.log(getMsgResult)
+            resolve(getMsgResult)
+          }
+        });
       }
     })
+  },
+  update: (queryData)=>{
+    return new Promise((resolve, reject) => {
+      let queryString='';
+      let queryCondition =[];
+      if (queryData.action === 'markedAsWatched') {
+        queryString = 'UPDATE message SET watched = "true" WHERE receiver = ? AND watched = "false"';
+        queryCondition.length = 0;
+        queryCondition.push(queryData.nickname);
+        mysql.pool.query(queryString, queryCondition, (err, markedAsWatchedResult, fileds) => {
+          if (err) {
+            console.log('err here');
+            mysql.errLog(err,'markedAsWatchedResult','msgDAO')
+            reject(err)
+          } else {
+            resolve(markedAsWatchedResult.affectedRows)
+          }
+        });
+      }
+    })  
   }
 }

@@ -98,16 +98,41 @@ nav .container {
 #general-notification {
   position: relative;
   display: inline-block;
+  font-weight: 500;
+  color: red;
 }
 
 .notification-area {
-  /* float: left; */
+  display: none;
   width: 300px;
-  height: 225px;
-  background: #fff;
+  max-height: 225px;
+  background: #ccc;
   position: absolute;
   margin: 8px auto auto -280px;
+  overflow: scroll;
   /* display: inline-block; */
+}
+
+.notification-div.outer {
+  min-height: 75px;
+  padding: 0 5px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1px;
+}
+
+.notification-div {
+  /* width: 300px;
+  height: 75px; */
+  color: #000;
+  margin-bottom: 1px;
+  /* padding: 5px 2px 0 2px; */
+}
+
+.notification-div.new {
+  background: #fff;
 }
 
 /* 
@@ -442,7 +467,8 @@ main
 }
 
 #main-right-inside-container::-webkit-scrollbar,
-.msg-area::-webkit-scrollbar {
+.msg-area::-webkit-scrollbar,
+.notification-area::-webkit-scrollbar {
   display: none;
 }
 

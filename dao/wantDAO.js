@@ -30,7 +30,75 @@ module.exports = {
     let queryString = '';
     let queryCondition = [];
     queryData.item_id = parseInt(queryData.item_id);
-    if (queryData.action === 'getUserSelectedItemIdArr') {
+    if (queryData.action === 'checkConfirmedMatch') {
+      // 檢查 double 是否成功配對 :
+      queryString = `SELECT w.required_item_id, w.want_item_id FROM want w WHERE w.want_item_id = ? AND w.required_item_id = ? AND w.checked = "confirm"`;
+      queryCondition.length = 0
+      queryCondition.push(queryData.required_item_id, queryData.want_item_id)
+      console.log('queryCondition');
+      console.log(queryCondition);
+      return new Promise((resolve, reject) => {
+        mysql.pool.query(queryString, queryCondition, (err, doubleSelectMatchResult, fileds) => {
+          if (err) {
+            mysql.errLog(err, 'doubleSelectMatchResult', 'wantDAO')
+            reject(err);
+          } else {
+            console.log('doubleSelectMatchResult');
+            console.log(doubleSelectMatchResult);
+            if (doubleSelectMatchResult.length > 0) {
+              console.log('double confirmed match, update item availability');
+              // 若 double confirmed match，優先配對，不執行三方配對
+              resolve({
+                msg: 'doubleConfirmedMatch',
+              });
+            } else {
+              // 檢查 Triple confirmed match
+              /* 
+              為了在許多 triple confirmed match 之中選擇一個做配對，之後要 ORDER BY time 來選取最早的 want 作為判斷依據
+              */
+              queryString = `SELECT * FROM want WHERE ( want_item_id = ? AND checked = "confirm") OR (required_item_id = ? AND checked = "confirm")`;
+              // queryCondition.length = 0
+              // queryCondition.push(queryData.want_item_id, queryData.required_item_id)
+              console.log('queryCondition');
+              console.log(queryCondition);
+              mysql.pool.query(queryString, queryCondition, (err, getConfirmedwantResult, fileds) => {
+                if (err) {
+                  mysql.errLog(err, 'getConfirmedwantResult', 'wantDAO')
+                  reject(err);
+                } else {
+                  console.log('getConfirmedwantResult');
+                  console.log(getConfirmedwantResult);
+                  wantC_Arr = [];
+                  wantC_Arr2 = [];
+                  getConfirmedwantResult.forEach(want => {
+                    console.log(want.want_item_id);
+                    console.log(parseInt(queryData.required_item_id));
+                    if (want.want_item_id === parseInt(queryData.required_item_id)) {
+                      wantC_Arr.push(want.required_item_id);
+                    } else {
+                      wantC_Arr2.push(want.want_item_id);
+                    }
+                  })
+                  console.log(wantC_Arr);
+                  console.log(wantC_Arr2);
+                  let itemC_idArr = wantC_Arr.filter(value => wantC_Arr2.includes(value))
+                  console.log('itemC_idArr');
+                  console.log(itemC_idArr);
+                  if (itemC_idArr.length > 0) {
+                    resolve({
+                      msg: 'tripleConfirmedMatch',
+                      itemC_idArr: itemC_idArr,
+                    })
+                  } else {
+                    resolve({});
+                  }
+                }
+              })
+            }
+          }
+        })
+      })
+    } else if (queryData.action === 'getUserSelectedItemIdArr') {
       return new Promise((resolve, reject) => {
         let queryString = 'SELECT i.id FROM want w JOIN items i ON i.id = w.want_item_id WHERE required_item_id = ? AND i.user_nickname = ?';
         let queryCondition = [queryData.item_id, queryData.user_nickname];
@@ -322,72 +390,72 @@ module.exports = {
         } else {
           console.log('updateCheckedResult');
           console.log(updateCheckedResult);
-          // resolve(updateMatchResult);
-          // 檢查 double 是否成功配對 :
-          queryString = `SELECT w.required_item_id, w.want_item_id FROM want w WHERE w.want_item_id = ? AND w.required_item_id = ? AND w.checked = "confirm"`;
-          queryCondition.length = 0
-          queryCondition.push(queryData.required_item_id, queryData.want_item_id)
-          console.log('queryCondition');
-          console.log(queryCondition);
-          mysql.pool.query(queryString, queryCondition, (err, doubleSelectMatchResult, fileds) => {
-            if (err) {
-              mysql.errLog(err, 'doubleSelectMatchResult', 'wantDAO')
-              reject(err);
-            } else {
-              console.log('doubleSelectMatchResult');
-              console.log(doubleSelectMatchResult);
-              if (doubleSelectMatchResult.length > 0) {
-                console.log('double confirmed match, update item availability');
-                // 若 double confirmed match，優先配對，不執行三方配對
-                resolve({
-                  msg: 'doubleConfirmedMatch',
-                });
-              } else {
-                // 檢查 Triple confirmed match
-                /* 
-                為了在許多 triple confirmed match 之中選擇一個做配對，之後要 ORDER BY time 來選取最早的 want 作為判斷依據
-                */
-                queryString = `SELECT * FROM want WHERE ( want_item_id = ? AND checked = "confirm") OR (required_item_id = ? AND checked = "confirm")`;
-                // queryCondition.length = 0
-                // queryCondition.push(queryData.want_item_id, queryData.required_item_id)
-                console.log('queryCondition');
-                console.log(queryCondition);
-                mysql.pool.query(queryString, queryCondition, (err, getConfirmedwantResult, fileds) => {
-                  if (err) {
-                    mysql.errLog(err, 'getConfirmedwantResult', 'wantDAO')
-                    reject(err);
-                  } else {
-                    console.log('getConfirmedwantResult');
-                    console.log(getConfirmedwantResult);
-                    wantC_Arr = [];
-                    wantC_Arr2 = [];
-                    getConfirmedwantResult.forEach(want => {
-                      console.log(want.want_item_id);
-                      console.log(parseInt(queryData.required_item_id));
-                      if (want.want_item_id === parseInt(queryData.required_item_id)) {
-                        wantC_Arr.push(want.required_item_id);
-                      } else {
-                        wantC_Arr2.push(want.want_item_id);
-                      }
-                    })
-                    console.log(wantC_Arr);
-                    console.log(wantC_Arr2);
-                    let itemC_idArr = wantC_Arr.filter(value => wantC_Arr2.includes(value))
-                    console.log('itemC_idArr');
-                    console.log(itemC_idArr);
-                    if (itemC_idArr.length > 0) {
-                      resolve({
-                        msg: 'tripleConfirmedMatch',
-                        itemC_idArr: itemC_idArr,
-                      })
-                    } else {
-                      resolve({});
-                    }
-                  }
-                })
-              }
-            }
-          })
+          resolve(updateCheckedResult);
+          // // 檢查 double 是否成功配對 :
+          // queryString = `SELECT w.required_item_id, w.want_item_id FROM want w WHERE w.want_item_id = ? AND w.required_item_id = ? AND w.checked = "confirm"`;
+          // queryCondition.length = 0
+          // queryCondition.push(queryData.required_item_id, queryData.want_item_id)
+          // console.log('queryCondition');
+          // console.log(queryCondition);
+          // mysql.pool.query(queryString, queryCondition, (err, doubleSelectMatchResult, fileds) => {
+          //   if (err) {
+          //     mysql.errLog(err, 'doubleSelectMatchResult', 'wantDAO')
+          //     reject(err);
+          //   } else {
+          //     console.log('doubleSelectMatchResult');
+          //     console.log(doubleSelectMatchResult);
+          //     if (doubleSelectMatchResult.length > 0) {
+          //       console.log('double confirmed match, update item availability');
+          //       // 若 double confirmed match，優先配對，不執行三方配對
+          //       resolve({
+          //         msg: 'doubleConfirmedMatch',
+          //       });
+          //     } else {
+          //       // 檢查 Triple confirmed match
+          //       /* 
+          //       為了在許多 triple confirmed match 之中選擇一個做配對，之後要 ORDER BY time 來選取最早的 want 作為判斷依據
+          //       */
+          //       queryString = `SELECT * FROM want WHERE ( want_item_id = ? AND checked = "confirm") OR (required_item_id = ? AND checked = "confirm")`;
+          //       // queryCondition.length = 0
+          //       // queryCondition.push(queryData.want_item_id, queryData.required_item_id)
+          //       console.log('queryCondition');
+          //       console.log(queryCondition);
+          //       mysql.pool.query(queryString, queryCondition, (err, getConfirmedwantResult, fileds) => {
+          //         if (err) {
+          //           mysql.errLog(err, 'getConfirmedwantResult', 'wantDAO')
+          //           reject(err);
+          //         } else {
+          //           console.log('getConfirmedwantResult');
+          //           console.log(getConfirmedwantResult);
+          //           wantC_Arr = [];
+          //           wantC_Arr2 = [];
+          //           getConfirmedwantResult.forEach(want => {
+          //             console.log(want.want_item_id);
+          //             console.log(parseInt(queryData.required_item_id));
+          //             if (want.want_item_id === parseInt(queryData.required_item_id)) {
+          //               wantC_Arr.push(want.required_item_id);
+          //             } else {
+          //               wantC_Arr2.push(want.want_item_id);
+          //             }
+          //           })
+          //           console.log(wantC_Arr);
+          //           console.log(wantC_Arr2);
+          //           let itemC_idArr = wantC_Arr.filter(value => wantC_Arr2.includes(value))
+          //           console.log('itemC_idArr');
+          //           console.log(itemC_idArr);
+          //           if (itemC_idArr.length > 0) {
+          //             resolve({
+          //               msg: 'tripleConfirmedMatch',
+          //               itemC_idArr: itemC_idArr,
+          //             })
+          //           } else {
+          //             resolve({});
+          //           }
+          //         }
+          //       })
+          //     }
+          //   }
+          // })
         }
       })
     })

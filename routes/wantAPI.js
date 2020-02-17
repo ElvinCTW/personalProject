@@ -4,6 +4,7 @@ const wantDAO = require('../dao/wantDAO');
 const matchDAO = require('../dao/matchDAO');
 const msgDAO = require('../dao/msgDAO');
 const itemDAO = require('../dao/item');
+const mysql = require('../util/mysql');
 
 router.post('/new', async (req, res, next) => {
   // 確認對方是否曾經想要你的物品
@@ -74,82 +75,104 @@ router.post('/checked', async (req, res, next) => {
  * 4.為成交用戶建立討論頁面 **
  */
   // 更新 want table check，並檢查有無 confirmed match，回傳配對成功名單(需下架名單)
-  let checkConfirmedMatchResult = await wantDAO.update(req.body);
-  if (checkConfirmedMatchResult.msg) {
-    // 若有配對成功，繼續後續動作 id_Arr = [user, user_want, (3)]
-    let id_Arr = [parseInt(req.body.want_item_id), parseInt(req.body.required_item_id)];
-    if (checkConfirmedMatchResult.msg === 'tripleConfirmedMatch') {
-      // 已按照時間排列，會選擇最先提出 want 的配對
-      id_Arr.push(checkConfirmedMatchResult.itemC_idArr[0])
-    }
-    console.log('id_Arr');
-    console.log(id_Arr);
-    // 1.新增交換紀錄，並取得交易紀錄 ID (之後建立配對成功者聊天訊息和查詢配對紀錄用)**
-    let insertMatchId = await matchDAO.insert({ id_Arr: id_Arr });
-    // 2.物品下架
-    let updateAvailabilitiesCount = await itemDAO.update({
-      id_Arr: id_Arr, // [user, user_want, (3)]
-      insertMatchId: insertMatchId,
-    })
-    if (updateAvailabilitiesCount !== id_Arr.length) {
-      console.log('updateAvailabilitiesCount is not identical with id_Arr.length, updateAvailabilitiesCount is :');
-      console.log(updateAvailabilitiesCount);
-    }
-    // 3.取得製作通知訊息的資訊 (被通知物品id、被通知人暱稱、下架物品id、下架物品 title)
-    let notificationResult = await wantDAO.get({ id_Arr: id_Arr })
-    // 3.1 過濾通知名單，製作 msg 內容
-    // 取得通知配對成功名單 && 配對取消名單
-    // let tempArr = notificationResult.filter(result => id_Arr.indexOf(result.notificated_item_id) === -1)
+  // 避免兩個人配到同一個東西，用 transaction 確保交易
+  // mysql.pool.getConnection((err, connection) => {
+  //   connection.beginTransaction((err) => {
+      // if (err) {                  //Transaction Error (Rollback and release connection)
+      //   connection.rollback(function () {
+      //     connection.release();
+      //     //Failure
+      //     console.log('err')
+      //     console.log(err)
+      //   });
+      // } else {
+        // 0. 更新 want / check => confirmed
+        await wantDAO.update(req.body);
+        // 0-1. 確認有無成功配對
+        let checkConfirmedMatchResult = await wantDAO.get({
+          action: 'checkConfirmedMatch',
+          required_item_id: req.body.required_item_id,
+          want_item_id: req.body.want_item_id,
+        })
+        if (checkConfirmedMatchResult.msg) {
+          // 若有配對成功，繼續後續動作 id_Arr = [user, user_want, (3)]
+          let id_Arr = [parseInt(req.body.want_item_id), parseInt(req.body.required_item_id)];
+          if (checkConfirmedMatchResult.msg === 'tripleConfirmedMatch') {
+            // 已按照時間排列，會選擇最先提出 want 的配對
+            id_Arr.push(checkConfirmedMatchResult.itemC_idArr[0])
+          }
+          console.log('id_Arr');
+          console.log(id_Arr);
+          // 1.新增交換紀錄，並取得交易紀錄 ID (之後建立配對成功者聊天訊息和查詢配對紀錄用)**
+          let insertMatchId = await matchDAO.insert({ id_Arr: id_Arr });
+          // 2.物品下架
+          let updateAvailabilitiesCount = await itemDAO.update({
+            id_Arr: id_Arr, // [user, user_want, (3)]
+            insertMatchId: insertMatchId,
+          })
+          if (updateAvailabilitiesCount !== id_Arr.length) {
+            console.log('updateAvailabilitiesCount is not identical with id_Arr.length, updateAvailabilitiesCount is :');
+            console.log(updateAvailabilitiesCount);
+          }
+          // 3.取得製作通知訊息的資訊 (被通知物品id、被通知人暱稱、下架物品id、下架物品 title)
+          let notificationResult = await wantDAO.get({ id_Arr: id_Arr })
+          // 3.1 過濾通知名單，製作 msg 內容
+          // 取得通知配對成功名單 && 配對取消名單
+          // let tempArr = notificationResult.filter(result => id_Arr.indexOf(result.notificated_item_id) === -1)
+      
+          // let cancelNotificationArr = [];
+          // let matchedNotificationArr = [];
+          let insertMsgQueryDataArr = [];
+          notificationResult.forEach(notification => {
+            if (id_Arr.indexOf(notification.notificated_item_id) === -1) {
+              insertMsgQueryDataArr.push([`哭哭！您以 ${notification.notificated_item_title} 對 ${notification.gone_item_title} 的交換請求，因該物品下架已被取消><`, 'system', notification.notificated_user, notification.gone_item_id, null, Date.now().toString()])
+            } else {
+              insertMsgQueryDataArr.push([`恭喜！您以 ${notification.notificated_item_title} 對 ${notification.gone_item_title} 的交換請求已成立～交換編號為${insertMatchId}，現在就打開交換溝通頁和對方討論交換細節吧！`, 'system', notification.notificated_user, notification.gone_item_id, insertMatchId, Date.now().toString()])
+            }
+          })
+          // console.log('cancelNotificationArr');
+          // console.log(cancelNotificationArr);
+          // console.log('matchedNotificationArr')
+          // console.log(matchedNotificationArr)
+          console.log('insertMsgQueryDataArr')
+          console.log(insertMsgQueryDataArr)
+          // let insertMsgQueryDataArr = [];
+          // cancelNotificationArr.forEach(notification => {
+          //   insertMsgQueryDataArr.push([`您對 ${notification.gone_item_title} 的交換請求，因該物品下架已被取消`, 'system', notification.notificated_user, notification.gone_item_id, Date.now().toString()])
+          // })
+          // console.log('insertMsgQueryDataArr')
+          // console.log(insertMsgQueryDataArr)
+          // 3.2 將 msg 插入 message table 
+          let insertedRowsCount = 0;
+          if (insertMsgQueryDataArr.length > 0) {
+            insertedRowsCount = await msgDAO.insert({
+              insertMsgQueryDataArr: insertMsgQueryDataArr,
+              action: 'insertItemGoneMsgToUser',
+            })
+          }
+          if (insertedRowsCount !== insertMsgQueryDataArr.length) {
+            console.log('something wrong when inserting gone msg in msgDAO');
+            console.log('insertedRowsCount')
+            console.log(insertedRowsCount)
+            // console.log('matchedNotificationArr.length+cancelNotificationArr.length')
+            // console.log(matchedNotificationArr.length+cancelNotificationArr.length)
+            console.log('insertMsgQueryDataArr.length')
+            console.log(insertMsgQueryDataArr.length)
+          }
+          console.log('finish notification of gone-item');
+          // 4.建立用戶溝通頁面
+          res.send({
+            msg: '配對成功！商品已自動為您下架，請至配對頁查詢配對結果',
+          })
+        } else {
+          res.send({
+            msg: '目前尚未配對成功，請靜候通知，謝謝',
+          })
+        }
 
-    // let cancelNotificationArr = [];
-    // let matchedNotificationArr = [];
-    let insertMsgQueryDataArr = [];
-    notificationResult.forEach(notification => {
-      if (id_Arr.indexOf(notification.notificated_item_id) === -1) {
-        insertMsgQueryDataArr.push([`哭哭！您以 ${notification.notificated_item_title} 對 ${notification.gone_item_title} 的交換請求，因該物品下架已被取消><`, 'system', notification.notificated_user, notification.gone_item_id, null, Date.now().toString()])
-      } else {
-        insertMsgQueryDataArr.push([`恭喜！您以 ${notification.notificated_item_title} 對 ${notification.gone_item_title} 的交換請求已成立～交換編號為${insertMatchId}，現在就打開交換溝通頁和對方討論交換細節吧！`, 'system', notification.notificated_user, notification.gone_item_id, insertMatchId, Date.now().toString()])
-      }
-    })
-    // console.log('cancelNotificationArr');
-    // console.log(cancelNotificationArr);
-    // console.log('matchedNotificationArr')
-    // console.log(matchedNotificationArr)
-    console.log('insertMsgQueryDataArr')
-    console.log(insertMsgQueryDataArr)
-    // let insertMsgQueryDataArr = [];
-    // cancelNotificationArr.forEach(notification => {
-    //   insertMsgQueryDataArr.push([`您對 ${notification.gone_item_title} 的交換請求，因該物品下架已被取消`, 'system', notification.notificated_user, notification.gone_item_id, Date.now().toString()])
-    // })
-    // console.log('insertMsgQueryDataArr')
-    // console.log(insertMsgQueryDataArr)
-    // 3.2 將 msg 插入 message table 
-    let insertedRowsCount = 0;
-    if (insertMsgQueryDataArr.length > 0) {
-      insertedRowsCount = await msgDAO.insert({
-        insertMsgQueryDataArr: insertMsgQueryDataArr,
-        action: 'insertItemGoneMsgToUser',
-      })
-    }
-    if (insertedRowsCount !== insertMsgQueryDataArr.length) {
-      console.log('something wrong when inserting gone msg in msgDAO');
-      console.log('insertedRowsCount')
-      console.log(insertedRowsCount)
-      // console.log('matchedNotificationArr.length+cancelNotificationArr.length')
-      // console.log(matchedNotificationArr.length+cancelNotificationArr.length)
-      console.log('insertMsgQueryDataArr.length')
-      console.log(insertMsgQueryDataArr.length)
-    }
-    console.log('finish notification of gone-item');
-    // 4.建立用戶溝通頁面
-    res.send({
-      msg: '配對成功！商品已自動為您下架，請至配對頁查詢配對結果',
-    })
-  } else {
-    res.send({
-      msg: '目前尚未配對成功，請靜候通知，謝謝',
-    })
-  }
+      // }
+  //   })
+  // })
 
 })
 

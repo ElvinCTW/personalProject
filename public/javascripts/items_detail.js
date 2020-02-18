@@ -108,11 +108,17 @@ $('#change-btn-item-detail').click(() => {
               } else {
                 page = 'end'
               }
+            },
+            error: (err)=>{
+              alert('金拍謝，暫時找不到你的物品資訊QQ，若持續發生請聯繫我們')
+              return;
             }
           })
         },
         error: (err) => {
-          alert(err);
+          // alert(err);
+          alert('暫時無法找到您上次的交換邀請紀錄')
+          return;
         }
       })
     } else {
@@ -147,7 +153,9 @@ $('#exchange-request-btn').click(() => {
         },
         error: (failResponse) => {
           console.log(failResponse);
-          alert(failResponse);
+          // alert(failResponse);
+          alert('金拍謝，暫時無法為您添加交換邀請，若持續發生請聯繫我們')
+          return;
         }
       })
     } else {

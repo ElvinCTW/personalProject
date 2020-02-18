@@ -7,8 +7,8 @@ block content
         .subtext.sign 會員註冊
         .sub-main-container.sign
           form(action="/api/1.0/users/register", method="post" id="sign-form")
-            p 會員ID （登入用）
-            input.id(name="id" type="text" max=10 placeholder="ID for Sign In" required)
+            p 會員ID （登入用, 最多 10 碼）
+            input.id(name="id" type="text" maxlength=10 placeholder="ID for Sign In, max 10" required)
             p 會員密碼
             input.password(name="password" type="password" placeholder="Password" value="123" required)
             p 會員暱稱

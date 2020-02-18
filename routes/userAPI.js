@@ -5,8 +5,10 @@ const userDAO = require('../dao/user');
 router.post('/register', async (req, res, next)=>{
   const checkUserResult = await userDAO.get(req.body.id);
   if (checkUserResult.length !== 0) {
-    res.status(500).send('double account, does not insert user.')
+    console.log('this');
+    res.status(200).send('本ID已被註冊，請換一個ID再試一次')
   } else if (checkUserResult.length === 0){
+    console.log('here');
     // register
     const insertUserResult = await userDAO.insert({
       sign_id: req.body.id,
@@ -16,10 +18,13 @@ router.post('/register', async (req, res, next)=>{
       email: req.body.email,
       address: req.body.address,
       city: req.body.city,
+    }).catch((err)=>{
+      res.send('double')
     });
     /* Output : Index page w/ user data || fail alert */
     res.status(200).send({user: insertUserResult});
   } else {
+    console.log('that');
     res.status(500).send('unknown error in registerAPI')
   }
 });
@@ -32,7 +37,7 @@ router.post('/signin', async (req, res, next)=>{
   if (checkUserResult.length === 0) {
     // console.log(checkUserResult);
     console.log('no such an user, does not sign in');
-    res.status(500).send('no such an user, does not sign in');
+    res.status(200).send('查無此用戶，請修改資訊後再試一次');
   } else if (checkUserResult.length === 1) {
     // Sign in
     res.status(200).send({user: {

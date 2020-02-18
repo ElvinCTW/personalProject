@@ -8,13 +8,20 @@ if (!localStorage.getItem('token')) {
       type: 'post',
       data: $('#sign-form').serialize(),
       success: (insertionResponse)=>{
-        localStorage.setItem('token', insertionResponse.user.token);
-        localStorage.setItem('nickname', insertionResponse.user.nickname);
-        window.location.assign('/');
+        console.log(insertionResponse);
+        console.log(typeof insertionResponse);
+        if (typeof insertionResponse === 'object') {
+          localStorage.setItem('token', insertionResponse.user.token);
+          localStorage.setItem('nickname', insertionResponse.user.nickname);
+          window.location.assign('/');
+        } else {
+          alert('這個ID已被註冊，請修改後再試一次');
+          return;
+        }
       },
       error: (failResponse)=>{
-        console.log(failResponse.responseText);
-        alert(failResponse.responseText);
+        alert('註冊有點問題，請稍後後再試一次，若持續發生請聯繫我們')
+        return;
       }
     })
   })

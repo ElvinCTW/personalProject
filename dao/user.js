@@ -17,8 +17,11 @@ module.exports = {
         if (err) {
           console.log('error in getUserPromise');
           console.log(err);
-          throw err;
+          // throw err;
+          reject(err);
         }
+        // console.log(userData);
+        // console.log(userData.length);
         resolve(userData);
       });
     });
@@ -46,12 +49,6 @@ module.exports = {
         });
         // console.log('insert user success');
       });
-    })
-  },
-  update: (updateUserData)=>{
-    // To do : update function
-    return new Promise((resolve,reject)=>{
-      mysql.pool.query('UPDATE users SET ? = ? WHERE sign_id = ?', [,,])
     })
   },
 }

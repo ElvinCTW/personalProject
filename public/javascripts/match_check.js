@@ -13,7 +13,7 @@ function getMatchedResultData(want_item_id, want_title, item_type) {
     type: 'get',
     success: (matchedItemsDataArr) => {
       // 取得所有 match result of item
-      console.log(matchedItemsDataArr);
+      // console.log(matchedItemsDataArr);
       $('#subtext-matched-result-page').html(`Matched Results of ${want_title}`);
       $('#items-area-match').empty();
       // 畫大框框給每個 match
@@ -50,6 +50,8 @@ function getMatchedResultData(want_item_id, want_title, item_type) {
             },
             error: (error) => {
               console.log(error);
+              alert('金拍謝，暫時無法為您送出交換邀請確認請求，若持續發生請聯繫我們')
+              return;
             },
           })
         });
@@ -152,8 +154,9 @@ function getMatchedResultData(want_item_id, want_title, item_type) {
         }
       }
     },
-    error: () => {
-
+    error: (err) => {
+      alert('金拍謝，暫時找不到你的交易邀請配對資訊QQ，若持續發生請聯繫我們')
+      return;
     }
   })
 }

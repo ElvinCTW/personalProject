@@ -108,7 +108,8 @@ function getMatchedResultData(matched_id, required_item_title) {
       })
     },
     error: (err) => {
-      alert(err)
+      alert('金拍謝，暫時找不到這筆配對紀錄QQ，若持續發生請聯繫我們')
+      return;
     }
   })
 }
@@ -156,7 +157,7 @@ function sendMsg() {
         }
       },
       error: (err) => {
-        alert('很抱歉，系統沒有成功儲存您的對話，若持續發生，請聯繫我們');
+        alert('很抱歉，系統沒有成功儲存您的對話QQ，若持續發生請聯繫我們');
       }
     })
   } else {

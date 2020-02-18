@@ -27,16 +27,15 @@ if (localStorage.getItem('token')) {
           console.log(`已將 ${affectedRows} 則訊息標示為已讀`);
         },
         error: (err) => {
-          alert(err);
+          console.log(err)
+          return;
         }
       })
     }
   })
   $('#match-notification').attr('href', `/matches/information?user_nickname=${nickname}`);
   $('#match-confirmed').attr('href', `/matches/confirmed?user_nickname=${nickname}`);
-
   // get notification counts
-
 } else {
   $('.fast-btn').attr('href', '/users/signin').click(()=>{
     alert('請先登入或註冊以使用會員功能');
@@ -69,7 +68,7 @@ function showNotification(nickname) {
       }
     },
     error: (err) => {
-      alert(err);
+      console.log(err);
     }
   })
 }

@@ -86,7 +86,7 @@ function createMoreItems() {
       },
       error: (failResponse) => {
         console.log(failResponse);
-        alert(failResponse);
+        alert('物品暫時無法顯示，QQ，若持續發生請聯繫我們');
       }
     })
   } else {

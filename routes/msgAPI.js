@@ -3,8 +3,8 @@ const router = express.Router();
 const msgDAO = require('../dao/msgDAO');
 
 router.post('/new', async (req, res, next)=>{
-  console.log('req.body')
-  console.log(req.body)
+  // console.log('req.body')
+  // console.log(req.body)
   let affectedRows = await msgDAO.insert(req.body);
   if (affectedRows !== 1) {
     console.log('msgAPI did not insert msg correctly');

@@ -131,7 +131,7 @@ $('#exchange-request-btn').click(() => {
   if (selectItemIDArr.length > 0) {
     // 送出請求 Aajx
     let wantItemArr = selectItemIDArr.filter(id => lastTimeSelectedArr.indexOf(id) === -1);
-    if (wantItemArr > 0) {
+    if (wantItemArr.length > 0) {
       $.ajax({
         method: 'post',
         url: '/api/1.0/want/new',

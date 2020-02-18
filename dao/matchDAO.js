@@ -16,10 +16,10 @@ module.exports = {
             mysql.errLog(err,'insertMatchTableResult','matchDAO')
             reject(err)
           } else {
-            console.log('insertMatchTableResult')
-            console.log(insertMatchTableResult)
-            console.log('insertMatchTableResult.insertId')
-            console.log(insertMatchTableResult.insertId)
+            // console.log('insertMatchTableResult')
+            // console.log(insertMatchTableResult)
+            // console.log('insertMatchTableResult.insertId')
+            // console.log(insertMatchTableResult.insertId)
             resolve(insertMatchTableResult.insertId);
           }
         });
@@ -56,8 +56,8 @@ module.exports = {
   },
   update: (queryCondition) => {
     return new Promise((resolve, reject) => {
-      console.log('matchDAO.update queryCondition is :');
-      console.log(queryCondition);
+      // console.log('matchDAO.update queryCondition is :');
+      // console.log(queryCondition);
       let queryString;
       let updateQueryCondition;
       if (queryCondition.want_item_id && queryCondition.required_item_id) {
@@ -68,8 +68,8 @@ module.exports = {
         // make 2 query first
         queryString = `UPDATE want SET want_owner_check = "${queryCondition.type}" WHERE want_item_id = ? AND required_item_id = ? AND matched = "true"`
         mysql.pool.query(queryString, updateQueryCondition, (err, updateCheckStatusResult, fields) => {
-          console.log('first update query');
-          console.log(updateCheckStatusResult);
+          // console.log('first update query');
+          // console.log(updateCheckStatusResult);
           if (err) {
             console.log('error in updateCheckStatusResultPromise');
             console.log(err.sqlMessage);
@@ -78,8 +78,8 @@ module.exports = {
           } else {
             queryString = `UPDATE want SET required_owner_check = "${queryCondition.type}" WHERE required_item_id = ? AND want_item_id = ? AND matched = "true"`
             mysql.pool.query(queryString, updateQueryCondition, (err, updateCheckStatusResult, fields) => {
-              console.log('second update query');
-              console.log(updateCheckStatusResult);
+              // console.log('second update query');
+              // console.log(updateCheckStatusResult);
               if (err) {
                 console.log('error in updateCheckStatusResultPromise');
                 console.log(err.sqlMessage);
@@ -89,11 +89,11 @@ module.exports = {
                 // get data from want to check double confirm, if so, alert both user and un-available both items
                 queryString = `SELECT * from want WHERE want_item_id in (?) AND required_item_id in (?) AND matched = "true" AND want_owner_check = "confirm" AND required_owner_check = "confirm"`
                 updateQueryCondition = [[queryCondition.want_item_id, queryCondition.required_item_id], [queryCondition.want_item_id, queryCondition.required_item_id]]
-                console.log('matchDAO.update updateQueryCondition is :');
-                console.log(updateQueryCondition);
+                // console.log('matchDAO.update updateQueryCondition is :');
+                // console.log(updateQueryCondition);
                 mysql.pool.query(queryString, updateQueryCondition, (err, checkAllConfirmResultArr, fields) => {
-                  console.log('select check all confirm query');
-                  console.log(checkAllConfirmResultArr);
+                  // console.log('select check all confirm query');
+                  // console.log(checkAllConfirmResultArr);
                   if (err) {
                     console.log('error in checkAllConfirmResultPromise');
                     console.log(err.sqlMessage);
@@ -114,7 +114,7 @@ module.exports = {
         queryString = `UPDATE matched SET ${placeArr[queryCondition.userIndex]}_owner_check = "${queryCondition.type}" WHERE matched.id = ?;`
         updateQueryCondition = [queryCondition.matched_id]
         mysql.pool.query(queryString, updateQueryCondition, (err, updateCheckStatusResult, fields) => {
-          console.log(updateCheckStatusResult);
+          // console.log(updateCheckStatusResult);
           if (err) {
             console.log('error in updateCheckStatusResultPromise');
             console.log(err.sqlMessage);
@@ -122,11 +122,11 @@ module.exports = {
             reject(err);
           }
           queryString = `SELECT * from matched WHERE matched.id = ? AND start_owner_check = "confirm" AND middle_owner_check = "confirm" AND end_owner_check = "confirm"`
-          console.log('matchDAO.update updateQueryCondition is :');
-          console.log(updateQueryCondition);
+          // console.log('matchDAO.update updateQueryCondition is :');
+          // console.log(updateQueryCondition);
           mysql.pool.query(queryString, updateQueryCondition, (err, checkAllConfirmResultArr, fields) => {
-            console.log('select check all confirm query');
-            console.log(checkAllConfirmResultArr);
+            // console.log('select check all confirm query');
+            // console.log(checkAllConfirmResultArr);
             if (err) {
               console.log('error in checkAllConfirmResultPromise');
               console.log(err.sqlMessage);

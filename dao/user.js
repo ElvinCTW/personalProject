@@ -27,9 +27,9 @@ module.exports = {
     return new Promise((resolve,reject)=>{
       // hash
       userObject.password = crypto.createHash('sha256').update(userObject.password).digest('hex');
-      console.log(userObject);
+      // console.log(userObject);
       let token = crypto.createHash('sha256').update(userObject.id+Date.now().toString(), 'utf8').digest('hex');
-      console.log(token);
+      // console.log(token);
       // make object
       userObject.token = token;
       userObject.time = Date.now().toString();
@@ -44,7 +44,7 @@ module.exports = {
           token: token,
           nickname: userObject.nickname,
         });
-        console.log('insert user success');
+        // console.log('insert user success');
       });
     })
   },

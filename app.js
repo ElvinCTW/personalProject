@@ -44,8 +44,8 @@ app.get('/matches/information', async (req,res)=>{
   let objectOfmatchesResultArr = await wantDAO.get({
     user_nickname: req.query.user_nickname,
   });
-  console.log('(objectOfmatchesResultArr.doubleMatchResultArr.length > 0 || objectOfmatchesResultArr.tripleMatchResultArr.length > 0)')
-  console.log((objectOfmatchesResultArr.doubleMatchResultArr.length > 0 || objectOfmatchesResultArr.tripleMatchResultArr.length > 0))
+  // console.log('(objectOfmatchesResultArr.doubleMatchResultArr.length > 0 || objectOfmatchesResultArr.tripleMatchResultArr.length > 0)')
+  // console.log((objectOfmatchesResultArr.doubleMatchResultArr.length > 0 || objectOfmatchesResultArr.tripleMatchResultArr.length > 0))
   if (objectOfmatchesResultArr.doubleMatchResultArr.length > 0 || objectOfmatchesResultArr.tripleMatchResultArr.length > 0) {
     let tempArr = [];
     objectOfmatchesResultArr.doubleMatchResultArr.forEach(doubleMatch=>{
@@ -64,10 +64,10 @@ app.get('/matches/information', async (req,res)=>{
   } else {
     objectOfmatchesResultArr.b_itemObjectArr = [];
   }
-  console.log('objectOfmatchesResultArr.b_itemObjectArr')
-  console.log(objectOfmatchesResultArr.b_itemObjectArr)
-  console.log('objectOfmatchesResultArr')
-  console.log(objectOfmatchesResultArr)
+  // console.log('objectOfmatchesResultArr.b_itemObjectArr')
+  // console.log(objectOfmatchesResultArr.b_itemObjectArr)
+  // console.log('objectOfmatchesResultArr')
+  // console.log(objectOfmatchesResultArr)
   res.render('match_check', objectOfmatchesResultArr)
 });
 // Check confirmed matches

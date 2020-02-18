@@ -11,33 +11,33 @@ module.exports = {
             mysql.errLog(err,'insertMsgResult','msgDAO')
             reject(err)
           } else {
-            console.log('insertMsgResult')
-            console.log(insertMsgResult)
+            // console.log('insertMsgResult')
+            // console.log(insertMsgResult)
             resolve(insertMsgResult.affectedRows)
           }
         });
       } else if (queryData.action === 'addNewMatchedPageMsg') {
-        console.log('queryData')
-        console.log(queryData)
+        // console.log('queryData')
+        // console.log(queryData)
         queryString = 'INSERT INTO message (content, sender, time, matched_id) values (?)';
         queryCondition.length = 0;
         delete queryData['action'];
-        console.log('queryData')
-        console.log(queryData)
+        // console.log('queryData')
+        // console.log(queryData)
         queryCondition.push(Object.values(queryData));
         mysql.pool.query(queryString, queryCondition, (err, insertNewMatchedPageMsgResult, fileds) => {
           if (err) {
             mysql.errLog(err,'insertNewMatchedPageMsgResult','msgDAO')
             reject(err)
           } else {
-            console.log('insertNewMatchedPageMsgResult.affectedRows')
-            console.log(insertNewMatchedPageMsgResult.affectedRows)
+            // console.log('insertNewMatchedPageMsgResult.affectedRows')
+            // console.log(insertNewMatchedPageMsgResult.affectedRows)
             resolve(insertNewMatchedPageMsgResult.affectedRows)
           }
         });
       } else if (queryData.action === 'insertNewMatchMsg') {
-        console.log('queryData')
-        console.log(queryData)
+        // console.log('queryData')
+        // console.log(queryData)
         queryString = 'INSERT INTO message (content, sender, receiver, time, mentioned_item_id) values ?';
         queryCondition.length = 0;
         queryCondition.push(queryData.msgArr);
@@ -46,8 +46,8 @@ module.exports = {
             mysql.errLog(err,'insertNewMatchedPageMsgResult','msgDAO')
             reject(err)
           } else {
-            console.log('insertNewMatchedPageMsgResult.affectedRows')
-            console.log(insertNewMatchedPageMsgResult.affectedRows)
+            // console.log('insertNewMatchedPageMsgResult.affectedRows')
+            // console.log(insertNewMatchedPageMsgResult.affectedRows)
             resolve(insertNewMatchedPageMsgResult.affectedRows)
           }
         });
@@ -67,8 +67,8 @@ module.exports = {
             mysql.errLog(err,'getConfirmedMatchMsgResult','msgDAO')
             reject(err)
           } else {
-            console.log('getConfirmedMatchMsgResult')
-            console.log(getConfirmedMatchMsgResult)
+            // console.log('getConfirmedMatchMsgResult')
+            // console.log(getConfirmedMatchMsgResult)
             resolve(getConfirmedMatchMsgResult)
           }
         });
@@ -76,17 +76,17 @@ module.exports = {
         queryString = 'SELECT * FROM message WHERE receiver = ? AND watched = "false"';
         queryCondition.length = 0;
         queryCondition.push(queryData.nickname);
-        console.log('queryData.nickname')
-        console.log(queryData.nickname)
-        console.log('queryCondition')
-        console.log(queryCondition)
+        // console.log('queryData.nickname')
+        // console.log(queryData.nickname)
+        // console.log('queryCondition')
+        // console.log(queryCondition)
         mysql.pool.query(queryString, queryCondition, (err, getMsgResult, fileds) => {
           if (err) {
             mysql.errLog(err,'getMsgResult','msgDAO')
             reject(err)
           } else {
-            console.log('getMsgResult')
-            console.log(getMsgResult)
+            // console.log('getMsgResult')
+            // console.log(getMsgResult)
             resolve(getMsgResult)
           }
         });

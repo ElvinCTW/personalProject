@@ -30,7 +30,7 @@ router.post('/signin', async (req, res, next)=>{
   // Check if user exist
   const checkUserResult = await userDAO.get(req.body.id);
   if (checkUserResult.length === 0) {
-    console.log(checkUserResult);
+    // console.log(checkUserResult);
     console.log('no such an user, does not sign in');
     res.status(500).send('no such an user, does not sign in');
   } else if (checkUserResult.length === 1) {

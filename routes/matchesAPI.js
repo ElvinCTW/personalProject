@@ -6,7 +6,7 @@ const msgDAO = require('../dao/msgDAO')
 // const wantDAO = require('../dao/wantDAO')
 
 router.get('/item/:type', async (req, res, next) => {
-  console.log(checkMatchResultArr);
+  // console.log(checkMatchResultArr);
   res.send(checkMatchResultArr)
 })
 
@@ -23,8 +23,8 @@ router.get('/confirmed', async (req, res, next) => {
     matched_id: parseInt(req.query.matched_id),
   }).catch((err) => { console.log(err) });
   // 整理取得 item Data
-  console.log('matchedItemsIdObj')
-  console.log(matchedItemsIdObj)
+  // console.log('matchedItemsIdObj')
+  // console.log(matchedItemsIdObj)
   // let idArr = Object.values(matchedItemsIdObj).filter(id=> typeof id === 'number')
   let idArr = Object.values(matchedItemsIdObj)
   let itemDataArr = await itemDAO.get({
@@ -40,8 +40,8 @@ router.get('/confirmed', async (req, res, next) => {
 
 router.post('/status', async (req, res, next) => {
   let checkAllConfirmResultArr = await matchDAO.update(req.body)
-  console.log(checkAllConfirmResultArr);
-  console.log('checkAllConfirmResultArr.length is ' + checkAllConfirmResultArr.length);
+  // console.log(checkAllConfirmResultArr);
+  // console.log('checkAllConfirmResultArr.length is ' + checkAllConfirmResultArr.length);
   if (checkAllConfirmResultArr.length > 0) {
     // 假如 all users confirmed, update item availability to false
     let updateAvailabilityresult

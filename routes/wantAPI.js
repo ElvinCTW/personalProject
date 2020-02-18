@@ -64,8 +64,8 @@ router.post('/new', async (req, res, next) => {
 });
 
 router.post('/checked', async (req, res, next) => {
-  console.log('req.body');
-  console.log(req.body);
+  // console.log('req.body');
+  // console.log(req.body);
   /**
  * 檢查是否有成功的 confirmed 配對，若有查到則進行以下動作
  * 1.confirmed match 物品下架
@@ -82,8 +82,8 @@ router.post('/checked', async (req, res, next) => {
       // 已按照時間排列，會選擇最先提出 want 的配對
       id_Arr.push(checkConfirmedMatchResult.itemC_idArr[0])
     }
-    console.log('id_Arr');
-    console.log(id_Arr);
+    // console.log('id_Arr');
+    // console.log(id_Arr);
     // 1.新增交換紀錄，並取得交易紀錄 ID (之後建立配對成功者聊天訊息和查詢配對紀錄用)**
     let insertMatchId = await matchDAO.insert({ id_Arr: id_Arr });
     // 2.物品下架
@@ -115,8 +115,8 @@ router.post('/checked', async (req, res, next) => {
     // console.log(cancelNotificationArr);
     // console.log('matchedNotificationArr')
     // console.log(matchedNotificationArr)
-    console.log('insertMsgQueryDataArr')
-    console.log(insertMsgQueryDataArr)
+    // console.log('insertMsgQueryDataArr')
+    // console.log(insertMsgQueryDataArr)
     // let insertMsgQueryDataArr = [];
     // cancelNotificationArr.forEach(notification => {
     //   insertMsgQueryDataArr.push([`您對 ${notification.gone_item_title} 的交換請求，因該物品下架已被取消`, 'system', notification.notificated_user, notification.gone_item_id, Date.now().toString()])
@@ -140,7 +140,7 @@ router.post('/checked', async (req, res, next) => {
       console.log('insertMsgQueryDataArr.length')
       console.log(insertMsgQueryDataArr.length)
     }
-    console.log('finish notification of gone-item');
+    // console.log('finish notification of gone-item');
     // 4.建立用戶溝通頁面
     res.send({
       msg: '配對成功！商品已自動為您下架，請至配對頁查詢配對結果',

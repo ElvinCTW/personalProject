@@ -10,8 +10,8 @@ module.exports = {
             mysql.errLog(err,'getConfirmedMatchItemsDataResult','itemDAO')
             reject(err)
           } else {
-            console.log('getConfirmedMatchItemsDataResult')
-            console.log(getConfirmedMatchItemsDataResult)
+            // console.log('getConfirmedMatchItemsDataResult')
+            // console.log(getConfirmedMatchItemsDataResult)
             resolve(getConfirmedMatchItemsDataResult)
           }
         });
@@ -50,8 +50,8 @@ module.exports = {
               mysql.errLog(err,'getConfirmedMatchesResult','itemDAO')
               reject(err)
             } else {
-              console.log('getConfirmedMatchesResult')
-              console.log(getConfirmedMatchesResult)
+              // console.log('getConfirmedMatchesResult')
+              // console.log(getConfirmedMatchesResult)
               resolve(getConfirmedMatchesResult);
             }
           });
@@ -115,8 +115,8 @@ module.exports = {
             mysql.errLog(err,'updateAvailbilityResult','itemDAO')
             reject(err)
           } else {
-            console.log('updateAvailbilityResult')
-            console.log(updateAvailbilityResult)
+            // console.log('updateAvailbilityResult')
+            // console.log(updateAvailbilityResult)
             updateAvailabilitiesCount += updateAvailbilityResult.affectedRows
             if (i = id_Arr.length-1) {
               resolve(updateAvailabilitiesCount);

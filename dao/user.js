@@ -4,6 +4,7 @@ const crypto = require('crypto');
 module.exports = {
   // get user data by log-in_id || token
   get: (userInfo)=>{
+    userInfo.password = crypto.createHash('sha256').update(userObject.password).digest('hex');
     // check id or token
     let queryColumn;
     if (userInfo.length <= 10 ) {
@@ -13,7 +14,7 @@ module.exports = {
       queryColumn = 'token'
     }
     return new Promise((resolve, reject)=>{
-      mysql.pool.query(`SELECT * FROM users WHERE ${queryColumn} = ?`, userInfo, (err, userData, fileds)=>{
+      mysql.pool.query(`SELECT * FROM users WHERE ${queryColumn} = ? AND password = ?`, [userInfo, ], (err, userData, fileds)=>{
         if (err) {
           console.log('error in getUserPromise');
           console.log(err);

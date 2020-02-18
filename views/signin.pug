@@ -8,9 +8,9 @@ block content
         .sub-main-container.sign
           form(action="/api/1.0/users/signin", method="post" id="sign-form")
             p 會員ID（登入用, 最多 10 碼）
-            input.id(name="id" type="text" maxlength=10 placeholder="ID for Sign In")
+            input.id(name="id" type="text" maxlength=10 placeholder="ID for Sign In" required)
             p 會員密碼
-            input.password(name="password" type="password" placeholder="Password" value="123")
+            input.password(name="password" type="password" placeholder="Password" value="123" required)
             .button-div
               button(type="button" id="signin-btn") 點此登入
           .button-div.sign

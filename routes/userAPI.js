@@ -43,6 +43,7 @@ router.post('/signin', async (req, res, next)=>{
     res.status(200).send({user: {
       nickname: checkUserResult[0].nickname,
       token: checkUserResult[0].token,
+      password: checkUserResult[0].password,
     }});
     // To do : Update token
   }

@@ -5,7 +5,7 @@ function locateToBoard() {
   let boardname = $('#select-list').val()
   window.location.assign(`/boards/${boardname}`)
 };
-// To do : made header react to log in status (by changing login div)
+
 if (localStorage.getItem('token')) {
   // Sign in status
   const nickname = localStorage.getItem('nickname');
@@ -37,6 +37,10 @@ if (localStorage.getItem('token')) {
   $('#match-confirmed').attr('href', `/matches/confirmed?user_nickname=${nickname}`);
   // get notification counts
 } else {
+  $('#navbar-member-link').click(()=>{
+    // console.log('asdads');
+    $('#sign-area').show();
+  });
   $('.fast-btn').attr('href', '/users/signin').click(()=>{
     alert('請先登入或註冊以使用會員功能');
   })

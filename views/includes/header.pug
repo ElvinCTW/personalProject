@@ -15,9 +15,19 @@ nav.nav
             //-         option(value="photograph") 攝影
         .inside-container.right.nav
             .userbar
-                a(href="/users/signin" id="navbar-member-link" title="點擊登入/出") 
+                a(id="navbar-member-link" title="點擊登入/出")
+                    //- href="/users/signin"
                     span.nav-right 登入/註冊
-            .fast-btn
+                    .notification-area.sign(id="sign-area")
+                        .notification-div.outer.sign
+                            form.sign(action="/api/1.0/users/signin", method="post" id="sign-form")
+                                .input-div.sign
+                                    input.id(placeholder="帳號" name="id" type="text")
+                                    input.pwd(placeholder="密碼" name="password" type="password") 
+                                    input.nickname(placeholder="暱稱" name="name" type="text")
+                                button(type="submit")
+                                button(type="submit" id="signin-btn") 送出
+            .fast-btn-div
                 a(href="/items/new" class="fast-btn" title="新增交換物品") 
                     span.nav-right 新增
                 a(href="/" id="match-notification" class="fast-btn" title="配對確認頁") 
@@ -26,5 +36,5 @@ nav.nav
                     span.nav-right 對話
                 a(id="general-notification" class="fast-btn" title="系統訊息") 
                     span.nav-right 通知
-                    //- .notification-area(id="notification-area")
+                    .notification-area.notification(id="notification-area")
 script(src="/javascripts/header.js")

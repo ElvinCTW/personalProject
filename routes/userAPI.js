@@ -3,7 +3,7 @@ const router = express.Router();
 const userDAO = require('../dao/user');
 
 router.post('/register', async (req, res, next)=>{
-  const checkUserResult = await userDAO.get(req.body.id);
+  const checkUserResult = await userDAO.get(req.body);
   if (checkUserResult.length !== 0) {
     console.log('this');
     res.status(200).send('本ID已被註冊，請換一個ID再試一次')
@@ -33,17 +33,17 @@ router.post('/signin', async (req, res, next)=>{
   /* Input: req.body of ID && pwd */
   /* To Do : get user data from db and log user in */
   // Check if user exist
-  const checkUserResult = await userDAO.get(req.body.id);
+  const checkUserResult = await userDAO.get(req.body);
   if (checkUserResult.length === 0) {
     // console.log(checkUserResult);
     console.log('no such an user, does not sign in');
     res.status(200).send('查無此用戶，請修改資訊後再試一次');
   } else if (checkUserResult.length === 1) {
     // Sign in
-    res.status(200).send({user: {
+    res.render('sign_success', 
+      {user: {
       nickname: checkUserResult[0].nickname,
       token: checkUserResult[0].token,
-      password: checkUserResult[0].password,
     }});
     // To do : Update token
   }

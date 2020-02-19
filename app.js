@@ -38,6 +38,8 @@ app.get('/', (req, res) => {res.render('index', {
 // Users
 app.get('/users/signin', (req,res)=>{res.render('signin')});
 app.get('/users/signup', (req,res)=>{res.render('signup')});
+// app.get('/api/1.0/users/signin', (req,res)=>{res.redirect('/')});
+
 // Items
 app.get('/items/new', (req,res)=>{res.render('items_add')});
 app.get('/items/detail', async (req,res)=>{

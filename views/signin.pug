@@ -1,19 +1,19 @@
 extends layout
 block content
-  .main 
-    .container
-      .main-left
-      .main-middle.sign
-        .subtext.sign 會員登錄
-        .sub-main-container.sign
-          form(action="/api/1.0/users/signin", method="post" id="sign-form")
-            p 會員ID（登入用, 最多 10 碼）
-            input.id(name="id" type="text" maxlength=10 placeholder="ID for Sign In" required)
-            p 會員密碼
-            input.password(name="password" type="password" placeholder="Password" value="123" required)
-            .button-div
-              button(type="button" id="signin-btn") 點此登入
-          .button-div.sign
-            button(type="button" onclick="location.href='/users/signup'") 我要註冊
-      .main-right
+  main 
+    .outer-container.main
+      .inside-container.main.left
+      .inside-container.main.middle
+        .sub-container.main.middle
+          h1.sub-title 用戶登入
+          .items-area.sign
+            form(action="/api/1.0/users/signin" method="post" id="sign-form")
+              p 會員ID（登入用, 最多 10 碼）
+              input.id(name="id" type="text" maxlength=10 placeholder="ID for Sign In" required)
+              p 會員密碼
+              input.password(name="password" type="password" placeholder="Password" value="123" required)
+              p 會員暱稱
+              input.name(name="name" type="text" placeholder="Nickname" required)
+              .button-div
+                button(type="button" id="signin-btn") 登入/註冊
   script(src="/javascripts/signin.js")

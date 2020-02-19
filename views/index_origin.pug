@@ -1,0 +1,34 @@
+extends layout
+block content
+  .main 
+    .container
+      .main-left
+        .sub-main-container
+          .subtext.subscribe 訂閱看板
+            //- for (i=0;i<6;i++)
+          .subscribe-item
+            .subscribe-content 
+              span 相機
+            .subscribe-content
+              span 足球
+            .subscribe-content
+              span 籃球
+            .subscribe-content
+              span 旅遊
+            .subscribe-content
+              span 登山
+            .subscribe-content
+              span 拳擊
+      .main-middle
+        //- .sub-main-container.news
+          //- .subtext.news News
+        .sub-main-container.recommands
+          .subtext.recommand 新商品清單
+          .items-area.recommands(id="items-area-recommand")
+          .nomore-text-div(onclick="createMoreItems()" id="nomore-text-div") 點此查看更多物品
+      //- .main-right
+      //-   .sub-main-container
+      //-   .subtext.ads 廣告
+      //-   .ads
+      //-     img(src="/images/gad.png", alt="")
+  script(src="/javascripts/index.js")

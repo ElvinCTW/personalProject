@@ -1,34 +1,62 @@
 extends layout
 block content
-  .main 
-    .container
-      .main-left
-        .sub-main-container
-          .subtext.subscribe 訂閱看板
-            //- for (i=0;i<6;i++)
-          .subscribe-item
-            .subscribe-content 
-              span 相機
-            .subscribe-content
-              span 足球
-            .subscribe-content
-              span 籃球
-            .subscribe-content
-              span 旅遊
-            .subscribe-content
-              span 登山
-            .subscribe-content
-              span 拳擊
-      .main-middle
-        //- .sub-main-container.news
+  main
+    .outer-container.main
+      .inside-container.main.left
+        .sub-container.main.left
+          .sidebar.left
+            //- href box 
+            if mainBoardsList
+              - let i = 0
+              - let mainLength = mainBoardsList.length 
+              if mainLength > 0
+                while i < mainLength
+                  a.sidebar-div.left
+                    .sidebar-div.left
+                      .sidebar-text.left=mainBoardsList[i]
+                  - i++
+            if subscribeBoardsList
+              .sidebar-div.left
+                .sidebar-text.left.separate 訂閱看板清單
+              - let j = 0
+              - let subsLength = subscribeBoardsList.length 
+              if subsLength > 0
+                while j < subsLength
+                  a.sidebar-div.left
+                    .sidebar-div.left
+                      .sidebar-text.left=subscribeBoardsList[j]
+                  - j++
+            //- - console.log((hotBoardsList()[0]))
+            if hotBoardsList
+              .sidebar-div.left
+                .sidebar-text.left.separate 即時熱門分類
+              - let k = 0
+              //- - let hotBoardsList = hotBoardsList()
+              - let hotsLength = hotBoardsList.length
+              if hotsLength > 0
+                while k < hotsLength
+                  a.sidebar-div.left
+                    .sidebar-div.left
+                      .sidebar-text.left=hotBoardsList[k].hot_board
+                  - k++
+      .inside-container.main.middle
+        .sub-container.main.middle
           //- .subtext.news News
-        .sub-main-container.recommands
-          .subtext.recommand 新商品清單
+          h1.sub-title 新商品清單
           .items-area.recommands(id="items-area-recommand")
-          .nomore-text-div(onclick="createMoreItems()" id="nomore-text-div") 點此查看更多物品
+          //- .nomore-text-div(onclick="createMoreItems()" id="nomore-text-div") 點此查看更多物品
+      .inside-container.main.right
+        .sub-container.main.right
+          .guide
+            h1.sub-title 新手指南
+            .guide-content
+              h3.guide-text 新增自己擁有的物品
+              h3.guide-text 找到喜歡的商品，並提出交換配對申請
+              h3.guide-text 若有配對成立，前往配對頁確認
+              h3.guide-text 所有人確認後，前往對話頁討論交易內容
       //- .main-right
       //-   .sub-main-container
       //-   .subtext.ads 廣告
       //-   .ads
-      //-     img(src="/images/gad.png", alt="")
+      //-     img(src="/images/gad.png" alt="")
   script(src="/javascripts/index.js")

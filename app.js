@@ -13,6 +13,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const app = express();
+const listData = require('./util/listData');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use(logger('dev'));
@@ -25,7 +26,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 /* Views */
 // Index
-app.get('/', (req, res) => {res.render('index')});
+app.get('/', (req, res) => {res.render('index', {
+  mainBoardsList: listData.mainBoardsList,
+  subscribeBoardsList: listData.subscribeBoardsList,
+  // hotBoardsList: await itemDAO.get({action:'getHotCounts'}),
+})});
+// app.get('/', (req, res) => {res.render('index', {
+//   listData:listData,
+//   hotBoardsList:listData.hotBoardsList(),
+// })});
 // Users
 app.get('/users/signin', (req,res)=>{res.render('signin')});
 app.get('/users/signup', (req,res)=>{res.render('signup')});

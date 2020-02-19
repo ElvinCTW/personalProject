@@ -3,7 +3,20 @@ module.exports = {
   get: (queryCondition) => {
     return new Promise((resolve, reject)=>{
       let queryString = 'SELECT * FROM items ';
-      if (queryCondition.action === 'getConfirmedMatchItemsData') {
+      if (queryCondition.action === 'getHotCounts') {
+        queryString = 'SELECT main_category hot_board, COUNT(*) count FROM items GROUP BY main_category ORDER BY count DESC LIMIT 0,500';
+        // let queryCondition = [];
+        mysql.pool.query(queryString, (err, hotCountsResult, fileds) => {
+          if (err) {
+            mysql.errLog(err,'hotCountsResult','itemDAO')
+            reject(err)
+          } else {
+            console.log('hotCountsResult')
+            console.log(hotCountsResult)
+            resolve(hotCountsResult)
+          }
+        });
+      } else if (queryCondition.action === 'getConfirmedMatchItemsData') {
         queryString = 'SELECT * FROM items WHERE items.id in (?)';
         mysql.pool.query(queryString, [queryCondition.idArr], (err, getConfirmedMatchItemsDataResult, fileds) => {
           if (err) {

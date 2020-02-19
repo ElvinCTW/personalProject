@@ -1,30 +1,30 @@
-nav.top-navbar
-    .container
-        .navbar-header
+nav.nav
+    .outer-container.nav
+        .inside-container.left.nav
             a(href='/')
-                h2.navbar-brand Triangle Trade
-        .navbar-middle
-            .container-inside
-                input.search(type="text", name="search", placeholder="搜尋...")
-                select.list(onchange='locateToBoard()' id="select-list")
-                    option(value="boardlist") 看板清單
-                    option(value="basketball") 籃球
-                    option(value="photograph") 攝影
-        .navbar-right
-            .container-inside
-                div.member
-                    a(href="/users/signin" id="navbar-member-link" title="點擊登入/出") 登入/註冊
-                a(id="general-notification" class="fast-btn" title="系統訊息") 通知
-                    //- link to notification page
-                    //- img.notification(src="/images/notification.png" id="notification-pic")
-                    .notification-area(id="notification-area")
-                a(href="/" id="match-notification" class="fast-btn" title="配對確認頁")
-                    //- link to favorite page
-                    img.likes(src="/images/likes.png", alt="")
-                a(href="/" class="fast-btn" id="match-confirmed" title="交換討論頁")
-                    //- link to message page
-                    img.message(src="/images/message.png", alt="")
-                a(href="/items/new" class="fast-btn" title="新增交換物品")
-                    //- link to new item page
-                    img.plus(src="/images/plus.png", alt="")
+                span.navbar-brand Triangle Trade
+        .inside-container.middle.nav
+            .search
+                form 
+                    input.search(type="text" name="search" placeholder="搜尋...")
+                    button.search(type="submit")
+            //- .list
+            //-     select.list(onchange='locateToBoard()' id="select-list")
+            //-         option(value="boardlist") 看板清單
+            //-         option(value="basketball") 籃球
+            //-         option(value="photograph") 攝影
+        .inside-container.right.nav
+            .userbar
+                a(href="/users/signin" id="navbar-member-link" title="點擊登入/出") 
+                    span.nav-right 登入/註冊
+            .fast-btn
+                a(href="/items/new" class="fast-btn" title="新增交換物品") 
+                    span.nav-right 新增
+                a(href="/" id="match-notification" class="fast-btn" title="配對確認頁") 
+                    span.nav-right 配對
+                a(href="/" class="fast-btn" id="match-confirmed" title="交換討論頁") 
+                    span.nav-right 對話
+                a(id="general-notification" class="fast-btn" title="系統訊息") 
+                    span.nav-right 通知
+                    //- .notification-area(id="notification-area")
 script(src="/javascripts/header.js")

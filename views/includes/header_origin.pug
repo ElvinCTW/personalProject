@@ -1,0 +1,30 @@
+nav.top-navbar
+    .container
+        .navbar-header
+            a(href='/')
+                h2.navbar-brand Triangle Trade
+        .navbar-middle
+            .container-inside
+                input.search(type="text", name="search", placeholder="搜尋...")
+                select.list(onchange='locateToBoard()' id="select-list")
+                    option(value="boardlist") 看板清單
+                    option(value="basketball") 籃球
+                    option(value="photograph") 攝影
+        .navbar-right
+            .container-inside
+                a(href="/users/signin" id="navbar-member-link" title="點擊登入/出") 
+                    //- div.member 
+                a(id="general-notification" class="fast-btn" title="系統訊息") 通知
+                    //- link to notification page
+                    //- img.notification(src="/images/notification.png" id="notification-pic")
+                    .notification-area(id="notification-area")
+                a(href="/" id="match-notification" class="fast-btn" title="配對確認頁") 配對
+                    //- link to favorite page
+                    //- img.likes(src="/images/likes.png", alt="")
+                a(href="/" class="fast-btn" id="match-confirmed" title="交換討論頁") 對話
+                    //- link to message page
+                    //- img.message(src="/images/message.png", alt="")
+                a(href="/items/new" class="fast-btn" title="新增交換物品") 新增
+                    //- link to new item page
+                    //- img.plus(src="/images/plus.png", alt="")
+script(src="/javascripts/header.js")

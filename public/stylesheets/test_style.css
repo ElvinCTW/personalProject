@@ -1,0 +1,267 @@
+/* Original settings */
+body {
+  background-color: rgb(0, 50, 78);
+  min-width: 1280px;
+  height: 100vh;
+  font-size: 14px;
+  font-weight: 300;
+}
+
+a {
+  /* color: #ffffff; */
+  text-decoration: none;
+}
+
+/* Nav */
+nav {
+  max-width:100%;
+  background-color: rgb(0, 106, 166);
+  height:60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  /* margin: auto; */
+}
+
+nav a {
+  color: white;
+}
+
+.outer-container {
+  width: 1280px;
+  display: flex;
+  /* align-items: center; */
+  justify-content: space-between;
+  justify-content: flex-start;
+}
+
+.inside-container {
+  display: flex;
+}
+
+.inside-container.left {
+  width: 200px;
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 10px;
+}
+
+.inside-container.main {
+  margin: 20px 0 0 0;
+}
+
+span.navbar-brand {
+  font-size: 28px;
+  font-weight: 400;
+  /* margin-right: 20px; */
+  /* padding-left: 10px; */
+}
+
+.search,
+.list {
+  display: inline-block;
+}
+
+.search form {
+  width: 400px;
+}
+
+.search form input {
+  /* width: auto; */
+  margin-right: 0;
+}
+
+input.search {
+  width: 350px;
+  border-radius: 4px;
+  padding: 0 10px;
+  height: 30px;
+  background: rgba(0, 50, 78, 0.5);
+  color: white;
+  border: 0;
+}
+
+select.list {
+  height: 24px;
+}
+
+.search form button {
+  /* height: 30px;
+  width: 40px; */
+  padding: 0;
+  margin: 0;
+  border: 0;
+  margin-right: 0;
+}
+
+.fast-btn a {
+  margin-left: 8px;
+}
+
+.inside-container.right.nav {
+  margin: 0 0 0 auto;
+  align-items: center;
+}
+
+select.list {
+  width: 200px;
+}
+
+.userbar {
+  display: inline-block;
+}
+
+.fast-btn {
+  display: inline-block;
+  
+}
+
+/* main */
+main {
+  max-width:100%;
+  height:calc(100vh - 60px);
+  display: flex;
+  justify-content: center;
+  /* align-items: center; */
+  /* margin: auto; */
+}
+
+/* sidebar */
+.sidebar-div {
+  height: 44px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  color: rgba(255,255,255,0.75);
+  font-size: 16px;
+}
+
+.sidebar-text.left.separate {
+  color: rgba(255,255,255,0.35);
+  font-size: 14px;
+}
+
+.sub-container.main.middle {
+  background: rgb(250, 250, 250);
+  width: 730px;
+  border-radius: 4px 4px 0 0;
+}
+
+.sub-title,
+.guide-text {
+  font-size: 15px;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.6);
+  position: sticky;
+  top: 0px;
+  z-index: 20;
+  height: 60px;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 4px 4px 0px 0px;
+  margin: 0 0 8px 0;
+}
+
+/* New item */
+.items-area,
+.nomore-text-div {
+  padding: 0 10px 0 16px;
+  display: flex;
+  flex-flow: wrap;
+}
+
+.items-area {
+  overflow: scroll;
+  height: 920px;
+  align-content: flex-start;
+}
+
+.items-area::-webkit-scrollbar {
+  display: none;
+}
+
+.items-area a {
+  margin: 0 6px 6px 0;
+}
+
+.item.content {
+  padding: 0 0 8px 0;
+  width: 168px;
+}
+
+.item-container.main span {
+  color: rgba(0,0,0,0.35);
+  font-size : 12px;
+  font-weight: 400;
+}
+
+.item-img {
+  width: 168px;
+  height: 168px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  border:1px solid rgba(0, 0, 0, 0.05);
+}
+
+.item-img img {
+  width: 168px;
+}
+
+.item.title {
+  color: rgba(0, 0, 0, 0.95);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  /* margin-bottom: 4px; */
+  padding: 4px 0px;
+}
+
+.item span,
+.item.title  {
+  text-overflow : ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.inside-container.main.right {
+  width: 340px;
+}
+
+.sub-container.main.right {
+  margin: 0 0 0 auto;
+  justify-content: flex-end;
+}
+
+.guide {
+  background: rgb(235,235,235);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.guide-content {
+  width: 330px;
+  color: rgba(0,0,0,0.35);
+  font-size : 12px;
+  font-weight: 400;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+
+.guide-text {
+  padding: 0 10px 0 16px;
+  margin: 0;
+  font-size: 12px;
+  height: 30px;
+  border: none;
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.75);
+  /* margin-bottom: 6px; */
+}

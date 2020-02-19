@@ -43,15 +43,15 @@ module.exports = {
         } else if (queryCondition.main_category) {
           if (!queryCondition.sub_category) {
             // select all by main category only
-            queryString += 'WHERE main_category = ? AND availability = "true" ORDER BY time DESC LIMIT ?, 6';
-            mysql.pool.query(queryString, [queryCondition.main_category, queryCondition.page*6], (err, getItemResultArr, fields)=>{
+            queryString += 'WHERE main_category = ? AND availability = "true" ORDER BY time DESC LIMIT ?, 20';
+            mysql.pool.query(queryString, [queryCondition.main_category, queryCondition.page*20], (err, getItemResultArr, fields)=>{
               if (err) {reject(err)};
               resolve(getItemResultArr);
             }) 
           } else {
             // select all by main and sub category
-            queryString += 'WHERE main_category = ? AND sub_category = ? AND availability = "true" ORDER BY time DESC LIMIT ?, 6';
-            mysql.pool.query(queryString, queryCondition.main_category, queryCondition.sub_category, queryCondition.page*6, (err, getItemResultArr, fields)=>{
+            queryString += 'WHERE main_category = ? AND sub_category = ? AND availability = "true" ORDER BY time DESC LIMIT ?, 20';
+            mysql.pool.query(queryString, queryCondition.main_category, queryCondition.sub_category, queryCondition.page*20, (err, getItemResultArr, fields)=>{
               if (err) {reject(err)};
               resolve(getItemResultArr);
             })
@@ -70,16 +70,16 @@ module.exports = {
           });
         } else if (!queryCondition.user_nickname) {
           // lastest
-          queryString += 'WHERE availability = "true" ORDER BY time DESC LIMIT ?, 6';
-          mysql.pool.query(queryString, queryCondition.page*6, (err, getItemResultArr, fields)=>{
+          queryString += 'WHERE availability = "true" ORDER BY time DESC LIMIT ?, 20';
+          mysql.pool.query(queryString, queryCondition.page*20, (err, getItemResultArr, fields)=>{
             // if (err) {reject(err)};
             // resolve(getItemResultArr);
             afterItemsQuery(err, queryCondition, getItemResultArr, resolve, reject);
           })
         } else {
           // recommand
-          queryString += 'WHERE user_nickname = ? AND availability = "true" ORDER BY time DESC LIMIT ?, 6';
-          mysql.pool.query(queryString, [queryCondition.user_nickname, queryCondition.page*6], (err, getItemResultArr, fields)=>{
+          queryString += 'WHERE user_nickname = ? AND availability = "true" ORDER BY time DESC LIMIT ?, 20';
+          mysql.pool.query(queryString, [queryCondition.user_nickname, queryCondition.page*20], (err, getItemResultArr, fields)=>{
             afterItemsQuery(err, queryCondition, getItemResultArr, resolve, reject);
           })
         } 
@@ -143,7 +143,7 @@ module.exports = {
 
 function afterItemsQuery(err, queryCondition, getItemResultArr, resolve, reject) {
   if (err) {reject(err)};
-  if (getItemResultArr.length === 6) {
+  if (getItemResultArr.length === 20) {
     getItemResultArr.next_paging = queryCondition.page+1;
   };
   resolve(getItemResultArr);

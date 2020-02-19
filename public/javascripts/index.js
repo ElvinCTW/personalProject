@@ -4,16 +4,20 @@ createMoreItems();
 /**
  * 捲動時自動帶入新物件
  */
-$(window).scroll(function () {
+$('#items-area-recommand').scroll(function () {
   // 判斷整體網頁的高度
-  const $BodyHeight = $(document).height();
+  const $BodyHeight = $('#items-area-recommand').height(); //920px
+  const $ItemHeight = $('.item-link').height(); // 253px;
   // 判斷所見範圍的高度
-  const $ViewportHeight = $(window).height();
+  // const $ViewportHeight = $(window).height();
   // 偵測目前捲軸頂點
   $ScrollTop = $(this).scrollTop();
-  if ($BodyHeight - ($ViewportHeight + $ScrollTop) < 10 ) {
+  if ((5*$ItemHeight)*(page) < ($BodyHeight + $ScrollTop)) {
     if (page !== 'end') {
+      if ($(this).data('dont')===1) return;
+      $(this).data('dont',1);
       createMoreItems();
+      $(this).data('dont',0);
     } else {
       if (!nomoreUpdate) {
         nomoreUpdate = true;
@@ -22,6 +26,25 @@ $(window).scroll(function () {
     }
   };
 });
+// origin
+// $(window).scroll(function () {
+//   // 判斷整體網頁的高度
+//   const $BodyHeight = $(document).height();
+//   // 判斷所見範圍的高度
+//   const $ViewportHeight = $(window).height();
+//   // 偵測目前捲軸頂點
+//   $ScrollTop = $(this).scrollTop();
+//   if ($BodyHeight - ($ViewportHeight + $ScrollTop) < 10 ) {
+//     if (page !== 'end') {
+//       createMoreItems();
+//     } else {
+//       if (!nomoreUpdate) {
+//         nomoreUpdate = true;
+//         $('#nomore-text-div').attr({'onclick': ''}).html('沒有更多物品囉～');
+//       }
+//     }
+//   };
+// });
 /**
  * 取得更多物件的 function，一次六件
  */
@@ -31,9 +54,12 @@ function createMoreItems() {
       url: `/api/1.0/items/all?page=${page}`,
       type: 'get',
       success: (itemsListArr) => {
-        for (let i = 6 * page; i < (6 * page + itemsListArr.length); i++) {
+        for (let i = 20 * page; i < (20 * page + itemsListArr.length); i++) {
           // Create link to item detail page
-          let link = $('<a></a>').attr({ 'href': `/items/detail?item_id=${itemsListArr[i - 6 * page].id}` });
+          let link = $('<a></a>').attr({ 
+            'href': `/items/detail?item_id=${itemsListArr[i - 20 * page].id}`,
+            'class': 'item-link'
+           });
           $('#items-area-recommand').append(link);
           // Create new Item outside container
           let newItemContainer_Outside = $('<div></div>').attr({ 'class': 'item-container outside main index' });
@@ -54,31 +80,31 @@ function createMoreItems() {
           // basedonDiv.append(basedonSpan);
           // basedonDiv.append(basedontag);
           // add picture
-          let itemImg = $('<img></img>').attr({ 'src': s3_url + itemsListArr[i - 6 * page].pictures.split(',')[0] });
+          let itemImg = $('<img></img>').attr({ 'src': s3_url + itemsListArr[i - 20 * page].pictures.split(',')[0] });
           itemImgDiv.append(itemImg);
           // add title, item-info and tags Divs
-          let titleDiv = $('<div></div>').attr({ 'class': 'item title' }).html(`${itemsListArr[i - 6 * page].title}`);
+          let titleDiv = $('<div></div>').attr({ 'class': 'item title' }).html(`${itemsListArr[i - 20 * page].title}`);
           let itemInfoDiv = $('<div></div>').attr({ 'class': 'item info' });
           let tagsDiv = $('<div></div>').attr({ 'class': 'item tags' });
           itemContentDiv.append(itemInfoDiv);
           itemContentDiv.append(titleDiv);
           itemContentDiv.append(tagsDiv);
           // add nickname and status span
-          let nicknameSpan = $('<span />').attr({ 'class': 'nickname' }).html(`${itemsListArr[i - 6 * page].user_nickname}`);
+          let nicknameSpan = $('<span />').attr({ 'class': 'nickname' }).html(`${itemsListArr[i - 20 * page].user_nickname}`);
           // let statusSpan = $('<span />').attr({
           //   'class': 'status',
           //   'id': 'item-status',
-          // }).html(`${itemsListArr[i - 6 * page].status}`);
+          // }).html(`${itemsListArr[i - 20 * page].status}`);
           itemInfoDiv.append(nicknameSpan);
           // itemInfoDiv.append(statusSpan);
           // add tags to tagsDiv
-          let tagsArr = itemsListArr[i - 6 * page].tags.split(' ')
+          let tagsArr = itemsListArr[i - 20 * page].tags.split(' ')
           for (let j = 0; j < tagsArr.length; j++) {
             let tagSpan = $('<span />').html(`${tagsArr[j]}`);
             tagsDiv.append(tagSpan);
           }
         }
-        if (itemsListArr.length === 6) {
+        if (itemsListArr.length === 20) {
           page += 1;
         } else {
           page = 'end'

@@ -177,7 +177,7 @@ main {
 
 .items-area {
   overflow: scroll;
-  height: 920px;
+  height: calc(100vh - 150px);
   align-content: flex-start;
 }
 

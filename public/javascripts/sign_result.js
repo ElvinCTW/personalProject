@@ -9,6 +9,6 @@ if (nickname !== '' && token !== '') {
   localStorage.setItem('nickname', nickname);
   window.location.assign('/');
 } else {
-  alert('登入有誤，請重新登入');
+  alert('查無此帳號或輸入資料有誤，請確認後重新登入');
   window.location.assign('/');
 }

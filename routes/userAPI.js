@@ -1,29 +1,45 @@
 const express = require('express');
 const router = express.Router();
 const userDAO = require('../dao/user');
-
+// remember to build transaction
 router.post('/register', async (req, res, next)=>{
-  const checkUserResult = await userDAO.get(req.body);
-  if (checkUserResult.length !== 0) {
-    res.status(200).render('/',{
-      errorMsg: '本ID已被註冊，請換一個ID再試一次'
-    })
-  } else if (checkUserResult.length === 0){
-    console.log('註冊');
+  const duplicationCheck = await userDAO.get({
+    action: 'checkdoubleUserInfo',
+    user: {
+      sign_id: req.body.id,
+      nickname: req.body.name,
+    }
+  });
+  if (duplicationCheck.successMsg) {
     // register
     const insertUserResult = await userDAO.insert({
-      sign_id: req.body.id,
-      password: req.body.password,
-      nickname: req.body.name,
+      action: 'insertUser',
+      user: {
+        sign_id: req.body.id,
+        password: req.body.password,
+        nickname: req.body.name,
+      }
     }).catch((err)=>{
-      res.send('double')
+      // err of db
+      res.render('sign_result', {
+        user: {
+          nickname:'',
+          token:'',
+          errorMsg:'資料庫有誤，若持續發生請聯繫我們',
+        },
+      })
     });
     /* Output : Index page w/ user data || fail alert */
-    res.render('user_success',{user: insertUserResult});
+    res.render('sign_result',{user: insertUserResult});
   } else {
-    console.log('that');
-    res.status(500).send('unknown error in registerAPI')
-  }
+    res.render('sign_result', {
+      user: {
+        nickname:'',
+        token:'',
+        errorMsg:duplicationCheck.errorMsg,
+      },
+    })
+  } 
 });
 
 router.post('/signin', async (req, res, next)=>{
@@ -33,7 +49,7 @@ router.post('/signin', async (req, res, next)=>{
   const signinResult = await userDAO.get({
     action: 'sign-in',
     user: {
-      id: req.body.id,
+      sign_id: req.body.id,
       password: req.body.password,
     },
   });

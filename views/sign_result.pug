@@ -1,4 +1,5 @@
-- let userobj = user;
 input(id="nickname" style="display:none;" value=`${user.nickname}`)
 input(id="token" style="display:none;" value=`${user.token}`)
+if user.errorMsg
+  input(id="errorMsg" style="display:none;" value=`${user.errorMsg}`)
 script(src="/javascripts/sign_result.js")

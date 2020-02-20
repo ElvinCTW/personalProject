@@ -29,7 +29,6 @@ router.post('/register', async (req, res, next)=>{
         },
       })
     });
-    /* Output : Index page w/ user data || fail alert */
     res.render('sign_result',{user: insertUserResult});
   } else {
     res.render('sign_result', {
@@ -43,9 +42,6 @@ router.post('/register', async (req, res, next)=>{
 });
 
 router.post('/signin', async (req, res, next)=>{
-  /* Input: req.body of ID && pwd */
-  /* To Do : get user data from db and log user in */
-  // Check if user exist
   const signinResult = await userDAO.get({
     action: 'sign-in',
     user: {

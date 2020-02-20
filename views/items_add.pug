@@ -1,39 +1,33 @@
 extends layout
 block content
-  .main 
-    .container
-      .main-left
-      .main-middle.add-item
-        .subtext.add-item 新增物品
-        .sub-main-container.add-item
-          if successMsg
-            .successMsgDiv=successMsg
-          form(action="/api/1.0/items/new" method="post" id="add-items-form" enctype="multipart/form-data")
-            input(type="text" name="token" id="token-input" style="display:none;")
-            p 主分類
-            select(name="main_category" id="main_category" onchange="changeSubOption()")
-              option(value="basketball") 籃球
-              option(value="photograph") 攝影
-            p 次分類
-            select(name="sub_category" id="sub_category")
-            p 標籤(請由"#"開始，並以空格區隔)
-            input.tags(name="tags" type="text" placeholder="e.q. \#Basketball \#Kobe ,Max 40 words" maxlength="40")
-            p 物品名稱
-            - let randomTitle = 'R-Title '+`${Math.round(Math.random()*99999)}`
-            input.title(name="title" type="text" placeholder="Max 30 words" required maxlength="30")
-            p 數量
-            - let randomCount = Math.round(Math.random()*9)+1
-            input.count(name="count" type="number" placeholder="At least one item" value=randomCount min=1 required)
-            p 商品狀態
-            select(name="status")
-              option(value="new") 全新
-              option(value="used") 二手
-              option(value="lookonly") 收藏
-            p 簡介
-            textarea.introduction(name="introduction" type="text" placeholder="Say something about this item" value="yoyoyo")
-            p 圖片 (最多3張，每張照片大小不超過 3 MB)
-            input.pictures(type="file", name="pictures" accept="image/*" id="pics-input" multiple required)
-            .button-div
-              button(type="submit" id="add-items-btn") Add items
-      .main-right
+  main
+    .outer-container.main
+      .inside-container.main.left
+        .sub-container.main.left
+      .inside-container.main.middle
+        .sub-container.main.middle
+          h1.sub-title 新增物品
+          .items-area.add-item
+            if successMsg
+              .successMsgDiv=successMsg
+            form(action="/api/1.0/items/new" method="post" id="add-items-form" enctype="multipart/form-data")
+              .new-item
+                .content-div.outer
+                  //- input(type="text" name="token" id="token-input" style="display:none;")
+                  .select-area
+                    .select-box.main-category(name="main_category" id="main_category" onchange="changeSubOption()") 主分類
+                    .select-box.sub-category(name="sub_category" id="sub_category") 次分類
+                    .select-box.status(name="status" id="status") 商品狀態
+                  - let randomTitle = 'R-Title '+`${Math.round(Math.random()*99999)}`
+                  //- p 標題
+                  input.title(name="title" type="text" placeholder="標題" required maxlength="30")
+                  //- p 標籤
+                  input.tags(name="tags" type="text" placeholder="標籤" maxlength="40")
+                  //- p 簡介
+                  textarea.introduction(name="introduction" type="text" placeholder="簡介" value="yoyoyo")
+                .picture-area.outer
+                  //- p 圖片 (最多3張，每張照片大小不超過 3 MB)
+                  input.pictures(type="file", name="pictures" accept="image/*" id="pics-input" multiple required)
+              .button-div
+                button(type="submit" id="add-items-btn") 新增物品
   script(src="/javascripts/items_add.js")

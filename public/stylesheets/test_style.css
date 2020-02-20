@@ -75,7 +75,8 @@ span.navbar-brand {
   width: 100%;
 }
 
-.items-area.signup form input {
+.items-area.signup form input,
+form .new-item  input {
   width: 100%;
   height: 40px;
   margin:  0 0 20px 0;
@@ -84,6 +85,27 @@ span.navbar-brand {
   border-style: solid;
   border-color: rgba(0, 0, 0, 0.15);
   padding: 0;
+}
+
+form .new-item input {
+  display: flex;
+  width: auto;
+  background: rgb(250, 250, 250);
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  width: 100%;
+  border-radius: 0;
+}
+
+form .new-item input.title {
+  font-size: 18px;
+  line-height: 26px;
+  margin-top: 20px;
+}
+
+#pics-input {
+  border: none;
+  display: none;
 }
 
 .items-area.signup form p {
@@ -342,6 +364,10 @@ main {
   margin: 0 6px 6px 0;
 }
 
+.items-area.add-item {
+  padding: 0 10px;
+}
+
 .item.content {
   padding: 0 0 8px 0;
   width: 168px;
@@ -448,5 +474,36 @@ main {
   display: flex;
   width: 370px;
   height: 510px;
-  /* background: grey; */
+}
+
+.new-item,
+.button-div {
+  display: flex;
+  margin: 15px 10px;
+}
+
+.button-div {
+  justify-content: flex-end;
+}
+.select-area {
+  display: flex;
+  width: 100%;
+}
+
+form .new-item  textarea {
+  width: 350px;
+  height: 150px;
+  overflow: auto;
+}
+
+.picture-area.outer {
+  display: flex;
+  width: 314px;
+  height: 314px;
+  margin: 0 0 0 auto;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.items-area.add-item form {
+  width: 100%;
 }

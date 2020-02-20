@@ -2,7 +2,6 @@ const mysql = require('../util/mysql');
 // change to online crypto in the future ?
 const crypto = require('crypto');
 module.exports = {
-  // get user data by log-in_id || token
   get: (queryData) => {
     return new Promise((resolve, reject) => {
       if (queryData.action === 'checkdoubleUserInfo') {
@@ -73,19 +72,6 @@ module.exports = {
             })
           }
         });
-        // mysql.pool.query('INSERT INTO users SET ?', userObject, (err, insertUserResult, fields) => {
-        //   if (err) {
-        //     console.log('error in insertUserPromise');
-        //     console.log(err);
-        //     reject(err);
-        //   }
-        //   // if insert success, send token and nickname back
-        //   resolve({
-        //     token: token,
-        //     nickname: userObject.nickname,
-        //   });
-        //   // console.log('insert user success');
-        // });
       }
     })
   },

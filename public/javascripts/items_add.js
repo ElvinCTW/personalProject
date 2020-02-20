@@ -6,11 +6,11 @@ if (token) {
   window.location.assign('/');
 }
 
-let initSubCategoryOption = $('<option></option>').attr({
-  'value': 'shoes',
-  // 'class': 'sub-option',
-}).html('鞋');
-$('#sub_category').append(initSubCategoryOption);
+// let initSubCategoryOption = $('<option></option>').attr({
+//   'value': 'shoes',
+//   // 'class': 'sub-option',
+// }).html('鞋');
+// $('#sub_category').append(initSubCategoryOption);
 
 function changeSubOption() {
   $('#sub_category').empty();

@@ -47,8 +47,16 @@ nav a {
   padding-left: 10px;
 }
 
+/* .inside-container.left {
+
+} */
+
 .inside-container.main {
   margin: 20px 0 0 0;
+}
+
+.inside-container.main.middle.signup {
+  margin: 0;
 }
 
 span.navbar-brand {
@@ -63,6 +71,28 @@ span.navbar-brand {
   display: inline-block;
 }
 
+.items-area.signup form {
+  width: 100%;
+}
+
+.items-area.signup form input {
+  width: 100%;
+  height: 40px;
+  margin:  0 0 20px 0;
+  border-radius: 4px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.15);
+  padding: 0;
+}
+
+.items-area.signup form p {
+  margin: 0 0 10px 0;
+  width: 100%;
+  font-size: 16px;
+  color : rgba(0, 0, 0, 0.8);
+}
+
 .search form {
   width: 400px;
 }
@@ -70,6 +100,10 @@ span.navbar-brand {
 .search form input {
   /* width: auto; */
   margin-right: 0;
+}
+
+.search form input::placeholder {
+  color: rgba(250,250,250,0.55)
 }
 
 input.search {
@@ -135,20 +169,14 @@ select.list {
 }
 
 form.sign {
-  /* min-height: 60px; */
-  /* padding: 15px 5px; */
-  /* background: rgb(235,235,235); */
   display: flex;
-  /* flex-direction: column; */
   z-index: 30;
-  /* align-items: center;
-  justify-content: center; */
-  /* margin-bottom: 1px; */
 }
 
-#signin-btn {
-  width: 57px;
-  height: 57px;
+#signin-btn,
+#signup-btn {
+  width: 36px;
+  height: 36px;
   background: #3397cf;
   color: rgb(250,250,250);
   border-radius: 4px;
@@ -157,7 +185,17 @@ form.sign {
   display: block;
 }
 
-.notification-area {
+#signup-btn {
+  width: 100%;
+  height: 44px;
+  border-radius: 4px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(51, 151, 207, 0.15);
+}
+
+.notification-area,
+.notification-area.notification {
   border-radius: 4px;
   display: none;
   width: 330px;
@@ -174,6 +212,7 @@ form.sign {
   padding: 6px 6px;
   background: rgb(235,235,235);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   /* margin-bottom: 1px; */
@@ -181,7 +220,7 @@ form.sign {
 }
 
 .notification-area.sign {
-  margin: 22.4px auto auto 0;
+  margin: 22.4px auto auto -116px;
   z-index: 25;
   width: auto;
 }
@@ -192,7 +231,26 @@ form.sign {
 
 form.sign input{
   display: block;
+  border-radius: 2px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.15);
+  height: 14px;
 }
+
+.to-signup {
+  width: 100%;
+  display: flex;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  margin-top: 4px;
+  padding-top:4px; 
+  justify-content: center;
+}
+
+.to-signup a {
+  color: rgba(0, 0, 0, 0.75);
+}
+
 /* main */
 main {
   max-width:100%;
@@ -224,6 +282,13 @@ main {
   border-radius: 4px 4px 0 0;
 }
 
+.sub-container.main.middle.signup {
+  width: 360px;
+  padding: 30px 50px 40px 50px;
+  border-radius: 4px;
+  margin: auto;
+}
+
 .sub-title,
 .guide-text {
   font-size: 15px;
@@ -243,6 +308,13 @@ main {
   margin: 0 0 8px 0;
 }
 
+.sub-title.signup {
+  font-size: 28px;
+  font-weight: 400;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
 /* New item */
 .items-area,
 .nomore-text-div {
@@ -257,9 +329,9 @@ main {
   align-content: flex-start;
 }
 
-/* .items-area.sign {
-  padding: 
-} */
+.items-area.signup {
+  height: auto;
+}
 
 .items-area::-webkit-scrollbar,
 .notification-area::-webkit-scrollbar {
@@ -314,6 +386,14 @@ main {
   width: 340px;
 }
 
+.inside-container.main.left.signup {
+  width: 570px;
+  justify-content: flex-end;
+  align-items: center;
+  /* margin: 20px 370px 0 0; */
+  margin: 20px 0;
+}
+
 .sub-container.main.right {
   margin: 0 0 0 auto;
   justify-content: flex-end;
@@ -346,4 +426,27 @@ main {
   font-weight: 300;
   color: rgba(0, 0, 0, 0.75);
   /* margin-bottom: 6px; */
+}
+
+.agree-text-div {
+  width: 100%;
+  margin: 20px 0 0 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+#agree-text {
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 14px;
+  text-align: center;
+}
+
+.sub-container.main.left.signup {
+  display: flex;
+  width: 370px;
+  height: 510px;
+  /* background: grey; */
 }

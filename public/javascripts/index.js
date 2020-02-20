@@ -1,5 +1,6 @@
 let page = 0;
 let nomoreUpdate = false;
+let getData = true;
 createMoreItems();
 /**
  * 捲動時自動帶入新物件
@@ -12,12 +13,14 @@ $('#items-area-recommand').scroll(function () {
   // const $ViewportHeight = $(window).height();
   // 偵測目前捲軸頂點
   $ScrollTop = $(this).scrollTop();
-  if ((5*$ItemHeight)*(page) < ($BodyHeight + $ScrollTop)) {
+  if ((5*$ItemHeight)*(page) < ($BodyHeight + $ScrollTop)*2) {
     if (page !== 'end') {
-      if ($(this).data('dont')===1) return;
-      $(this).data('dont',1);
-      createMoreItems();
-      $(this).data('dont',0);
+      if (getData) {
+        getData = false;
+        createMoreItems();
+      } else {
+        return;
+      }
     } else {
       if (!nomoreUpdate) {
         nomoreUpdate = true;
@@ -109,6 +112,7 @@ function createMoreItems() {
         } else {
           page = 'end'
         }
+        getData = true;
       },
       error: (failResponse) => {
         console.log(failResponse);

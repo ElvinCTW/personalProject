@@ -1,21 +1,24 @@
 extends layout
 block content
-  .main 
-    .container
-      .main-left
-      .main-middle.sign
-        .subtext.sign 會員註冊
-        .sub-main-container.sign
-          form(action="/api/1.0/users/register", method="post" id="sign-form")
-            p 會員ID （登入用, 最多 10 碼）
-            input.id(name="id" type="text" maxlength=10 placeholder="ID for Sign In, max 10" required)
-            p 會員密碼
-            input.password(name="password" type="password" placeholder="Password" value="123" required)
-            p 會員暱稱
-            input.name(name="name" type="text" placeholder="Nickname" required)
-            .button-div
-              button(type="button" id="submit-btn") 點此註冊
-          .button-div.sign
-            button(type="button" onclick="location.href='/users/signin'") 我要登入
-      .main-right
+  main
+    .outer-container.main
+      .inside-container.main.left.signup
+        .sub-container.main.left.signup
+          img(src="", alt="")
+      .inside-container.main.middle.signup
+        .sub-container.main.middle.signup
+          h1.sub-title.signup 會員註冊
+          .items-area.signup(id="items-area-recommand")
+            form(action="/api/1.0/users/register", method="post" id="sign-form")
+              p 會員ID
+              input.id(name="id" type="text" maxlength=10 required)
+              p 會員密碼
+              input.password(name="password" type="password" value="123" required)
+              p 會員暱稱
+              input.name(name="name" type="text" required)
+              .agree-text-div
+                p(id="agree-text") 註冊則表示您同意本網站之使用條款
+                button(type="button" id="signup-btn") 點此註冊
+              //- .button-div
+      //- .inside-container.main.right
   script(src="/javascripts/signup.js")

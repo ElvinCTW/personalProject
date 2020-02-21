@@ -14,14 +14,17 @@ block content
             .items-area.add-item
               if successMsg
                 .successMsgDiv=successMsg
+              if errorMsg
+                .successMsgDiv=errorMsg
               .new-item
                 .content-div.outer
-                  //- input(type="text" name="token" id="token-input" style="display:none;")
+                  input(type="text" name="token" id="token-input" style="display:none;")
                   .select-area
                     //- .select-box.main-category(id="main_category" onchange="changeSubOption()" ) 足球
-                    input(type="text" onchange="changeSubOption()" style="display:none;" name="main_category" id="main_category_input")
-                    .select-box.main-category(id="main_category") 主分類   ▾
-                      .outer-select-box
+                    input(type="text" style="display:none;" name="main_category" id="main_category_input")
+                    .select-box.main-category(id="main_category")
+                      span(id="main_category_text") 主分類   ▾
+                      .outer-select-box(id="main_category_box")
                         .sub-select-box.main-category(id="main_category_list")
                           //- - let i = 0
                           //- while i < 20
@@ -30,14 +33,18 @@ block content
                           .option 高爾夫球
                           //-   - i++
                     //- .select-box.sub-category(name="sub_category" id="sub_category") 次分類   ▾
-                    //- .select-box.sub-category(id="sub_category") 鞋
-                    //-   .outer-select-box
-                    //-     input(type="text" style="display:none;" name="sub_category")
-                    //-     .sub-select-box.sub-category(id="sub_category_list")
+                    input(type="text" style="display:none;" name="sub_category" id="sub_category_input")
+                    .select-box.sub-category(id="sub_category") 
+                      span(id="sub_category_text") 次分類   ▾
+                      .outer-select-box(id="sub_category_box")
+                        .sub-select-box.sub-category(id="sub_category_list")
+                          .option 鞋
                     //- .select-box.status(id="status") 全新
                     input(type="text" style="display:none;" name="status" id="status_input")
-                    .select-box.status(id="status") 商品狀態   ▾
-                      .outer-select-box
+                    .select-box.status(id="status")
+                      span(id="status_text") 商品狀態   ▾
+                      .outer-select-box(id="status_box")
+                        //- .inner-select-box
                         .sub-select-box.status(id="status_list")
                           .option 全新
                           .option 二手
@@ -46,7 +53,7 @@ block content
                   //- p 標題
                   input.title(name="title" type="text" placeholder="標題" autocomplete="off" required maxlength="30")
                   //- p 標籤
-                  input.tags(name="tags" type="text" placeholder="標籤" autocomplete="off" maxlength="40")
+                  input.tags(name="tags" type="text" placeholder="標籤" autocomplete="off" maxlength="40" onchange="tagsNormalization()" id="tags_input")
                   //- p 簡介
                   textarea.introduction(name="introduction" type="text" placeholder="簡介" value="yoyoyo")
                 label(for="pics-input")

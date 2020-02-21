@@ -85,31 +85,35 @@ $('#pics-input').bind('change', function () {
 });
 
 $('#main_category_list').click((e)=>{
-  $('#main_category').html(`${e.toElement.innerText}`)
+  $('#main_category_text').text(`${e.toElement.innerText}`)
   $('#main_category_input').val(`${e.toElement.innerText}`);
-  if ($('#status_input').val() !== '') {
+  if ($('#status_input').val() !== '' && $('#sub_category_input').val() !== '') {
     $('#add-items-btn').attr({type:'submit'})
   }
 })
 $('#sub_category_list').click((e)=>{
-  $('#sub_category').html(`${e.toElement.innerText}`)
+  $('#sub_category_text').text(`${e.toElement.innerText}`)
+  $('#sub_category_input').val(`${e.toElement.innerText}`)
+  if ($('#status_input').val() !== '' && $('#main_category_input').val() !== '') {
+    $('#add-items-btn').attr({type:'submit'})
+  }
 })
 $('#status_list').click((e)=>{
-  $('#status').html(`${e.toElement.innerText}`)
+  $('#status_text').text(`${e.toElement.innerText}`)
   $('#status_input').val(`${e.toElement.innerText}`);
-  if ($('#main_category_input').val() !== '') {
+  if ($('#main_category_input').val() !== '' && $('#sub_category_input').val() !== '') {
     $('#add-items-btn').attr({type:'submit'})
   }
 })
 
 $('#main_category').click(()=>{
-  $('#main_category_list').toggle()
+  $('#main_category_box').toggle();
 })
 $('#sub_category').click(()=>{
-  $('#sub_category_list').toggle()
+  $('#sub_category_box').toggle()
 })
 $('#status').click(()=>{
-  $('#status_list').toggle()
+  $('#status_box').toggle()
 })
 
 $('#add-items-btn').click(()=>{
@@ -119,3 +123,16 @@ $('#add-items-btn').click(()=>{
     alert('請先選擇至少一張圖片');
   }
 })
+
+function tagsNormalization() {
+  // let tags = $('#tags_input').val()
+  if ($('#tags_input').val() !== '') {
+    // 去除空白
+    let tags = $('#tags_input').val().replace(/\s*/g,'')
+    // 抽換＃為#
+    tags = tags.replace(/＃/g,'#')
+    console.log('tags')
+    console.log(tags)
+    $('#tags_input').val(tags)
+  }
+}

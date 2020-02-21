@@ -95,20 +95,18 @@ module.exports = {
       }
     })
   },
-  insert: (newItemData) => {
+  insert: (queryData) => {
     /** Input: user_id(optional) and item information*/
     return new Promise((resolve, reject) => {
-      mysql.pool.query('INSERT INTO items SET ?', newItemData, (err, insertItemResult, fields) => {
+      mysql.pool.query('INSERT INTO items SET ?', queryData, (err, insertItem, fields) => {
         if (err) {
-          console.log('error in insertItemPromise');
-          console.log(err);
-          reject(err);
+          mysql.errLog(err,'insertItem','itemDAO')
+          reject(err)
+        } else {
+          console.log('insertItem')
+          console.log(insertItem)
+          resolve(insertItem);
         }
-        // if insert success, send token and nickname back
-        resolve({
-          msg: 'insert suceess',
-        });
-        console.log('insert item success');
       })
     })
     /** To do: insert data to db */

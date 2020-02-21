@@ -111,6 +111,13 @@ form .new-item input.title {
   margin-top: 15px;
 }
 
+form .new-item input.tags::placeholder,
+form .new-item textarea.introduction::placeholder,
+form .new-item input.tags,
+form .new-item textarea.introduction {
+  color: rgba(0, 0, 0, 0.35);
+}
+
 #pics-input {
   border: none;
   display: none;
@@ -267,6 +274,7 @@ form.sign {
   min-height: 100px; */
   background: rgb(239,239,239);
   border-radius: 4px;
+  /* display: none; */
   /* padding: 4px; */
 }
 
@@ -601,9 +609,10 @@ form .new-item textarea {
   max-height: 100%;
 }
 
-.select-box {
+.select-box,
+.outer-select-box {
   display: flex;
-  margin-right: 10px;
+  margin-right: 6px;
   /* border: 1px solid rgba(0, 0, 0, 0.05); */
   color: rgba(0, 0, 0, 0.35);
   background: rgb(239, 239, 239);
@@ -616,7 +625,7 @@ form .new-item textarea {
 }
 
 .sub-select-box {
-  display: none;
+  /* display: none; */
   position: relative;
   padding: 0;
   max-width: 500px;
@@ -647,5 +656,17 @@ form .new-item textarea {
 
 .outer-select-box {
   position: absolute;
-  margin: 22.4px auto auto -4px;
+  margin: 22.4px auto auto 0;
+  display: none;
+  padding: 0;
+  /* width: 0;
+  height: 0; */
+}
+
+.inner-select-box {
+  position: absolute;
+}
+
+input.tags {
+
 }

@@ -31,7 +31,7 @@ router.post('/new', async (req, res, next) => {
         cb(null, `userUpload/${userNickname}/${userNickname}-` + Date.now().toString())
       }
     })
-  }).fields([{ name: "pictures", maxCount: 6 }])
+  }).fields([{ name: "pictures", maxCount: 4 }])
   upload(req, res, async (err) => {
     if (!req.files.pictures) {
       res.status(400).send('Please choose pictures');
@@ -56,19 +56,20 @@ router.post('/new', async (req, res, next) => {
       tags: req.body.tags,
       title: req.body.title,
       status: req.body.status,
-      count: req.body.count,
+      // count: req.body.count,
       introduction: req.body.introduction,
-      // change this after finish multer-s3
       pictures: picturesString,
       time: Date.now().toString(),
+    }).catch((err)=>{
+      console.log('err')
+      console.log(err)
+      res.status(500).render('items_add', {errorMsg:'DB error'})
     })
     /** Output : success or error msg */
-    if (insertItemResult.errorMsg) {
-      res.status(500).send(insertItemResult.errorMsg)
+    if (insertItemResult.affectedRows > 1) {
+      res.status(200).render('items_add', {successMsg : 'Insert New Item success!'})
     } else {
-      res.status(200).render('items_add', {
-        successMsg : 'Insert New Item success!'
-      })
+      res.status(500).render('items_add', {errorMsg:'DB error'})
     }
   });
 })

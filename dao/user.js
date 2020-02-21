@@ -4,7 +4,20 @@ const crypto = require('crypto');
 module.exports = {
   get: (queryData) => {
     return new Promise((resolve, reject) => {
-      if (queryData.action === 'checkdoubleUserInfo') {
+      if (queryData.action === 'getUserDataByToken') {
+        let queryString = 'SELECT * FROM users WHERE token = ?';
+        let queryCondition = [queryData.token];
+        mysql.pool.query(queryString, queryCondition, (err, userData, fileds) => {
+          if (err) {
+            mysql.errLog(err,'userData','userDAO')
+            reject(err)
+          } else {
+            console.log('userData')
+            console.log(userData)
+            resolve(userData)
+          }
+        });
+      } else if (queryData.action === 'checkdoubleUserInfo') {
         let queryString = 'SELECT * FROM users WHERE sign_id = ? OR nickname = ?';
         let queryCondition = [queryData.user.sign_id, queryData.user.nickname];
         mysql.pool.query(queryString, queryCondition, (err, checkdoubleUserInfo, fileds) => {

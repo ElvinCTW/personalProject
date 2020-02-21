@@ -27,7 +27,10 @@ router.post('/new', async (req, res, next) => {
       key: async function (req, file, cb) {
         // check picture uploaded
         // get user data
-        const userDataArr = await userDAO.get(req.body.token);
+        const userDataArr = await userDAO.get({
+          action: 'getUserDataByToken',
+          token: req.body.token,
+        });
         userID = userDataArr[0].sign_id;
         userNickname = userDataArr[0].nickname;
         cb(null, `userUpload/${userNickname}/${userNickname}-` + Date.now().toString())
@@ -72,7 +75,7 @@ router.post('/new', async (req, res, next) => {
       res.status(500).render('items_add', {errorMsg:'DB error'})
     })
     /** Output : success or error msg */
-    if (insertItemResult.affectedRows > 1) {
+    if (insertItemResult.affectedRows > 0) {
       res.status(200).render('items_add', {successMsg : 'Insert New Item success!'})
     } else {
       res.status(500).render('items_add', {errorMsg:'DB error'})

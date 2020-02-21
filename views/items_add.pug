@@ -4,6 +4,9 @@ block content
     .outer-container.main
       .inside-container.main.left
         .sub-container.main.left
+          form(action="/api/1.0/items/new" method="post" enctype="multipart/form-data")
+            //- input(type="text" name="token" id="token-input" style="display:none;")
+            button(type="submit")
       .inside-container.main.middle
         form(action="/api/1.0/items/new" method="post" id="add-items-form" enctype="multipart/form-data")
           .sub-container.main.middle
@@ -73,4 +76,5 @@ block content
                   //- p 圖片 (最多3張，每張照片大小不超過 3 MB)
               //- .button-div
               //-   button(type="submit" id="add-items-btn") 新增物品
+              //- button(type="submit")
   script(src="/javascripts/items_add.js")

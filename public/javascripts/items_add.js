@@ -17,9 +17,6 @@ function readURL(input) {
     const reader = new FileReader();
     if (input.files && input.files[0]) {
       reader.onload = function (e) {
-        console.log(e);
-        console.log('e.target.result')
-        console.log(e.target.result)
         // for (let i = 0; i < input.files.length; i++) {
         $(`#pic${i}`).attr('src', e.target.result);
       }
@@ -131,8 +128,6 @@ function tagsNormalization() {
     let tags = $('#tags_input').val().replace(/\s*/g,'')
     // 抽換＃為#
     tags = tags.replace(/＃/g,'#')
-    console.log('tags')
-    console.log(tags)
     $('#tags_input').val(tags)
   }
 }

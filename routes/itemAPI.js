@@ -14,6 +14,8 @@ const s3 = new aws.S3({
 });
 // Add new item API
 router.post('/new', async (req, res, next) => {
+  console.log('req.body')
+  console.log(req.body)
   let userID;
   let userNickname;
   const upload = multer({
@@ -31,13 +33,17 @@ router.post('/new', async (req, res, next) => {
         cb(null, `userUpload/${userNickname}/${userNickname}-` + Date.now().toString())
       }
     })
-  }).fields([{ name: "pictures", maxCount: 4 }])
+  }).fields([{ name: "pictures", maxCount: 6 }])
   upload(req, res, async (err) => {
+    console.log('req.body')
+    console.log(req.body)
     if (!req.files.pictures) {
+      console.log('no pic, itemAPI');
       res.status(400).send('Please choose pictures');
       return;
     }
     if (err) {
+      console.log('err, itemAPI');
       console.log(err);
       res.status(500).send('err of s3 service')
     }

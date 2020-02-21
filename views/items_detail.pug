@@ -1,25 +1,30 @@
 extends layout
 block content
-  .main 
-    .container
-      .main-left
-      .main-middle.item-detail
-        if title
-          .subtext.item-detail 物品詳細資料
-          .sub-main-container.item-detail
-            .title.item-detail(id="item-detail-title")=title
-            .picture-div.item-detail
-              - let imgUrl = 'https://triangletradeelvintokyo.s3-ap-northeast-1.amazonaws.com/'+pictures.split(',')[0]
-              img(src=imgUrl)
-            .interaction.item-detail
-              .nickname.item-detail(id="required-owner")=user_nickname
-              .change-button.item-detail
-                button(id="change-btn-item-detail") 點此進行交換⬇︎
-            .introduction-div.item-detail=introduction
-          .sub-main-container.user-items(id="subdiv-itemdetail-useritems" style="display:none;")
-            button.title.user-items(type="button" id="exchange-request-btn") 請在點選自己的物品後點擊此處
-            .items-div.user-items(id="items-area-recommand")
-        else 
-          .subtext.item-detail 您來晚了><物品已不在架上～
-      //- .main-right
+  main
+    .outer-container.main
+      .inside-container.main.left
+      .inside-container.main.middle
+        .sub-container.main.middle
+          if title
+            h1.sub-title.detail=title
+            .items-area.detail(id="items-area-recommand")
+              .sub-main-container.item-detail
+                //- .title.item-detail(id="item-detail-title")=title
+                .sub-title-div.detail
+                  .sub-title.category=status+main_category+sub_category
+                  .sub-title.time(id="item-detail-time")=time
+                .picture-div.item-detail
+                  - let imgUrl = 'https://triangletradeelvintokyo.s3-ap-northeast-1.amazonaws.com/'+pictures.split(',')[0]
+                  img(src=imgUrl)
+                .interaction.item-detail
+                  .nickname.item-detail(id="required-owner")=user_nickname
+                  .change-button.item-detail
+                    button(id="change-btn-item-detail") 點此進行交換⬇︎
+                .introduction-div.item-detail=introduction
+              .sub-main-container.user-items(id="subdiv-itemdetail-useritems" style="display:none;")
+                button.title.user-items(type="button" id="exchange-request-btn") 請在點選自己的物品後點擊此處
+                .items-div.user-items(id="items-area-recommand")
+          else 
+            h1.sub-title 您來晚了><物品已不在架上～
+        //- .main-right
   script(src="/javascripts/items_detail.js")

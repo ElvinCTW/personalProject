@@ -4,7 +4,7 @@ const crypto = require('crypto');
 module.exports = {
   get: (queryData) => {
     return new Promise((resolve, reject) => {
-      if (queryData.action === 'getUserDataByToken') {
+     if (queryData.action === 'getUserDataByToken') {
         let queryString = 'SELECT * FROM users WHERE token = ?';
         let queryCondition = [queryData.token];
         mysql.pool.query(queryString, queryCondition, (err, userData, fileds) => {

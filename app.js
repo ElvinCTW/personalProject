@@ -47,6 +47,7 @@ app.get('/items/detail', async (req,res)=>{
     type: 'detail',
     item_id: req.query.item_id,
   })
+  // itemDetailData[0].time = new Date(parseInt(itemDetailData[0].time)).toString().slice(4, 24)
   res.render('items_detail',itemDetailData[0])
 });
 // Check non-confirmed matches

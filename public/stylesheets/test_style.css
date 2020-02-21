@@ -366,6 +366,17 @@ main {
   margin: 0 0 8px 0;
 }
 
+.sub-title.detail {
+  /* font-size: 20px; */
+  padding: 22px 60px;
+  border: none;
+  font-size: 30px;
+  line-height: 1.5;
+  font-weight: 500;
+  overflow-wrap: break-word;
+  color: rgba(0, 0, 0, 0.95)
+}
+
 .sub-title.signup {
   font-size: 28px;
   font-weight: 400;
@@ -381,10 +392,18 @@ main {
   flex-flow: wrap;
 }
 
+.items-area.detail {
+  padding: 0 60px;
+}
+
 .items-area {
   overflow: scroll;
   height: calc(100vh - 150px);
   align-content: flex-start;
+}
+
+.items-area.detail {
+  height: calc(100vh - 193px);
 }
 
 .items-area.top {
@@ -667,6 +686,23 @@ form .new-item textarea {
   position: absolute;
 }
 
-input.tags {
+.title.item-detail {
+  font-size: 30px;
+  line-height: 1.5;
+  font-weight: 500;
+  overflow-wrap: break-word;
+  color: rgba(0, 0, 0, 0.95);
+}
 
+.sub-main-container.item-detail {
+  width: 100%;
+}
+
+.sub-title-div {
+  display: flex;
+}
+
+.picture-div.item-detail,
+.picture-div.item-detail img {
+  max-width: 500px;
 }

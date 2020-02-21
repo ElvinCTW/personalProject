@@ -3,6 +3,10 @@ let nomoreUpdate = false;
 let user_nickname = null;
 let selectItemIDArr = [];
 let lastTimeSelectedArr;
+let time = $('#item-detail-time')
+
+time.html(new Date(parseInt(time.html())).toString().slice(4, 24))
+
 /**
  * 創造申請交換用戶物品列表
  */

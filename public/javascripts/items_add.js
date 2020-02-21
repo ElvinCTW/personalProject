@@ -1,3 +1,9 @@
+/**
+ * To do :
+ * 更換主分類時動態生成子分類
+ * items_add.pug 做出子分類框
+ */
+
 const token = localStorage.getItem('token');
 if (token) {
   $('#token-input').val(token);
@@ -6,43 +12,56 @@ if (token) {
   window.location.assign('/');
 }
 
-// let initSubCategoryOption = $('<option></option>').attr({
-//   'value': 'shoes',
-//   // 'class': 'sub-option',
-// }).html('鞋');
-// $('#sub_category').append(initSubCategoryOption);
+function readURL(input) {
+  for (let i = 0; i < input.files.length; i++) {
+    const reader = new FileReader();
+    if (input.files && input.files[0]) {
+      reader.onload = function (e) {
+        console.log(e);
+        console.log('e.target.result')
+        console.log(e.target.result)
+        // for (let i = 0; i < input.files.length; i++) {
+        $(`#pic${i}`).attr('src', e.target.result);
+      }
+    }
+    reader.readAsDataURL(input.files[i]);
+  }
+}
+
+$("#pics-input").change(function () {
+  readURL(this);
+});
 
 function changeSubOption() {
-  $('#sub_category').empty();
-  if ($('#main_category').val() === 'basketball') {
-    let subCategoryOption = $('<option></option>').attr({
-      'value': 'shoes',
-      // 'class': 'sub-option',
-    }).html('鞋');
-    $('#sub_category').append(subCategoryOption)
-  } else if ($('#main_category').val() === 'photograph') {
-    let subCategoryOption = $('<option></option>').attr({
-      'value': 'camera',
-      // 'class': 'sub-option',
-    }).html('相機');
-    $('#sub_category').append(subCategoryOption)
-  }
+  console.log('change');
+  // $('#sub_category').empty();
+  // if ($('#main_category').val() === 'basketball') {
+  //   let subCategoryOption = $('<div></div>').attr({
+  //     'value': 'shoes',
+  //     // 'class': 'sub-option',
+  //   }).html('鞋');
+  //   $('#sub_category_list').append(subCategoryOption)
+  // } else if ($('#main_category').val() === 'photograph') {
+  //   let subCategoryOption = $('<option></option>').attr({
+  //     'value': 'camera',
+  //     // 'class': 'sub-option',
+  //   }).html('相機');
+  //   $('#sub_category').append(subCategoryOption)
+  // }
 }
 
 let vaildImageUpload = true;
 // check images size
-$('#pics-input').bind('change', function() {
+$('#pics-input').bind('change', function () {
   // check files count
   let files = this.files;
-  if (files.length > 3) {
+  if (files.length > 4) {
     vaildImageUpload = false;
-    alert('圖片超過3張，請減少圖片數量')
+    alert('圖片超過4張，請減少圖片數量')
   } else {
     // check each picture size
     vaildImageUpload = true;
-    for (let i=0;i<files.length;i++) {
-      console.log('files[i].size')
-      console.log(files[i].size)
+    for (let i = 0; i < files.length; i++) {
       if (files[i].size > 3000000) {
         vaildImageUpload = false;
         alert(`${files[i].name}的檔案大小超過 3MB ，請取消選用或更換其他圖片`)
@@ -64,3 +83,39 @@ $('#pics-input').bind('change', function() {
     })
   }
 });
+
+$('#main_category_list').click((e)=>{
+  $('#main_category').html(`${e.toElement.innerText}`)
+  $('#main_category_input').val(`${e.toElement.innerText}`);
+  if ($('#status_input').val() !== '') {
+    $('#add-items-btn').attr({type:'submit'})
+  }
+})
+$('#sub_category_list').click((e)=>{
+  $('#sub_category').html(`${e.toElement.innerText}`)
+})
+$('#status_list').click((e)=>{
+  $('#status').html(`${e.toElement.innerText}`)
+  $('#status_input').val(`${e.toElement.innerText}`);
+  if ($('#main_category_input').val() !== '') {
+    $('#add-items-btn').attr({type:'submit'})
+  }
+})
+
+$('#main_category').click(()=>{
+  $('#main_category_list').toggle()
+})
+$('#sub_category').click(()=>{
+  $('#sub_category_list').toggle()
+})
+$('#status').click(()=>{
+  $('#status_list').toggle()
+})
+
+$('#add-items-btn').click(()=>{
+  if ($('#main_category_input').val() === '' || $('#status_input').val() === '') {
+    alert('請先選擇商品分類與商品狀態');
+  } else if ($('#pics-input').val() === '') {
+    alert('請先選擇至少一張圖片');
+  }
+})

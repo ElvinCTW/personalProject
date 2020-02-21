@@ -16,7 +16,7 @@ nav.nav
                         .notification-div.outer.sign
                             form.sign(action="/api/1.0/users/signin", method="post" id="sign-form")
                                 .input-div.sign
-                                    input.id(placeholder="帳號" name="id" type="text" value="test")
+                                    input.id(placeholder="帳號" name="id" type="text" autocomplete="off" value="test")
                                     input.pwd(placeholder="密碼" name="password" type="password" value="123") 
                                     //- input.nickname(placeholder="暱稱" name="name" type="text")
                                 button(type="submit")

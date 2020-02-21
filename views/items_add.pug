@@ -5,29 +5,65 @@ block content
       .inside-container.main.left
         .sub-container.main.left
       .inside-container.main.middle
-        .sub-container.main.middle
-          h1.sub-title 新增物品
-          .items-area.add-item
-            if successMsg
-              .successMsgDiv=successMsg
-            form(action="/api/1.0/items/new" method="post" id="add-items-form" enctype="multipart/form-data")
+        form(action="/api/1.0/items/new" method="post" id="add-items-form" enctype="multipart/form-data")
+          .sub-container.main.middle
+            .items-area.top
+              h1.sub-title(id="item-add-subtitle") 新增物品
+              .button-div
+                button(type="button" id="add-items-btn") 上傳
+            .items-area.add-item
+              if successMsg
+                .successMsgDiv=successMsg
               .new-item
                 .content-div.outer
                   //- input(type="text" name="token" id="token-input" style="display:none;")
                   .select-area
-                    .select-box.main-category(name="main_category" id="main_category" onchange="changeSubOption()") 主分類
-                    .select-box.sub-category(name="sub_category" id="sub_category") 次分類
-                    .select-box.status(name="status" id="status") 商品狀態
-                  - let randomTitle = 'R-Title '+`${Math.round(Math.random()*99999)}`
+                    //- .select-box.main-category(id="main_category" onchange="changeSubOption()" ) 足球
+                    input(type="text" onchange="changeSubOption()" style="display:none;" name="main_category" id="main_category_input")
+                    .select-box.main-category(id="main_category") 主分類   ▾
+                      .outer-select-box
+                        .sub-select-box.main-category(id="main_category_list")
+                          //- - let i = 0
+                          //- while i < 20
+                          .option 棒球
+                          .option 橄欖球
+                          .option 高爾夫球
+                          //-   - i++
+                    //- .select-box.sub-category(name="sub_category" id="sub_category") 次分類   ▾
+                    //- .select-box.sub-category(id="sub_category") 鞋
+                    //-   .outer-select-box
+                    //-     input(type="text" style="display:none;" name="sub_category")
+                    //-     .sub-select-box.sub-category(id="sub_category_list")
+                    //- .select-box.status(id="status") 全新
+                    input(type="text" style="display:none;" name="status" id="status_input")
+                    .select-box.status(id="status") 商品狀態   ▾
+                      .outer-select-box
+                        .sub-select-box.status(id="status_list")
+                          .option 全新
+                          .option 二手
+                          .option 觀賞用
+                  //- - let randomTitle = 'R-Title '+`${Math.round(Math.random()*99999)}`
                   //- p 標題
-                  input.title(name="title" type="text" placeholder="標題" required maxlength="30")
+                  input.title(name="title" type="text" placeholder="標題" autocomplete="off" required maxlength="30")
                   //- p 標籤
-                  input.tags(name="tags" type="text" placeholder="標籤" maxlength="40")
+                  input.tags(name="tags" type="text" placeholder="標籤" autocomplete="off" maxlength="40")
                   //- p 簡介
                   textarea.introduction(name="introduction" type="text" placeholder="簡介" value="yoyoyo")
-                .picture-area.outer
+                label(for="pics-input")
+                  .picture-area.outer
+                    input.pictures(type="file", name="pictures" accept="image/*" id="pics-input" multiple required hidden)
+                    //- .picture-area.inner.up
+                    //-   img(src="/images/upload-icon.png", alt="")
+                    //- .picture-area.inner.down
+                    .picture-area.div
+                      img(id="pic0")
+                    .picture-area.div
+                      img(id="pic1")
+                    .picture-area.div
+                      img(id="pic2")
+                    .picture-area.div
+                      img(id="pic3")
                   //- p 圖片 (最多3張，每張照片大小不超過 3 MB)
-                  input.pictures(type="file", name="pictures" accept="image/*" id="pics-input" multiple required)
-              .button-div
-                button(type="submit" id="add-items-btn") 新增物品
+              //- .button-div
+              //-   button(type="submit" id="add-items-btn") 新增物品
   script(src="/javascripts/items_add.js")

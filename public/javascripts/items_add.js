@@ -1,7 +1,5 @@
 /**
  * To do :
- * 動態生成母分類
- * 更換主分類時動態生成子分類
  * 上傳時確認暱稱與 token 為同一人
  */
 // 生成母分類
@@ -10,10 +8,13 @@ $.ajax({
   type: 'get',
   success: (mainList) => {
     console.log(mainList);
-    mainList.forEach(main=>{
+    mainList.forEach(main => {
       console.log('main')
       console.log(main)
-      let option = $('<div></div>').attr('class', 'option').html(main.main_category)
+      let option = $('<div></div>').attr({
+        class: 'option',
+        main_id: main.id,
+      }).html(main.main_category)
       $('#main_category_list').append(option);
     })
   },
@@ -100,20 +101,22 @@ $('#pics-input').bind('change', function () {
   }
 });
 // 打開分類選單
-$('#main_category').click(()=>{
+$('#main_category').click(() => {
   $('#main_category_box').toggle();
 })
-$('#sub_category').click(()=>{
+$('#sub_category').click(() => {
   $('#sub_category_box').toggle()
 })
-$('#status').click(()=>{
+$('#status').click(() => {
   $('#status_box').toggle()
 })
 
 // 點擊主分類選單
-$('#main_category_list').click((e)=>{
+$('#main_category_list').click((e) => {
+  console.log('e')
+  console.log(e)
   $('#main_category_text').text(`${e.toElement.innerText}`)
-  $('#main_category_input').val(`${e.toElement.innerText}`);
+  $('#main_category_input').val(`${e.originalEvent.toElement.attributes.main_id.value}`);
   // 抽換次分類
   $.ajax({
     url: `/api/1.0/category/sub?main_category=${e.toElement.innerText}`,
@@ -121,8 +124,11 @@ $('#main_category_list').click((e)=>{
     success: (subCategorylist) => {
       console.log(subCategorylist);
       $('#sub_category_list').empty()
-      subCategorylist.forEach(sub=>{
-        let option = $('<div></div>').attr('class','option').html(sub.sub_category);
+      subCategorylist.forEach(sub => {
+        let option = $('<div></div>').attr({
+          class: 'option',
+          sub_id: sub.id
+        }).html(sub.sub_category);
         $('#sub_category_list').append(option)
       })
     },
@@ -131,33 +137,33 @@ $('#main_category_list').click((e)=>{
     }
   })
   if ($('#status_input').val() !== '' && $('#sub_category_input').val() !== '') {
-    $('#add-items-btn').attr({type:'submit'})
+    $('#add-items-btn').attr({ type: 'submit' })
   }
 })
 // 次分類
-$('#sub_category_list').click((e)=>{
-  if ($('#main_category_input').val()==='') {
+$('#sub_category_list').click((e) => {
+  if ($('#main_category_input').val() === '') {
     alert('請先選擇主分類')
   } else {
     $('#sub_category_text').text(`${e.toElement.innerText}`)
-    $('#sub_category_input').val(`${e.toElement.innerText}`)
+    $('#sub_category_input').val(`${e.originalEvent.toElement.attributes.sub_id.value}`)
     if ($('#status_input').val() !== '' && $('#main_category_input').val() !== '') {
-      $('#add-items-btn').attr({type:'submit'})
+      $('#add-items-btn').attr({ type: 'submit' })
     }
   }
 })
 // 狀態
-$('#status_list').click((e)=>{
+$('#status_list').click((e) => {
   $('#status_text').text(`${e.toElement.innerText}`)
   $('#status_input').val(`${e.toElement.innerText}`);
   if ($('#main_category_input').val() !== '' && $('#sub_category_input').val() !== '') {
-    $('#add-items-btn').attr({type:'submit'})
+    $('#add-items-btn').attr({ type: 'submit' })
   }
 })
 
 // 上傳前檢查
-$('#add-items-btn').click(()=>{
-  if ($('#main_category_input').val() === '' || $('#sub_category_input').val() === ''  || $('#status_input').val() === '') {
+$('#add-items-btn').click(() => {
+  if ($('#main_category_input').val() === '' || $('#sub_category_input').val() === '' || $('#status_input').val() === '') {
     alert('請先選擇商品分類與商品狀態');
   } else if ($('#pics-input').val() === '') {
     alert('請先選擇至少一張圖片');
@@ -167,10 +173,12 @@ $('#add-items-btn').click(()=>{
 function tagsNormalization() {
   // let tags = $('#tags_input').val()
   if ($('#tags_input').val() !== '') {
-    // 去除空白
-    let tags = $('#tags_input').val().replace(/\s*/g,'')
     // 抽換＃為#
-    tags = tags.replace(/＃/g,'#')
+    let tags = $('#tags_input').val().replace(/＃/g, '#')
+    // 去除空白
+    tags = tags.replace(/\s*/g, '')
+    // 若沒#，添加#
+    if (tags[0] !== '#') {tags = '#'+tags}
     $('#tags_input').val(tags)
   }
 }

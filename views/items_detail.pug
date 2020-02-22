@@ -12,7 +12,7 @@ block content
                 .nickname.item-detail(id="required-owner")=user_nickname
                 .title.item-detail(id="item-detail-title")=title
                 .sub-title-div.detail
-                  .sub-title.category=status+main_category+sub_category
+                  .sub-title.category=status+main_category_text+sub_category_text
                   .sub-title.time(id="item-detail-time")=time
                 .picture-div.item-detail
                   - let imgUrl = 'https://triangletradeelvintokyo.s3-ap-northeast-1.amazonaws.com/'+pictures.split(',')[0]

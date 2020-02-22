@@ -2,9 +2,8 @@ const mysql = require('../util/mysql');
 module.exports = {
   get: (queryCondition) => {
     return new Promise((resolve, reject)=>{
-      let queryString = 'SELECT * FROM items ';
       if (queryCondition.action === 'getHotCounts') {
-        queryString = 'SELECT main_category hot_board, COUNT(*) count FROM items GROUP BY main_category ORDER BY count DESC LIMIT 0,500';
+        let queryString = 'SELECT main_category hot_board, COUNT(*) count FROM items GROUP BY main_category ORDER BY count DESC LIMIT 0,500';
         // let queryCondition = [];
         mysql.pool.query(queryString, (err, hotCountsResult, fileds) => {
           if (err) {
@@ -17,7 +16,7 @@ module.exports = {
           }
         });
       } else if (queryCondition.action === 'getConfirmedMatchItemsData') {
-        queryString = 'SELECT * FROM items WHERE items.id in (?)';
+        let queryString = mysql.itemJoinString+'WHERE i.id in (?)';
         mysql.pool.query(queryString, [queryCondition.idArr], (err, getConfirmedMatchItemsDataResult, fileds) => {
           if (err) {
             mysql.errLog(err,'getConfirmedMatchItemsDataResult','itemDAO')
@@ -31,7 +30,7 @@ module.exports = {
       } else if (queryCondition.type === 'all') {
         if (queryCondition.id_Arr) {
           // get data for id_Arr
-          queryString += 'WHERE id IN (?) AND availability = "true"';
+          let queryString = mysql.itemJoinString+'WHERE i.id IN (?) AND i.availability = "true"';
           mysql.pool.query(queryString, [queryCondition.id_Arr], (err, getItemResultArr, fields)=>{
             if (err) {
               console.log(err.sqlMessage);
@@ -43,14 +42,14 @@ module.exports = {
         } else if (queryCondition.main_category) {
           if (!queryCondition.sub_category) {
             // select all by main category only
-            queryString += 'WHERE main_category = ? AND availability = "true" ORDER BY time DESC LIMIT ?, 20';
+            let queryString = mysql.itemJoinString+'WHERE i.main_category = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
             mysql.pool.query(queryString, [queryCondition.main_category, queryCondition.page*20], (err, getItemResultArr, fields)=>{
               if (err) {reject(err)};
               resolve(getItemResultArr);
             }) 
           } else {
             // select all by main and sub category
-            queryString += 'WHERE main_category = ? AND sub_category = ? AND availability = "true" ORDER BY time DESC LIMIT ?, 20';
+            let queryString = mysql.itemJoinString+'WHERE i.main_category = ? AND i.sub_category = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
             mysql.pool.query(queryString, queryCondition.main_category, queryCondition.sub_category, queryCondition.page*20, (err, getItemResultArr, fields)=>{
               if (err) {reject(err)};
               resolve(getItemResultArr);
@@ -70,7 +69,7 @@ module.exports = {
           });
         } else if (!queryCondition.user_nickname) {
           // lastest
-          queryString += 'WHERE availability = "true" ORDER BY time DESC LIMIT ?, 20';
+          let queryString = mysql.itemJoinString+'WHERE i.availability = "true" ORDER BY i.time DESC LIMIT ?, 20';
           mysql.pool.query(queryString, queryCondition.page*20, (err, getItemResultArr, fields)=>{
             // if (err) {reject(err)};
             // resolve(getItemResultArr);
@@ -78,14 +77,14 @@ module.exports = {
           })
         } else {
           // recommand
-          queryString += 'WHERE user_nickname = ? AND availability = "true" ORDER BY time DESC LIMIT ?, 20';
+          queryString += 'WHERE user_nickname = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
           mysql.pool.query(queryString, [queryCondition.user_nickname, queryCondition.page*20], (err, getItemResultArr, fields)=>{
             afterItemsQuery(err, queryCondition, getItemResultArr, resolve, reject);
           })
         } 
       } else if (queryCondition.type === 'detail') {
         // item detail info page
-        queryString += 'WHERE id = ? AND availability = "true"'
+        let queryString = mysql.itemJoinString+'WHERE i.id = ? AND i.availability = "true"'
         mysql.pool.query(queryString, queryCondition.item_id, (err, getItemResultArr, fields)=>{
           if (err) {reject(err)};
           resolve(getItemResultArr);

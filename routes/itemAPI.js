@@ -31,7 +31,7 @@ router.post('/new', async (req, res, next) => {
           action: 'getUserDataByToken',
           token: req.body.token,
         });
-        userID = userDataArr[0].sign_id;
+        userID = userDataArr[0].id;
         userNickname = userDataArr[0].nickname;
         cb(null, `userUpload/${userNickname}/${userNickname}-` + Date.now().toString())
       }
@@ -59,7 +59,7 @@ router.post('/new', async (req, res, next) => {
     // insert item
     const insertItemResult = await itemDAO.insert({
       user_id: userID,
-      user_nickname: userNickname,
+      // user_nickname: userNickname,
       main_category: req.body.main_category,
       sub_category: req.body.sub_category,
       tags: req.body.tags,

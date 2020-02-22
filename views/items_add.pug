@@ -23,19 +23,11 @@ block content
                 .content-div.outer
                   input(type="text" name="token" id="token-input" style="display:none;")
                   .select-area
-                    //- .select-box.main-category(id="main_category" onchange="changeSubOption()" ) 足球
                     input(type="text" style="display:none;" name="main_category" id="main_category_input" required)
                     .select-box.main-category(id="main_category")
                       span(id="main_category_text") 主分類   ▾
                       .outer-select-box(id="main_category_box")
                         .sub-select-box.main-category(id="main_category_list")
-                          //- if allBoardsList
-                          //-   - let i = 0
-                          //-   //- - let mainCategoryListCount = mainCategoryList.length
-                          //-   while i < allBoardsList.length
-                          //-     .option=allBoardsList[i]
-                          //-     - i++
-                    //- .select-box.sub-category(name="sub_category" id="sub_category") 次分類   ▾
                     input(type="text" style="display:none;" name="sub_category" id="sub_category_input" required)
                     .select-box.sub-category(id="sub_category") 
                       span(id="sub_category_text") 次分類   ▾

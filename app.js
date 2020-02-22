@@ -42,6 +42,7 @@ app.get('/items/detail', async (req,res)=>{
     type: 'detail',
     item_id: req.query.item_id,
   })
+  
   res.render('items_detail',itemDetailData[0])
 });
 // Matches

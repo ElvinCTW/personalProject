@@ -15,11 +15,14 @@ block content
                   .sub-title.category=status+main_category_text+sub_category_text
                   .sub-title.time(id="item-detail-time")=time
                 .picture-div.item-detail
-                  - let imgUrl = 'https://triangletradeelvintokyo.s3-ap-northeast-1.amazonaws.com/'+pictures.split(',')[0]
-                  img(src=imgUrl)
-                .interaction.item-detail
-                  .change-button.item-detail
-                    button(id="change-btn-item-detail") 點此進行交換⬇︎
+                  - let imgArr = pictures.split(',').map(pic=>'https://triangletradeelvintokyo.s3-ap-northeast-1.amazonaws.com/'+pic)
+                  - let i = 0
+                  while i < imgArr.length-1
+                    img(src=imgArr[i])
+                    - i++
+                //- .interaction.item-detail
+                //-   .change-button.item-detail
+                //-     button(id="change-btn-item-detail") 點此進行交換⬇︎
                 .introduction-div.item-detail=introduction
               .sub-main-container.user-items(id="subdiv-itemdetail-useritems" style="display:none;")
                 button.title.user-items(type="button" id="exchange-request-btn") 請在點選自己的物品後點擊此處

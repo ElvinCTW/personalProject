@@ -4,9 +4,6 @@ block content
     .outer-container.main
       .inside-container.main.left
         .sub-container.main.left
-          //- form(action="/api/1.0/items/new" method="post" enctype="multipart/form-data")
-            //- input(type="text" name="token" id="token-input" style="display:none;")
-            //- button(type="submit")
       .inside-container.main.middle
         form(action="/api/1.0/items/new" method="post" id="add-items-form" enctype="multipart/form-data")
           .sub-container.main.middle
@@ -34,29 +31,20 @@ block content
                       .outer-select-box(id="sub_category_box")
                         .sub-select-box.sub-category(id="sub_category_list")
                           .option 請先選擇主分類
-                    //- .select-box.status(id="status") 全新
                     input(type="text" style="display:none;" name="status" id="status_input" required)
                     .select-box.status(id="status")
                       span(id="status_text") 商品狀態   ▾
                       .outer-select-box(id="status_box")
-                        //- .inner-select-box
                         .sub-select-box.status(id="status_list")
                           .option 全新
                           .option 二手
                           .option 觀賞用
-                  //- - let randomTitle = 'R-Title '+`${Math.round(Math.random()*99999)}`
-                  //- p 標題
                   input.title(name="title" type="text" placeholder="標題" autocomplete="off" required maxlength="30")
-                  //- p 標籤
                   input.tags(name="tags" type="text" placeholder="標籤" autocomplete="off" maxlength="40" onchange="tagsNormalization()" id="tags_input")
-                  //- p 簡介
                   textarea.introduction(name="introduction" type="text" placeholder="簡介" value="yoyoyo")
                 label(for="pics-input")
                   .picture-area.outer
                     input.pictures(type="file", name="pictures" accept="image/*" id="pics-input" multiple required hidden)
-                    //- .picture-area.inner.up
-                    //-   img(src="/images/upload-icon.png", alt="")
-                    //- .picture-area.inner.down
                     .picture-area.div
                       img(id="pic0" class="item-add-pictures")
                     .picture-area.div
@@ -65,8 +53,4 @@ block content
                       img(id="pic2" class="item-add-pictures")
                     .picture-area.div
                       img(id="pic3" class="item-add-pictures")
-                  //- p 圖片 (最多3張，每張照片大小不超過 3 MB)
-              //- .button-div
-              //-   button(type="submit" id="add-items-btn") 新增物品
-              //- button(type="submit")
   script(src="/javascripts/items_add.js")

@@ -124,6 +124,7 @@ $('#main_category_list').click((e) => {
     success: (subCategorylist) => {
       console.log(subCategorylist);
       $('#sub_category_list').empty()
+      $('#sub_category_text').text('次分類   ▾')
       subCategorylist.forEach(sub => {
         let option = $('<div></div>').attr({
           class: 'option',
@@ -179,6 +180,9 @@ function tagsNormalization() {
     tags = tags.replace(/\s*/g, '')
     // 若沒#，添加#
     if (tags[0] !== '#') {tags = '#'+tags}
+    // 填上空白+去頭
+    tags = tags.replace(/#/g, ' #')
+    tags = tags.substr(1)
     $('#tags_input').val(tags)
   }
 }

@@ -4,6 +4,7 @@ const express = require('express');
 const userAPI = require('./routes/userAPI');
 const itemAPI = require('./routes/itemAPI');
 const wantAPI = require('./routes/wantAPI');
+const categoryAPI = require('./routes/categoryAPI');
 const matchesAPI = require('./routes/matchesAPI');
 const msgAPI = require('./routes/msgAPI');
 const itemDAO = require('./dao/item');
@@ -24,22 +25,16 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-/* Views */
+/**
+ * Views 
+ */
 // Index
 app.get('/', (req, res) => {res.render('index', {
   mainBoardsList: listData.mainBoardsList,
   subscribeBoardsList: listData.subscribeBoardsList,
-  // hotBoardsList: await itemDAO.get({action:'getHotCounts'}),
 })});
-// app.get('/', (req, res) => {res.render('index', {
-//   listData:listData,
-//   hotBoardsList:listData.hotBoardsList(),
-// })});
-// Users
-app.get('/users/signin', (req,res)=>{res.render('signin')});
+// sign up
 app.get('/users/signup', (req,res)=>{res.render('signup')});
-// app.get('/api/1.0/users/signin', (req,res)=>{res.redirect('/')});
-
 // Items
 app.get('/items/new', (req,res)=>{res.render('items_add')});
 app.get('/items/detail', async (req,res)=>{
@@ -47,17 +42,15 @@ app.get('/items/detail', async (req,res)=>{
     type: 'detail',
     item_id: req.query.item_id,
   })
-  // itemDetailData[0].time = new Date(parseInt(itemDetailData[0].time)).toString().slice(4, 24)
   res.render('items_detail',itemDetailData[0])
 });
+// Matches
 // Check non-confirmed matches
 app.get('/matches/information', async (req,res)=>{
   // get data with first match in the list, need to check if no matches at all
   let objectOfmatchesResultArr = await wantDAO.get({
     user_nickname: req.query.user_nickname,
   });
-  // console.log('(objectOfmatchesResultArr.doubleMatchResultArr.length > 0 || objectOfmatchesResultArr.tripleMatchResultArr.length > 0)')
-  // console.log((objectOfmatchesResultArr.doubleMatchResultArr.length > 0 || objectOfmatchesResultArr.tripleMatchResultArr.length > 0))
   if (objectOfmatchesResultArr.doubleMatchResultArr.length > 0 || objectOfmatchesResultArr.tripleMatchResultArr.length > 0) {
     let tempArr = [];
     objectOfmatchesResultArr.doubleMatchResultArr.forEach(doubleMatch=>{
@@ -76,10 +69,6 @@ app.get('/matches/information', async (req,res)=>{
   } else {
     objectOfmatchesResultArr.b_itemObjectArr = [];
   }
-  // console.log('objectOfmatchesResultArr.b_itemObjectArr')
-  // console.log(objectOfmatchesResultArr.b_itemObjectArr)
-  // console.log('objectOfmatchesResultArr')
-  // console.log(objectOfmatchesResultArr)
   res.render('match_check', objectOfmatchesResultArr)
 });
 // Check confirmed matches
@@ -89,7 +78,6 @@ app.get('/matches/confirmed', async (req,res)=>{
     user_nickname: req.query.user_nickname,
     type: 'all',
   });
-
   res.render('match_confirmed', {
     getConfirmedMatchesResultArr:getConfirmedMatchesResultArr,
   });
@@ -118,6 +106,7 @@ app.use('/api/1.0/items', itemAPI);
 app.use('/api/1.0/want', wantAPI);
 app.use('/api/1.0/matches', matchesAPI);
 app.use('/api/1.0/message', msgAPI);
+app.use('/api/1.0/category', categoryAPI);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

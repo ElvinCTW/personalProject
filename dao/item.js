@@ -83,12 +83,15 @@ module.exports = {
           })
         } 
       } else if (queryCondition.type === 'detail') {
-        // item detail info page
-        let queryString = mysql.itemJoinString+'WHERE i.id = ? AND i.availability = "true"'
-        mysql.pool.query(queryString, queryCondition.item_id, (err, getItemResultArr, fields)=>{
-          if (err) {reject(err)};
-          resolve(getItemResultArr);
-        });
+        mysql.advancedQuery({
+          queryString: mysql.itemJoinString+'WHERE i.id = ? AND i.availability = "true"',
+          queryCondition: [queryCondition.item_id],
+          queryName: 'itemDetailResult',
+          DAO_name: 'itemDAO',
+          reject: reject,
+        },(itemDetailResult)=>{
+          resolve(itemDetailResult)
+        })
       } else {
         reject({msg: 'wrong query type, error in items.get()'})
       }

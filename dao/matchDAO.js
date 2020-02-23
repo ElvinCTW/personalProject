@@ -16,10 +16,6 @@ module.exports = {
             mysql.errLog(err,'insertMatchTableResult','matchDAO')
             reject(err)
           } else {
-            // console.log('insertMatchTableResult')
-            // console.log(insertMatchTableResult)
-            // console.log('insertMatchTableResult.insertId')
-            // console.log(insertMatchTableResult.insertId)
             resolve(insertMatchTableResult.insertId);
           }
         });

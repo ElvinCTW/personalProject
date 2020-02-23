@@ -6,7 +6,7 @@ const userDAO = require('../dao/user');
 const msgDAO = require('../dao/msgDAO');
 const itemDAO = require('../dao/item');
 
-
+// item_detail page 建立 want 用
 router.post('/new', async (req, res, next) => {
   // 確認使用者為本人
   let checkUserResult = await userDAO.get({
@@ -39,7 +39,7 @@ router.post('/new', async (req, res, next) => {
         // content, sender, receiver, time, mentioned_item_id
         _2n3MatchResultObj.doubleMatchResultArr.forEach(doubleMatch => {
           // 通知 B_nickname A_title
-          msgArr.push([`您對"${doubleMatch.A_title}"的兩人配對已成立，快到配對確認頁面查看吧！`, 'system', doubleMatch.B_id, Date.now().toString(), doubleMatch.required_item_id])
+          msgArr.push([`您對"${doubleMatch.A_title}"的兩人配對已成立，快到"配對"頁面確認吧！`, 'system', doubleMatch.B_id, Date.now().toString(), doubleMatch.required_item_id])
         })
       }
       if (_2n3MatchResultObj.tripleMatchResultArr.length > 0) {
@@ -53,8 +53,8 @@ router.post('/new', async (req, res, next) => {
         _2n3MatchResultObj.tripleMatchResultArr.forEach(tripleMatch => {
           // 先做通知 B + C title 再做 C + A_title
           msgArr.push(
-            [`您對"${tripleMatch.C_title}"的三人配對已成立，快到配對確認頁面查看吧！`, 'system', curUserId, Date.now().toString(), tripleMatch.want_item_id],
-            [`您對"${tripleMatch.A_title}"的三人配對已成立，快到配對確認頁面查看吧！`, 'system', tripleMatch.C_id, Date.now().toString(), req.body.required_item]
+            [`您對"${tripleMatch.C_title}"的三人配對已成立，快到"配對"頁面確認吧！`, 'system', curUserId, Date.now().toString(), tripleMatch.want_item_id],
+            [`您對"${tripleMatch.A_title}"的三人配對已成立，快到"配對"頁面確認吧！`, 'system', tripleMatch.C_id, Date.now().toString(), req.body.required_item]
           )
         })
       }
@@ -77,9 +77,35 @@ router.post('/new', async (req, res, next) => {
   }
 });
 
+// 配對頁面讀取資料用
+router.get('/check', async (req, res, next) => {
+  // get data with first match in the list, need to check if no matches at all
+  let objectOfmatchesResultArr = await wantDAO.get({
+    action: 'getWantCheckPageData',
+    token: req.headers.authorization.split(' ')[1],
+  }).catch((err)=>{res.status(500).send('取得配對頁面資料時發生DB錯誤')});
+  if (objectOfmatchesResultArr.doubleMatchResultArr.length > 0 || objectOfmatchesResultArr.tripleMatchResultArr.length > 0) {
+    let tempArr = [];
+    objectOfmatchesResultArr.doubleMatchResultArr.forEach(doubleMatch=>{
+      tempArr.push( doubleMatch.B_id )
+    })
+    objectOfmatchesResultArr.tripleMatchResultArr.forEach(tripleMatch=>{
+      tempArr.push( tripleMatch.B_id)
+    })
+    // 取得不重複 Array
+    let setTempArr = [...new Set(tempArr)];
+    // 過濾仍可取用之物品並取得資料
+    objectOfmatchesResultArr.b_itemObjectArr = await itemDAO.get({
+      type: 'all',
+      id_Arr: setTempArr,
+    });
+  } else {
+    objectOfmatchesResultArr.b_itemObjectArr = [];
+  }
+  res.send(objectOfmatchesResultArr)
+})
+// 配對頁面按下確認鍵時用
 router.post('/checked', async (req, res, next) => {
-  // console.log('req.body');
-  // console.log(req.body);
   /**
  * 檢查是否有成功的 confirmed 配對，若有查到則進行以下動作
  * 1.confirmed match 物品下架
@@ -96,8 +122,6 @@ router.post('/checked', async (req, res, next) => {
       // 已按照時間排列，會選擇最先提出 want 的配對
       id_Arr.push(checkConfirmedMatchResult.itemC_idArr[0])
     }
-    // console.log('id_Arr');
-    // console.log(id_Arr);
     // 1.新增交換紀錄，並取得交易紀錄 ID (之後建立配對成功者聊天訊息和查詢配對紀錄用)**
     let insertMatchId = await matchDAO.insert({ id_Arr: id_Arr });
     // 2.物品下架
@@ -113,10 +137,6 @@ router.post('/checked', async (req, res, next) => {
     let notificationResult = await wantDAO.get({ id_Arr: id_Arr })
     // 3.1 過濾通知名單，製作 msg 內容
     // 取得通知配對成功名單 && 配對取消名單
-    // let tempArr = notificationResult.filter(result => id_Arr.indexOf(result.notificated_item_id) === -1)
-
-    // let cancelNotificationArr = [];
-    // let matchedNotificationArr = [];
     let insertMsgQueryDataArr = [];
     notificationResult.forEach(notification => {
       if (id_Arr.indexOf(notification.notificated_item_id) === -1) {
@@ -125,18 +145,6 @@ router.post('/checked', async (req, res, next) => {
         insertMsgQueryDataArr.push([`恭喜！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}"的交換請求已成立～交換編號為${insertMatchId}，現在就打開交換溝通頁和對方討論交換細節吧！`, 'system', notification.notificated_user, notification.gone_item_id, insertMatchId, Date.now().toString()])
       }
     })
-    // console.log('cancelNotificationArr');
-    // console.log(cancelNotificationArr);
-    // console.log('matchedNotificationArr')
-    // console.log(matchedNotificationArr)
-    // console.log('insertMsgQueryDataArr')
-    // console.log(insertMsgQueryDataArr)
-    // let insertMsgQueryDataArr = [];
-    // cancelNotificationArr.forEach(notification => {
-    //   insertMsgQueryDataArr.push([`您對 ${notification.gone_item_title} 的交換請求，因該物品下架已被取消`, 'system', notification.notificated_user, notification.gone_item_id, Date.now().toString()])
-    // })
-    // console.log('insertMsgQueryDataArr')
-    // console.log(insertMsgQueryDataArr)
     // 3.2 將 msg 插入 message table 
     let insertedRowsCount = 0;
     if (insertMsgQueryDataArr.length > 0) {
@@ -149,12 +157,9 @@ router.post('/checked', async (req, res, next) => {
       console.log('something wrong when inserting gone msg in msgDAO');
       console.log('insertedRowsCount')
       console.log(insertedRowsCount)
-      // console.log('matchedNotificationArr.length+cancelNotificationArr.length')
-      // console.log(matchedNotificationArr.length+cancelNotificationArr.length)
       console.log('insertMsgQueryDataArr.length')
       console.log(insertMsgQueryDataArr.length)
     }
-    // console.log('finish notification of gone-item');
     // 4.建立用戶溝通頁面
     res.send({
       msg: '配對成功！商品已自動為您下架，請至配對頁查詢配對結果',
@@ -164,10 +169,11 @@ router.post('/checked', async (req, res, next) => {
       msg: '目前尚未配對成功，請耐心等候～',
     })
   }
-
 })
 
-// get item matches result
+
+
+// want 確認頁取得資料用
 router.get('/matches/:type', async (req, res, next) => {
   const checkMatchResultArr = await wantDAO.get({
     item_id: req.query.id,
@@ -185,6 +191,7 @@ router.get('/matches/:type', async (req, res, next) => {
   res.send(resArr)
 })
 
+// item_detail page 取得先前已選擇過的物品清單用
 router.get('/last', async (req, res, next) => {
   let userSelectedItemIdArr = await wantDAO.get({
     action: 'getUserSelectedItemIdArr',
@@ -193,5 +200,7 @@ router.get('/last', async (req, res, next) => {
   })
   res.send(userSelectedItemIdArr);
 })
+
+// 
 
 module.exports = router;

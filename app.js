@@ -47,30 +47,31 @@ app.get('/items/detail', async (req,res)=>{
 });
 // Matches
 // Check non-confirmed matches
-app.get('/matches/information', async (req,res)=>{
+app.get('/want/check', async (req,res)=>{
   // get data with first match in the list, need to check if no matches at all
-  let objectOfmatchesResultArr = await wantDAO.get({
-    user_nickname: req.query.user_nickname,
-  });
-  if (objectOfmatchesResultArr.doubleMatchResultArr.length > 0 || objectOfmatchesResultArr.tripleMatchResultArr.length > 0) {
-    let tempArr = [];
-    objectOfmatchesResultArr.doubleMatchResultArr.forEach(doubleMatch=>{
-      tempArr.push( doubleMatch.B_id )
-    })
-    objectOfmatchesResultArr.tripleMatchResultArr.forEach(tripleMatch=>{
-      tempArr.push( tripleMatch.B_id)
-    })
-    // 取得不重複 Array
-    let setTempArr = [...new Set(tempArr)];
-    // 過濾仍可取用之物品並取得資料
-    objectOfmatchesResultArr.b_itemObjectArr = await itemDAO.get({
-      type: 'all',
-      id_Arr: setTempArr,
-    });
-  } else {
-    objectOfmatchesResultArr.b_itemObjectArr = [];
-  }
-  res.render('match_check', objectOfmatchesResultArr)
+  // let objectOfmatchesResultArr = await wantDAO.get({
+  //   user_nickname: req.query.user_nickname,
+  // });
+  // if (objectOfmatchesResultArr.doubleMatchResultArr.length > 0 || objectOfmatchesResultArr.tripleMatchResultArr.length > 0) {
+  //   let tempArr = [];
+  //   objectOfmatchesResultArr.doubleMatchResultArr.forEach(doubleMatch=>{
+  //     tempArr.push( doubleMatch.B_id )
+  //   })
+  //   objectOfmatchesResultArr.tripleMatchResultArr.forEach(tripleMatch=>{
+  //     tempArr.push( tripleMatch.B_id)
+  //   })
+  //   // 取得不重複 Array
+  //   let setTempArr = [...new Set(tempArr)];
+  //   // 過濾仍可取用之物品並取得資料
+  //   objectOfmatchesResultArr.b_itemObjectArr = await itemDAO.get({
+  //     type: 'all',
+  //     id_Arr: setTempArr,
+  //   });
+  // } else {
+  //   objectOfmatchesResultArr.b_itemObjectArr = [];
+  // }
+  // res.render('match_check', objectOfmatchesResultArr)
+  res.render('match_check')
 });
 // Check confirmed matches
 app.get('/matches/confirmed', async (req,res)=>{

@@ -89,10 +89,20 @@ if (page !== 'end') {
           // 記得要順便 query wish table，如果 table 有記錄需寫進 lastOfferItems
           for (let i = 20 * page; i < (20 * page + itemsListArr.length); i++) {
             // Create link to item detail page
-            let link = $('<div></div>').attr({
-              'class': 'item-div user-item',
-              'item_id': itemsListArr[i - 20 * page].id,
-            }).click(() => {
+            let link
+            if (lastTimeSelectedArr.indexOf(itemsListArr[i - 20 * page].id) !== -1) {
+              link = $('<div></div>').attr({
+                'class': 'item-div user-item',
+                'item_id': itemsListArr[i - 20 * page].id,
+                'style': 'background:rgb(235,235,235)',
+              });
+            } else {
+              link = $('<div></div>').attr({ 
+                'class': 'item-div user-item',
+                'item_id': itemsListArr[i - 20 * page].id,
+              });
+            }
+            link.click(() => {
               if (link.attr('style') === 'background:rgb(235,235,235)') {
                 // 取消點選時將 itemID 移出 selectorListArr
                 link.attr({ 'style': 'background:none;' });
@@ -108,32 +118,10 @@ if (page !== 'end') {
               }
             });
             $('#items-area-user-item').append(link);
-            // Create new Item outside container
-            // let newItemContainer_Outside
-            // if (lastTimeSelectedArr.indexOf(itemsListArr[i - 20 * page].id) !== -1) {
-            //   newItemContainer_Outside = $('<div></div>').attr({
-            //     'class': 'item-container-outside recommands',
-            //     'style': 'background:#ddd',
-            //   });
-            // } else {
-            //   newItemContainer_Outside = $('<div></div>').attr({ 'class': 'item-container-outside recommands' });
-            // }
-            // link.append(newItemContainer_Outside);
-            // // Create new Item inside container
-            // let newItemContainer_Inside = $('<div></div>').attr({ 'class': 'item-container-inside recommands' });
-            // newItemContainer_Outside.append(newItemContainer_Inside);
-            // Create basedonDiv, itemImgDiv and itemContentDiv
-            // let basedonDiv = $('<div></div>').attr({ 'class': 'based-on' });
             let itemImgDiv = $('<div></div>').attr({ 'class': 'picture-div user-item' });
             let itemContentDiv = $('<div></div>').attr({ 'class': 'content-div user-item' });
-            // link.append(basedonDiv);
             link.append(itemImgDiv);
             link.append(itemContentDiv);
-            // basedonDiv text spans
-            // let basedonSpan = $('<span />').html('Based on ');
-            // let basedontag = $('<span />').attr({ 'id': 'basedon-tag' }).html('#something');
-            // basedonDiv.append(basedonSpan);
-            // basedonDiv.append(basedontag);
             // add picture
             let itemImg = $('<img></img>').attr({ 'src': s3_url + itemsListArr[i - 20 * page].pictures.split(',')[0] });
             itemImgDiv.append(itemImg);
@@ -142,16 +130,7 @@ if (page !== 'end') {
             // let itemInfoDiv = $('<div></div>').attr({ 'class': 'item-info' });
             let tagsDiv = $('<div></div>').attr({ 'class': 'introduction-div tags user-item' });
             itemContentDiv.append(titleDiv);
-            // itemContentDiv.append(itemInfoDiv);
             itemContentDiv.append(tagsDiv);
-            // add nickname and status span
-            // let nicknameSpan = $('<span />').attr({ 'class': 'nickname' }).html(`${itemsListArr[i - 20 * page].user_nickname}`);
-            // let statusSpan = $('<span />').attr({
-            //   'class': 'status',
-            //   'id': 'item-status',
-            // }).html(`${itemsListArr[i - 20 * page].status}`);
-            // itemInfoDiv.append(nicknameSpan);
-            // itemInfoDiv.append(statusSpan);
             // add tags to tagsDiv
             let tagsArr = itemsListArr[i - 20 * page].tags.split(' ')
             for (let j = 0; j < tagsArr.length; j++) {

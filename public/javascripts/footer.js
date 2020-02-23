@@ -1,3 +1,4 @@
+let msgCount = 0;
 if (localStorage.getItem('token')) {
   // Sign in status
   const nickname = localStorage.getItem('nickname');
@@ -11,27 +12,30 @@ if (localStorage.getItem('token')) {
   $('#general-notification').click(() => {
     $('#notification-area').toggle()
     // call msgDAO change watched => true
-    if ($('#notification-count').html()) {
+    if ($('#notification-count')) {
       $('#notification-count').remove();
-      $.ajax({
-        url: `/api/1.0/message/watched`,
-        type: 'post',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        success: (affectedRows) => {
-          console.log(affectedRows);
-          console.log(`已將 ${affectedRows} 則訊息標示為已讀`);
-        },
-        error: (err) => {
-          console.log(err)
-          return;
-        }
-      })
+      if (msgCount>0) {
+        $.ajax({
+          url: `/api/1.0/message/watched`,
+          type: 'post',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          success: (affectedRows) => {
+            console.log(affectedRows);
+            console.log(`已將 ${affectedRows} 則訊息標示為已讀`);
+            msgCount=0;
+          },
+          error: (err) => {
+            console.log(err)
+            return;
+          }
+        })
+      }
     }
   })
-  $('#match-notification').attr('href', `/matches/information?user_nickname=${nickname}`);
-  $('#match-confirmed').attr('href', `/matches/confirmed?user_nickname=${nickname}`);
+  $('#match-notification').attr('href', `/want/check`);
+  $('#match-confirmed').attr('href', `/matches/confirmed`);
   $('#add-item').attr('href', `/items/new`);
 
   // get notification counts
@@ -57,8 +61,9 @@ function showNotification(token) {
     success: (unreadMsgArr) => {
       console.log(unreadMsgArr);
       if (unreadMsgArr.length > 0) {
+        msgCount = unreadMsgArr.length;
         // update number of fast btn
-        let notificationCount = $('<div></div>').attr({ 'id': 'notification-count' }).html(`${unreadMsgArr.length}`);
+        let notificationCount = $('<div></div>').attr({ 'id': 'notification-count' });
         notificationCount.insertAfter($('#notification-span'))
         // insert msg into msg area
         unreadMsgArr.forEach(msgObj => {

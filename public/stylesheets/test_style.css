@@ -203,7 +203,7 @@ select.list {
 }
 
 .notification-div.outer.notification {
-  min-height: 90px;
+  min-height: 75px;
   padding: 0 5px;
   background: rgb(235,235,235);
   display: flex;
@@ -243,7 +243,7 @@ form.sign {
   border-radius: 4px;
   display: none;
   width: 330px;
-  max-height: 225px;
+  max-height: 150px;
   background: rgb(235,235,235);
   position: absolute;
   margin: 22.4px auto auto -300px;
@@ -289,6 +289,10 @@ form.sign {
 
 .notification-div form button {
   display: none;
+}
+
+.notification-div.new {
+  font-size: 12px;
 }
 
 form.sign input{
@@ -928,4 +932,22 @@ span.title.user-item {
 
 .tag.user-item {
   font-size: 12px;
+}
+
+#notification-count {
+  background: red;
+  width: 6px;
+  height: 6px;
+  /* line-height: 12px; */
+  text-align: center;
+  border-radius: 10px;
+  /* color: red; */
+  font-size: 1px;
+  font-weight: 200;
+  margin-left: -2px;
+}
+
+.fast-btn-sub {
+  display: flex;
+  align-items: flex-start;
 }

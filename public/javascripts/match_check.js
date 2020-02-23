@@ -1,9 +1,49 @@
 // const alphabetArr = ['A', 'B', 'C']
-if (!localStorage.getItem('nickname')) {
+if (!localStorage.getItem('token')) {
   // 確認使用者有登入，如果沒有，跳alert請user登入
   alert('請登入以進行物品交換確認');
   window.location.assign('/');
   // 應確認使用者為指定 user_nickname 的使用者
+} else {
+  ((token=localStorage.getItem('token'))=>{
+    // get data
+    $.ajax({
+      url: `/api/1.0/want/check`,
+      type: 'get',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      success: (objectOfmatchesResultArr) => {
+        console.log(objectOfmatchesResultArr);
+        let bArr = objectOfmatchesResultArr.b_itemObjectArr
+        if (bArr.length > 0) {
+          bArr.forEach(want=>{
+            let subsItem = $('<div></div>').attr('class','subscribe-item').click(()=>{
+              getMatchedResultData(want.id, want.title, 'want')
+            })
+            subsItem.insertAfter($('#subs-subtext'));
+            let subsContent = $('<div></div>').attr('class','subscribe-content')
+            subsItem.append(subsContent);
+            let subsSpan = $('<span></span>').html(want.title);
+            subsContent.append(subsSpan)
+            // .subscribe-item(onclick=`getMatchedResultData(${want.id}, '${want.title}', 'want')`)
+              // .subscribe-content 
+                // span=want.title
+          })
+        } else {
+          let subsItem = $('<div></div>').attr('class','subscribe-item')
+          subsItem.insertAfter($('#subs-subtext'));
+          let subsContent = $('<div></div>').attr('class','subscribe-content')
+          subsItem.append(subsContent);
+          let subsSpan = $('<span></span>').html('目前沒有配對');
+          subsContent.append(subsSpan)
+        }
+      },
+      error: (err) => {
+        alert(err);
+      }
+    })
+  })()
 }
 
 function getMatchedResultData(want_item_id, want_title, item_type) {

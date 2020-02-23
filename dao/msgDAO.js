@@ -73,11 +73,11 @@ module.exports = {
           }
         });
       } else if (queryData.action === 'getMsgForHeader') {
-        queryString = 'SELECT * FROM message WHERE receiver = ? AND watched = "false"';
+        console.log('queryData')
+        console.log(queryData)
+        queryString = 'SELECT m.* FROM message m JOIN users u ON u.id = m.receiver WHERE u.token = ? AND m.watched = "false"';
         queryCondition.length = 0;
-        queryCondition.push(queryData.nickname);
-        // console.log('queryData.nickname')
-        // console.log(queryData.nickname)
+        queryCondition.push(queryData.token);
         // console.log('queryCondition')
         // console.log(queryCondition)
         mysql.pool.query(queryString, queryCondition, (err, getMsgResult, fileds) => {
@@ -85,8 +85,8 @@ module.exports = {
             mysql.errLog(err,'getMsgResult','msgDAO')
             reject(err)
           } else {
-            // console.log('getMsgResult')
-            // console.log(getMsgResult)
+            console.log('getMsgResult')
+            console.log(getMsgResult)
             resolve(getMsgResult)
           }
         });
@@ -98,9 +98,9 @@ module.exports = {
       let queryString='';
       let queryCondition =[];
       if (queryData.action === 'markedAsWatched') {
-        queryString = 'UPDATE message SET watched = "true" WHERE receiver = ? AND watched = "false"';
+        queryString = 'UPDATE message m JOIN users u ON u.id = m.receiver SET m.watched = "true" WHERE u.token = ? AND m.watched = "false"';
         queryCondition.length = 0;
-        queryCondition.push(queryData.nickname);
+        queryCondition.push(queryData.token);
         mysql.pool.query(queryString, queryCondition, (err, markedAsWatchedResult, fileds) => {
           if (err) {
             console.log('err here');

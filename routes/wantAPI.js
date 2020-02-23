@@ -53,8 +53,8 @@ router.post('/new', async (req, res, next) => {
         _2n3MatchResultObj.tripleMatchResultArr.forEach(tripleMatch => {
           // 先做通知 B + C title 再做 C + A_title
           msgArr.push(
-            [`您對"${tripleMatch.C_title}"的三人配對已成立，快到配對確認頁面查看吧！`, 'system', getBItemDetailResult[0].user_nickname, Date.now().toString(), tripleMatch.want_item_id],
-            [`您對"${tripleMatch.A_title}"的三人配對已成立，快到配對確認頁面查看吧！`, 'system', tripleMatch.C_nickname, Date.now().toString(), req.body.required_item]
+            [`您對"${tripleMatch.C_title}"的三人配對已成立，快到配對確認頁面查看吧！`, 'system', curUserId, Date.now().toString(), tripleMatch.want_item_id],
+            [`您對"${tripleMatch.A_title}"的三人配對已成立，快到配對確認頁面查看吧！`, 'system', tripleMatch.C_id, Date.now().toString(), req.body.required_item]
           )
         })
       }

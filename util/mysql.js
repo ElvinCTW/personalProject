@@ -26,10 +26,10 @@ module.exports = {
   advancedQuery: (obj, cb)=>{
     pool.query(obj.queryString, obj.queryCondition, (err, result, fileds) => {
       if (err) {
-        console.log(`error in ${obj.queryName}, ${DAO_Name}`);
+        console.log(`error in ${obj.queryName}, ${obj.DAO_name}`);
         console.log(err.sqlMessage);
         console.log(err.sql);
-        reject(err)
+        obj.reject(err)
       } else {
         cb(result);
       }

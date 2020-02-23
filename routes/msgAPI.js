@@ -27,8 +27,13 @@ router.get('/header', async (req, res, next)=>{
   let unreadMsgArr = await msgDAO.get({
     action: 'getMsgForHeader',
     nickname: req.query.nickname,
+  }).catch(err=>{
+    console.log(err);
+    res.status(500).send([]);
   })
-  res.send(unreadMsgArr);
+  if (unreadMsgArr) {
+    res.send(unreadMsgArr);
+  }
 })
 
 module.exports = router;

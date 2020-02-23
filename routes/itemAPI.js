@@ -103,6 +103,8 @@ router.get('/:type', async (req, res, next) => {
       item_id: req.query.item_id || null,
       token: token,
       user_nickname: user_nickname,
+    }).catch((err)=>{
+      res.status(500).send(err);
     })
     if (!getItemResultArr.errorMsg) {
       res.status(200).send(getItemResultArr);

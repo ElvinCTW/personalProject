@@ -32,7 +32,7 @@ module.exports = {
     queryData.item_id = parseInt(queryData.item_id);
     if (queryData.action === 'getUserSelectedItemIdArr') {
       return new Promise((resolve, reject) => {
-        let queryString = 'SELECT i.id FROM want w JOIN items i ON i.id = w.want_item_id WHERE required_item_id = ? AND i.user_nickname = ?';
+        let queryString = 'SELECT i.id FROM want w JOIN items i ON i.id = w.want_item_id JOIN users u ON i.user_id = u.id WHERE w.required_item_id = ? AND u.nickname = ?';
         let queryCondition = [queryData.item_id, queryData.user_nickname];
         mysql.pool.query(queryString, queryCondition, (err, userSelectedItemIdResult, fileds) => {
           if (err) {
@@ -77,6 +77,7 @@ module.exports = {
       queryData.wantArr.forEach((item_id) => {
         parseIntArr.push(parseInt(item_id));
       })
+      // A = current user , B = item_deatil page owner, C = other
       // B_nickname 在裡面
       queryString = `SELECT w.*, i.user_nickname B_nickname, i2.title A_title FROM want w JOIN items i ON i.id = w.want_item_id JOIN items i2 ON i2.id = w.required_item_id WHERE w.want_item_id = ? AND w.required_item_id in (?) AND i.availability = "true"`;
       queryCondition = [queryData.item_id, parseIntArr];

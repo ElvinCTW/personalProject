@@ -103,7 +103,7 @@ function createMoreItems() {
           // add tags to tagsDiv
           let tagsArr = itemsListArr[i - 20 * page].tags.split(' ')
           for (let j = 0; j < tagsArr.length; j++) {
-            let tagSpan = $('<span />').html(`${tagsArr[j]}`);
+            let tagSpan = $('<span />').html(`${tagsArr[j]} `);
             tagsDiv.append(tagSpan);
           }
         }

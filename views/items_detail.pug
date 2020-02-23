@@ -3,31 +3,59 @@ block content
   main
     .outer-container.main
       .inside-container.main.left
-      .inside-container.main.middle
-        .sub-container.main.middle
+      .inside-container.main.middle.detail
+        .sub-container.main.middle.detail
           if title
             //- h1.sub-title.detail=title
             .items-area.detail(id="items-area-recommand")
               .sub-main-container.item-detail
-                .nickname.item-detail(id="required-owner")=user_nickname
-                .title.item-detail(id="item-detail-title")=title
-                .sub-title-div.detail
-                  .sub-title.category=status+main_category_text+sub_category_text
-                  .sub-title.time(id="item-detail-time")=time
-                .picture-div.item-detail
+                .info-div.item-detail
+                  .nickname.item-detail(id="required-owner")=user_nickname
+                  .title.item-detail(id="item-detail-title")
+                    p=title
+                  .sub-title-div.detail
+                    .sub-title.category=status
+                    .sub-title.category=main_category_text
+                    .sub-title.category=sub_category_text
+                    .sub-title.time(id="item-detail-time")=time
+                .picture-div.item-detail(id="item-detail-pic-div")
                   - let imgArr = pictures.split(',').map(pic=>'https://triangletradeelvintokyo.s3-ap-northeast-1.amazonaws.com/'+pic)
                   - let i = 0
                   while i < imgArr.length-1
-                    img(src=imgArr[i])
+                    img(src=imgArr[i] style="display:none;" id=`img${i}`)
                     - i++
+              .sub-main-container.text-content
+                .introduction-div.tags
+                  - let tagsArr = tags.split(' ')
+                  each tag in tagsArr
+                    .tag=tag
+                .introduction-div.item-detail=introduction
                 //- .interaction.item-detail
                 //-   .change-button.item-detail
                 //-     button(id="change-btn-item-detail") 點此進行交換⬇︎
-                .introduction-div.item-detail=introduction
-              .sub-main-container.user-items(id="subdiv-itemdetail-useritems" style="display:none;")
-                button.title.user-items(type="button" id="exchange-request-btn") 請在點選自己的物品後點擊此處
-                .items-div.user-items(id="items-area-recommand")
+              //- .sub-main-container.user-items(id="subdiv-itemdetail-useritems" style="display:none;")
+              //-   button.title.user-items(type="button" id="exchange-request-btn") 請在點選自己的物品後點擊此處
+              //-   .items-div.user-items(id="items-area-recommand")
           else 
             h1.sub-title 您來晚了><物品已不在架上～
-        //- .main-right
+      .inside-container.main.right
+        .sub-container.main.right.user-item
+          .items-area.top
+            h1.sub-title.user-item(id="item-add-subtitle")  您的物品清單
+            .button-div
+              button(type="button" id="exchange-request-btn") 交換
+          .items-area.user-items
+            .sub-main-container.user-items(id="items-area-user-item")
+              //- 這裡開始
+              //- .item-div.user-item
+              //-   .picture-div.user-item
+              //-   .content-div.user-item
+              //-     span.title.user-item aaa
+              //-     .introduction-div.tags.user-item
+              //-       .tag.user-item=tags
+                
+
+              
+              
+              
   script(src="/javascripts/items_detail.js")

@@ -82,7 +82,7 @@ module.exports = {
         } else {
           // recommand
           mysql.advancedQuery({
-            queryString: mysql.itemJoinString+'WHERE user_nickname = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20',
+            queryString: mysql.itemJoinString+'WHERE u.nickname = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20',
             queryCondition: [data.user_nickname,data.page*20],
             queryName: 'recommendItemsData',
             DAO_name: 'itemDAO',

@@ -6,60 +6,70 @@ const msgDAO = require('../dao/msgDAO');
 const itemDAO = require('../dao/item');
 
 router.post('/new', async (req, res, next) => {
-  // 確認對方是否曾經想要你的物品
-  req.body.required_item = parseInt(req.body.required_item);
-  const _2n3MatchResultObj = await wantDAO.get({
-    wantArr: req.body.want_items_Arr.split(','),
-    item_id: req.body.required_item,
-  })
-  // Call wantDAO.insert
-  const newWantInsertResult = await wantDAO.insert({
-    wantArr: req.body.want_items_Arr.split(','),
-    required_item_id: req.body.required_item,
-  })
-  // 建立通知被配對者的訊息
-  let msgArr = [];
-  if (newWantInsertResult.errorMsg) {
-    res.status(500).send(newWantInsertResult.errorMsg)
-  } else {
-    // 建立 msg 通知交易者
-    if (_2n3MatchResultObj.doubleMatchResultArr.length > 0) {
-      // double match msg
-      // content, sender, receiver, time, mentioned_item_id
-      _2n3MatchResultObj.doubleMatchResultArr.forEach(doubleMatch => {
-        // 通知 B_nickname A_title
-        msgArr.push([`您對"${doubleMatch.A_title}"的兩人配對已成立，快到配對確認頁面查看吧！`, 'system', doubleMatch.B_nickname, Date.now().toString(), doubleMatch.required_item_id])
-      })
-    }
-    if (_2n3MatchResultObj.tripleMatchResultArr.length > 0) {
-      // 取得 B_nickname
-      let getBItemDetailResult = await itemDAO.get({
-        type: 'detail',
-        item_id: req.body.required_item,
-      })
-      // triple match msg
-      // content, sender, receiver, time, mentioned_item_id
-      _2n3MatchResultObj.tripleMatchResultArr.forEach(tripleMatch => {
-        // 先做通知 B + C title 再做 C + A_title
-        msgArr.push(
-          [`您對"${tripleMatch.C_title}"的三人配對已成立，快到配對確認頁面查看吧！`, 'system', getBItemDetailResult[0].user_nickname, Date.now().toString(), tripleMatch.want_item_id],
-          [`您對"${tripleMatch.A_title}"的三人配對已成立，快到配對確認頁面查看吧！`, 'system', tripleMatch.C_nickname, Date.now().toString(), req.body.required_item]
-        )
-      })
-    }
-    if (msgArr.length > 0) {
-      const newMatchMsgInsertionCounts = await msgDAO.insert({
-        action: 'insertNewMatchMsg',
-        msgArr: msgArr,
-      })
-      if (newMatchMsgInsertionCounts !== (_2n3MatchResultObj.tripleMatchResultArr.length * 2 + _2n3MatchResultObj.doubleMatchResultArr.length)) {
-        console.log(`insertion msg counts is not normal, insetion counts is ${newMatchMsgInsertionCounts}, tripleMatchMsgCount is ${_2n3MatchResultObj.tripleMatchResultArr.length * 2} and doubleMatchMsgCount is ${_2n3MatchResultObj.doubleMatchResultArr.length}`);
-      }
-    }
-    // Send back success or fail msg
-    res.send({
-      msg: ` 配對結果: \n 已新增 ${newWantInsertResult.affectedRows} 個交換請求, \n 為您找到 ${_2n3MatchResultObj.doubleMatchResultArr.length} 個雙人交換, \n 找到 ${_2n3MatchResultObj.tripleMatchResultArr.length} 三人交換`
+  // 確認使用者為本人
+  let checkUserResult = await userDAO.get({
+    action: 'getUserDataByToken',
+    token: req.body.token,
+  }).catch(err=>{res.status(500).send('資料庫錯誤');})
+  if (checkUserResult.length === 1) {
+    // 確認對方是否曾經想要你的物品
+    // let curUserId = checkUserResult[0].id
+    req.body.required_item = parseInt(req.body.required_item);
+    const _2n3MatchResultObj = await wantDAO.get({
+      wantArr: req.body.want_items_Arr.split(','),
+      item_id: req.body.required_item,
     })
+    // Call wantDAO.insert
+    const newWantInsertResult = await wantDAO.insert({
+      wantArr: req.body.want_items_Arr.split(','),
+      required_item_id: req.body.required_item,
+    })
+    // 建立通知被配對者的訊息
+    let msgArr = [];
+    if (newWantInsertResult.errorMsg) {
+      res.status(500).send(newWantInsertResult.errorMsg)
+    } else {
+      // 建立 msg 通知交易者
+      if (_2n3MatchResultObj.doubleMatchResultArr.length > 0) {
+        // double match msg
+        // content, sender, receiver, time, mentioned_item_id
+        _2n3MatchResultObj.doubleMatchResultArr.forEach(doubleMatch => {
+          // 通知 B_nickname A_title
+          msgArr.push([`您對"${doubleMatch.A_title}"的兩人配對已成立，快到配對確認頁面查看吧！`, 'system', doubleMatch.B_nickname, Date.now().toString(), doubleMatch.required_item_id])
+        })
+      }
+      if (_2n3MatchResultObj.tripleMatchResultArr.length > 0) {
+        // 取得 B_nickname
+        let getBItemDetailResult = await itemDAO.get({
+          type: 'detail',
+          item_id: req.body.required_item,
+        })
+        // triple match msg
+        // content, sender, receiver, time, mentioned_item_id
+        _2n3MatchResultObj.tripleMatchResultArr.forEach(tripleMatch => {
+          // 先做通知 B + C title 再做 C + A_title
+          msgArr.push(
+            [`您對"${tripleMatch.C_title}"的三人配對已成立，快到配對確認頁面查看吧！`, 'system', getBItemDetailResult[0].user_nickname, Date.now().toString(), tripleMatch.want_item_id],
+            [`您對"${tripleMatch.A_title}"的三人配對已成立，快到配對確認頁面查看吧！`, 'system', tripleMatch.C_nickname, Date.now().toString(), req.body.required_item]
+          )
+        })
+      }
+      if (msgArr.length > 0) {
+        const newMatchMsgInsertionCounts = await msgDAO.insert({
+          action: 'insertNewMatchMsg',
+          msgArr: msgArr,
+        })
+        if (newMatchMsgInsertionCounts !== (_2n3MatchResultObj.tripleMatchResultArr.length * 2 + _2n3MatchResultObj.doubleMatchResultArr.length)) {
+          console.log(`insertion msg counts is not normal, insetion counts is ${newMatchMsgInsertionCounts}, tripleMatchMsgCount is ${_2n3MatchResultObj.tripleMatchResultArr.length * 2} and doubleMatchMsgCount is ${_2n3MatchResultObj.doubleMatchResultArr.length}`);
+        }
+      }
+      // Send back success or fail msg
+      res.send({
+        msg: ` 配對結果: \n 已新增 ${newWantInsertResult.affectedRows} 個交換請求, \n 為您找到 ${_2n3MatchResultObj.doubleMatchResultArr.length} 個雙人交換, \n 找到 ${_2n3MatchResultObj.tripleMatchResultArr.length} 三人交換`
+      })
+    }
+  } else {
+    res.status(500).send('此token查無用戶');
   }
 });
 

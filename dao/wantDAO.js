@@ -79,7 +79,7 @@ module.exports = {
       })
       // A = current user , B = item_deatil page owner, C = other
       // B_nickname 在裡面
-      queryString = `SELECT w.*, i.user_nickname B_nickname, i2.title A_title FROM want w JOIN items i ON i.id = w.want_item_id JOIN items i2 ON i2.id = w.required_item_id WHERE w.want_item_id = ? AND w.required_item_id in (?) AND i.availability = "true"`;
+      queryString = `SELECT w.*, u.id B_id, i2.title A_title FROM want w JOIN items i ON i.id = w.want_item_id JOIN users u ON i.user_id = u.id JOIN items i2 ON i2.id = w.required_item_id WHERE w.want_item_id = ? AND w.required_item_id in (?) AND i.availability = "true"`;
       queryCondition = [queryData.item_id, parseIntArr];
       return new Promise((resolve, reject) => {
         mysql.pool.query(queryString, queryCondition, (err, doubleMatchResultArr, fileds) => {
@@ -91,7 +91,7 @@ module.exports = {
             reject(err);
           } else {
             // C_nickname, C_title, A_title 缺 B_nickname
-            queryString = `SELECT w.*, i.user_nickname C_nickname, i.title C_title, i2.title A_title FROM want w JOIN items i ON i.id = w.want_item_id JOIN items i2 ON i2.id = w.required_item_id WHERE w.want_item_id IN ( SELECT w1.required_item_id FROM want w1 JOIN items i3 ON i3.id = w1.required_item_id WHERE w1.want_item_id = ? AND i3.availability = "true" ) AND w.required_item_id in (?) AND i.availability = "true"`;
+            queryString = `SELECT w.*, u.id C_id, i.title C_title, i2.title A_title FROM want w JOIN items i ON i.id = w.want_item_id JOIN users u ON i.user_id = u.id JOIN items i2 ON i2.id = w.required_item_id WHERE w.want_item_id IN ( SELECT w1.required_item_id FROM want w1 JOIN items i3 ON i3.id = w1.required_item_id WHERE w1.want_item_id = ? AND i3.availability = "true" ) AND w.required_item_id in (?) AND i.availability = "true"`;
             // return new Promise((resolve, reject) => {
             mysql.pool.query(queryString, queryCondition, (err, tripleMatchResultArr, fileds) => {
               // console.log(tripleMatchResultArr);

@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const wantDAO = require('../dao/wantDAO');
 const matchDAO = require('../dao/matchDAO');
+const userDAO = require('../dao/user');
 const msgDAO = require('../dao/msgDAO');
 const itemDAO = require('../dao/item');
+
 
 router.post('/new', async (req, res, next) => {
   // 確認使用者為本人
@@ -13,7 +15,7 @@ router.post('/new', async (req, res, next) => {
   }).catch(err=>{res.status(500).send('資料庫錯誤');})
   if (checkUserResult.length === 1) {
     // 確認對方是否曾經想要你的物品
-    // let curUserId = checkUserResult[0].id
+    let curUserId = checkUserResult[0].id
     req.body.required_item = parseInt(req.body.required_item);
     const _2n3MatchResultObj = await wantDAO.get({
       wantArr: req.body.want_items_Arr.split(','),
@@ -24,6 +26,8 @@ router.post('/new', async (req, res, next) => {
       wantArr: req.body.want_items_Arr.split(','),
       required_item_id: req.body.required_item,
     })
+    console.log('checkpoint')
+    console.log(_2n3MatchResultObj)
     // 建立通知被配對者的訊息
     let msgArr = [];
     if (newWantInsertResult.errorMsg) {
@@ -35,7 +39,7 @@ router.post('/new', async (req, res, next) => {
         // content, sender, receiver, time, mentioned_item_id
         _2n3MatchResultObj.doubleMatchResultArr.forEach(doubleMatch => {
           // 通知 B_nickname A_title
-          msgArr.push([`您對"${doubleMatch.A_title}"的兩人配對已成立，快到配對確認頁面查看吧！`, 'system', doubleMatch.B_nickname, Date.now().toString(), doubleMatch.required_item_id])
+          msgArr.push([`您對"${doubleMatch.A_title}"的兩人配對已成立，快到配對確認頁面查看吧！`, 'system', doubleMatch.B_id, Date.now().toString(), doubleMatch.required_item_id])
         })
       }
       if (_2n3MatchResultObj.tripleMatchResultArr.length > 0) {

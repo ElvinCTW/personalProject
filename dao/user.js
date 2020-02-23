@@ -12,8 +12,6 @@ module.exports = {
             mysql.errLog(err,'userData','userDAO')
             reject(err)
           } else {
-            console.log('userData')
-            console.log(userData)
             resolve(userData)
           }
         });

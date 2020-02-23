@@ -23,6 +23,8 @@ $('#exchange-request-btn').click(() => {
     // 送出請求 Aajx
     let wantItemArr = selectItemIDArr.filter(id => lastTimeSelectedArr.indexOf(id) === -1);
     if (wantItemArr.length > 0) {
+      console.log('token, itemDetail')
+      console.log(localStorage.getItem('token'))
       $.ajax({
         method: 'post',
         url: '/api/1.0/want/new',

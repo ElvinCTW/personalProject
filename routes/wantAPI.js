@@ -171,14 +171,12 @@ router.post('/checked', async (req, res, next) => {
   }
 })
 
-
-
 // want 確認頁取得資料用
 router.get('/matches/:type', async (req, res, next) => {
   const checkMatchResultArr = await wantDAO.get({
     item_id: req.query.id,
     // item_type: req.params.type,
-    user_nickname: req.query.nickname,
+    token: req.headers.authorization.split(' ')[1],
   })
   let resArr = [];
   checkMatchResultArr.doubleMatchResultArr.forEach(element => {
@@ -200,7 +198,5 @@ router.get('/last', async (req, res, next) => {
   })
   res.send(userSelectedItemIdArr);
 })
-
-// 
 
 module.exports = router;

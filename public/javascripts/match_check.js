@@ -5,8 +5,9 @@ if (!localStorage.getItem('token')) {
   window.location.assign('/');
   // 應確認使用者為指定 user_nickname 的使用者
 } else {
-  ((token=localStorage.getItem('token'))=>{
-    // get data
+  let token = localStorage.getItem('token');
+  ((token)=>{
+    // 取得配對物品清單
     $.ajax({
       url: `/api/1.0/want/check`,
       type: 'get',
@@ -18,17 +19,41 @@ if (!localStorage.getItem('token')) {
         let bArr = objectOfmatchesResultArr.b_itemObjectArr
         if (bArr.length > 0) {
           bArr.forEach(want=>{
-            let subsItem = $('<div></div>').attr('class','subscribe-item').click(()=>{
+            let link = $('<div></div>').attr({ 
+              'class': 'item-div user-item',
+            }).click(()=>{
+              $('.item-div.user-item').attr('style','background:none;')
+              link.attr('style','background:rgb(235,235,235);')
               getMatchedResultData(want.id, want.title, 'want')
             })
-            subsItem.insertAfter($('#subs-subtext'));
-            let subsContent = $('<div></div>').attr('class','subscribe-content')
-            subsItem.append(subsContent);
-            let subsSpan = $('<span></span>').html(want.title);
-            subsContent.append(subsSpan)
-            // .subscribe-item(onclick=`getMatchedResultData(${want.id}, '${want.title}', 'want')`)
-              // .subscribe-content 
-                // span=want.title
+            $('#items-area-user-item').append(link);
+            let itemImgDiv = $('<div></div>').attr({ 'class': 'picture-div user-item' });
+            let itemContentDiv = $('<div></div>').attr({ 'class': 'content-div user-item' });
+            link.append(itemImgDiv);
+            link.append(itemContentDiv);
+            // add picture
+            let itemImg = $('<img></img>').attr({ 'src': s3_url + want.pictures.split(',')[0] });
+            itemImgDiv.append(itemImg);
+            // add title, item-info and tags Divs
+            let titleDiv = $('<span></span>').attr({ 'class': 'title user-item' }).html(want.title);
+            // let itemInfoDiv = $('<div></div>').attr({ 'class': 'item-info' });
+            let tagsDiv = $('<div></div>').attr({ 'class': 'introduction-div tags user-item' });
+            itemContentDiv.append(titleDiv);
+            itemContentDiv.append(tagsDiv);
+            // add tags to tagsDiv
+            let tagsArr = want.tags.split(' ')
+            for (let j = 0; j < tagsArr.length; j++) {
+              let tagSpan = $('<div />').attr('class', 'tag user-item').html(`${tagsArr[j]} `);
+              tagsDiv.append(tagSpan);
+            }
+            // let subsItem = $('<div></div>').attr('class','subscribe-item').click(()=>{
+            //   getMatchedResultData(want.id, want.title, 'want')
+            // })
+            // subsItem.insertAfter($('#subs-subtext'));
+            // let subsContent = $('<div></div>').attr('class','subscribe-content')
+            // subsItem.append(subsContent);
+            // let subsSpan = $('<span></span>').html(want.title);
+            // subsContent.append(subsSpan)
           })
         } else {
           let subsItem = $('<div></div>').attr('class','subscribe-item')
@@ -43,18 +68,23 @@ if (!localStorage.getItem('token')) {
         alert(err);
       }
     })
-  })()
+  })(token)
 }
 
 function getMatchedResultData(want_item_id, want_title, item_type) {
   // call wantAPI get matched data (by want_item_id)
   $.ajax({
-    url: `/api/1.0/want/matches/${item_type}?id=${want_item_id}&nickname=${localStorage.getItem('nickname')}`,
+    url: `/api/1.0/want/matches/${item_type}?id=${want_item_id}`,
     type: 'get',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
     success: (matchedItemsDataArr) => {
+      console.log('matchedItemsDataArr')
+      console.log(matchedItemsDataArr)
       // 取得所有 match result of item
       // console.log(matchedItemsDataArr);
-      $('#subtext-matched-result-page').html(`Matched Results of ${want_title}`);
+      // $('#subtext-matched-result-page').html(`Matched Results of ${want_title}`);
       $('#items-area-match').empty();
       // 畫大框框給每個 match
       for (let i = 0; i < matchedItemsDataArr.length; i++) {
@@ -70,7 +100,7 @@ function getMatchedResultData(want_item_id, want_title, item_type) {
         data.want_item_id = matchedItemsDataArr[i].C_id; // user_item_id
         let confirmBtn = $('<button></button>').attr({
           'class': 'interaction-btn',
-        }).html('Confirm').click(() => {
+        }).html('確認').click(() => {
           data.type = 'confirm';
           console.log('data is:');
           console.log(data);
@@ -79,7 +109,7 @@ function getMatchedResultData(want_item_id, want_title, item_type) {
             type: 'post',
             data: data,
             success: (checkAllConfirmResultArr) => {
-              checkStatusNodeArr[1].html(`User : 您, Check : ${data.type}`)
+              checkStatusNodeArr[1].html(`User :  您, 已確認`)
               interactionBtnDiv.attr({ 'style': 'display:none;' })
               // 若有配對成功，alert 成功訊息
               alert(checkAllConfirmResultArr.msg);
@@ -100,10 +130,10 @@ function getMatchedResultData(want_item_id, want_title, item_type) {
         let ownersArr;
         if (!matchedItemsDataArr[i].B_id) {
           interactors = 2;
-          ownersArr = ['對方', '您'];
+          ownersArr = ['對方', '  您'];
         } else {
           interactors = 3;
-          ownersArr = ['第三人', '您', '對方'];
+          ownersArr = ['他人', '  您', '對方'];
         }
         /**
          * 商品資訊區
@@ -117,14 +147,14 @@ function getMatchedResultData(want_item_id, want_title, item_type) {
             let link = $('<a></a>').attr({ 'href': `/items/detail?item_id=${matchedItemsDataArr[i][e].id}` });
             link.insertBefore(interaction);
             // Create new Item outside container
-            let newItemContainer_Outside = $('<div></div>').attr({ 'class': 'item-container-outside recommands match' });
+            let newItemContainer_Outside = $('<div></div>').attr({ 'class': 'item-container outside main index' });
             link.append(newItemContainer_Outside);
             // Create new Item inside container
-            let newItemContainer_Inside = $('<div></div>').attr({ 'class': 'item-container-inside recommands' });
+            let newItemContainer_Inside = $('<div></div>').attr({ 'class': 'item-container inside main index' });
             newItemContainer_Outside.append(newItemContainer_Inside);
             // Create basedonDiv, itemImgDiv and itemContentDiv
             let basedonDiv = $('<div></div>').attr({ 'class': 'based-on' });
-            let itemImgDiv = $('<div></div>').attr({ 'class': 'item-img recommands' });
+            let itemImgDiv = $('<div></div>').attr({ 'class': 'item-img main' });
             let itemContentDiv = $('<div></div>').attr({ 'class': 'item content' });
             newItemContainer_Inside.append(basedonDiv);
             newItemContainer_Inside.append(itemImgDiv);
@@ -143,29 +173,35 @@ function getMatchedResultData(want_item_id, want_title, item_type) {
             let itemImg = $('<img></img>').attr({ 'src': s3_url + matchedItemsDataArr[i][e].pictures.split(',')[0] });
             itemImgDiv.append(itemImg);
             // add title, item-info and tags Divs
-            let titleDiv = $('<div></div>').attr({ 'class': 'title' }).html(`${matchedItemsDataArr[i][e].title}`);
-            let itemInfoDiv = $('<div></div>').attr({ 'class': 'item-info' });
-            let tagsDiv = $('<div></div>').attr({ 'class': 'tags' });
+            let titleDiv = $('<div></div>').attr({ 'class': 'item title' }).html(`${matchedItemsDataArr[i][e].title}`);
+            let itemInfoDiv = $('<div></div>').attr({ 'class': 'item info' });
+            let tagsDiv = $('<div></div>').attr({ 'class': 'item tags' });
             itemContentDiv.append(titleDiv);
             itemContentDiv.append(itemInfoDiv);
             itemContentDiv.append(tagsDiv);
             // add nickname and status span
             let nicknameSpan = $('<span />').attr({ 'class': 'nickname' }).html(`${matchedItemsDataArr[i][e].user_nickname}`);
-            let statusSpan = $('<span />').attr({
-              'class': 'status',
-              'id': 'item-status',
-            }).html(`${matchedItemsDataArr[i][e].status}`);
+            // let statusSpan = $('<span />').attr({
+            //   'class': 'status',
+            //   'id': 'item-status',
+            // }).html(`${matchedItemsDataArr[i][e].status}`);
             itemInfoDiv.append(nicknameSpan);
-            itemInfoDiv.append(statusSpan);
+            // itemInfoDiv.append(statusSpan);
             // add tags to tagsDiv
             let tagsArr = matchedItemsDataArr[i][e].tags.split(' ')
             for (let j = 0; j < tagsArr.length; j++) {
-              let tagSpan = $('<span />').html(`${tagsArr[j]}`);
+              let tagSpan = $('<span />').html(`${tagsArr[j]} `);
               tagsDiv.append(tagSpan);
             }
             /**
              * 配對互動區
              */
+            if (matchedItemsDataArr[i][e].checked === 'confirm') {
+              matchedItemsDataArr[i][e].checked = '已確認'
+            } else {
+              matchedItemsDataArr[i][e].checked = '未確認'
+            }
+
             let ownercheckStatsus = $('<div></div>').attr({ 'class': 'user-check-status' }).html(
               `User : ${ownersArr[divCounter]}, ${matchedItemsDataArr[i][e].checked}`
             );
@@ -201,25 +237,25 @@ function getMatchedResultData(want_item_id, want_title, item_type) {
   })
 }
 
-function updateCheckStatus(ownersArr, chcek) {
-  if (check) {
-    // user click btn "check"
+// function updateCheckStatus(ownersArr, chcek) {
+//   if (check) {
+//     // user click btn "check"
 
-  } else {
+//   } else {
 
-  }
-  $.ajax({
-    url: `/api/1.0/matches/status`,
-    type: 'update',
-    data: {
-      tradeType: tradeType,
-    },
-    success: () => {
-      checkStatusNodeArr[userIndex].html(`User : ${user_nickname}, Check : true`)
-      interactionBtnDiv.attr({ 'style': 'display:none;' })
-    },
-    error: () => {
+//   }
+//   $.ajax({
+//     url: `/api/1.0/matches/status`,
+//     type: 'update',
+//     data: {
+//       tradeType: tradeType,
+//     },
+//     success: () => {
+//       checkStatusNodeArr[userIndex].html(`User : ${user_nickname}, Check : true`)
+//       interactionBtnDiv.attr({ 'style': 'display:none;' })
+//     },
+//     error: () => {
 
-    },
-  })
-}
+//     },
+//   })
+// }

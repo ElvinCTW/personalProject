@@ -1,10 +1,10 @@
 extends layout
 block content
-  .main 
-    .container
-      .main-left
-        .sub-main-container
-          .subtext.subscribe(id="subs-subtext") 已配對物品
+  main
+    .outer-container.main
+      .inside-container.main.left
+        .sub-container.main.left
+          .subtext.subscribe(id="subs-subtext") 
           //- - console.log(b_itemObjectArr.length)
           //- if b_itemObjectArr.length > 0
           //-   each want in b_itemObjectArr
@@ -15,9 +15,17 @@ block content
           //-   .subscribe-item
           //-     .subscribe-content 
           //-       span 目前沒有配對
-      .main-middle.matches-page
-        .sub-main-container.recommands
-          .subtext.recommand(id="subtext-matched-result-page") 配對結果
+      .inside-container.main.middle.match-check
+        .sub-container.main.middle
+          h1.sub-title 交換請求清單
           .items-area.recommands(id="items-area-match")
-          .nomore-text-div(id="nomore-text-div") 請點選左方商品列查看更多配對
+          //- .nomore-text-div(id="nomore-text-div") 請點選左方商品列查看更多配對
+      .inside-container.main.right
+        .sub-container.main.right.want-match
+          .items-area.top
+            h1.sub-title.user-item(id="item-add-subtitle") 您想換的物品
+            .button-div
+              //- button(type="button" id="exchange-request-btn") 交換
+          .items-area.user-items
+            .sub-main-container.user-items(id="items-area-user-item")
   script(src="/javascripts/match_check.js")

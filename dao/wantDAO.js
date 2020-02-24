@@ -111,7 +111,7 @@ module.exports = {
           }
         })
       })
-    } else if ( queryData.action === 'getWantCheckPageData' || queryData.user_nickname || queryData.item_id) {
+    } else if ( queryData.token || queryData.item_id) {
       let doubleMatchResultArr = [];
       let tripleMatchResultArr = [];
       /**
@@ -122,7 +122,7 @@ module.exports = {
       // 查詢該會員的所有交易資料
       // 1. 用 user_nickname 取得 AwantB
       return new Promise((resolve, reject) => {
-        if ((queryData.action === 'getWantCheckPageData')) {
+        if (queryData.token) {
           // console.log('search match result of user in wantDAO');
           queryString = `SELECT want_item_id A_id, required_item_id B_id, i.title FROM want w JOIN items i ON w.want_item_id = i.id JOIN users u ON i.user_id = u.id WHERE u.token = ? AND i.availability = "true"`
           queryCondition = [queryData.token]
@@ -160,19 +160,19 @@ module.exports = {
                 // 用token
                 queryString = `SELECT want_item_id C_id, required_item_id A_id FROM want w JOIN items i ON w.required_item_id = i.id JOIN users u ON u.id = i.user_id WHERE u.token = ? AND i.availability = "true"`
               } else if (queryData.item_id && queryData.token) {
-                queryString = `SELECT want_item_id C_id, w.checked, i.* FROM want w JOIN items i ON w.required_item_id = i.id JOIN items i2 ON w.want_item_id = i2.id WHERE w.required_item_id = ? AND i2.user_nickname = ? AND i.availability = "true"`
+                queryString = `SELECT want_item_id C_id, w.checked, i.*, u.nickname user_nickname FROM want w JOIN items i ON w.required_item_id = i.id JOIN items i2 ON w.want_item_id = i2.id JOIN users u ON u.id = i.user_id WHERE w.required_item_id = ? AND u.token = ? AND i.availability = "true"`
                 queryCondition = [queryData.item_id, queryData.token]
               } else {
                 queryString = `SELECT want_item_id C_id, w.checked, i.* FROM want w JOIN items i ON w.required_item_id = i.id WHERE w.required_item_id = ? AND i.availability = "true"`
                 queryCondition = [queryData.item_id]
               }
-              // console.log('queryString')
-              // console.log(queryString)
-              // console.log('queryCondition');
-              // console.log(queryCondition);
+              console.log('queryString')
+              console.log(queryString)
+              console.log('queryCondition');
+              console.log(queryCondition);
               // console.log(queryCondition);
               mysql.pool.query(queryString, queryCondition, (err, CwantAtable, fileds) => {
-                // console.log(CwantAtable);
+                console.log(CwantAtable);
                 if (err) {
                   console.log('error in CwantAtablePromise');
                   console.log(err.sqlMessage);

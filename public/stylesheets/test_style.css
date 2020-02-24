@@ -650,10 +650,19 @@ form .new-item textarea {
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-#item-add-subtitle {
+#item-add-subtitle,
+#search-by-curuser-item,
+#search-by-required-item {
   border: none;
   margin: 0;
   padding: 0 4px;
+  border-radius: 4px 4px 0 0 ;
+}
+
+#search-by-curuser-item,
+#search-by-required-item {
+  margin-top: 10px;
+  height: 50px;
 }
 
 .picture-area.div img {
@@ -996,4 +1005,9 @@ span.title.user-item {
 
 #notification-area {
   z-index: 100;
+}
+
+.items-area.top.match-check {
+  padding: 0 20px; ;
+  justify-content: space-around;
 }

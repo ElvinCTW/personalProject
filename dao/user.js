@@ -4,7 +4,21 @@ const crypto = require('crypto');
 module.exports = {
   get: (queryData) => {
     return new Promise((resolve, reject) => {
-     if (queryData.action === 'getUserDataByToken') {
+     if (queryData.action === 'checkUpdateWantWithToken') {
+       let queryString = 
+       `SELECT * FROM users u 
+       JOIN items i ON i.user_id = u.id 
+       WHERE u.token = ? AND i.id = ?`;
+       mysql.advancedQuery({
+         queryString: queryString,
+         queryCondition: [queryData.token,queryData.item_id],
+         queryName: 'checkUpdateWantWithToken',
+         DAO_name: 'userDAO',
+         reject: reject,
+       },(checkUpdateWantWithToken)=>{
+         resolve(checkUpdateWantWithToken)
+       })
+     } else if (queryData.action === 'getUserDataByToken') {
         let queryString = 'SELECT * FROM users WHERE token = ?';
         let queryCondition = [queryData.token];
         mysql.pool.query(queryString, queryCondition, (err, userData, fileds) => {
@@ -51,8 +65,6 @@ module.exports = {
             mysql.errLog(err,'signinResult','userDAO')
             reject(err)
           } else {
-            console.log('signinResult')
-            console.log(signinResult)
             resolve(signinResult[0])
           }
         });
@@ -75,8 +87,6 @@ module.exports = {
             mysql.errLog(err,'insertUser','userDAO')
             reject(err)
           } else {
-            console.log('insertUser')
-            console.log(insertUser)
             resolve({
               token: token,
               nickname: queryData.user.nickname,

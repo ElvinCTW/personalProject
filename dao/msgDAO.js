@@ -85,8 +85,8 @@ module.exports = {
             mysql.errLog(err,'getMsgResult','msgDAO')
             reject(err)
           } else {
-            console.log('getMsgResult')
-            console.log(getMsgResult)
+            // console.log('getMsgResult')
+            // console.log(getMsgResult)
             resolve(getMsgResult)
           }
         });

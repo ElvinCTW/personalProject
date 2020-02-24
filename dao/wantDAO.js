@@ -43,7 +43,7 @@ module.exports = {
         // JOIN users u ON u.id = i.user_id
         // JOIN users u2 ON u2.id = i2.user_id
         let queryString = 
-        `SELECT w.*, 
+        `SELECT w.* 
         FROM want w 
         JOIN items i ON i.id = w.want_item_id 
         JOIN items i2 ON i2.id = w.required_item_id
@@ -62,7 +62,7 @@ module.exports = {
       } else if (queryData.action === 'getUserWantByToken') {
         // JOIN users u2 ON u2.id = i2.user_id 
         let queryString = 
-        `SELECT w.*,  
+        `SELECT w.*  
         FROM want w 
         JOIN items i ON i.id = w.want_item_id 
         JOIN items i2 ON i2.id = w.required_item_id 
@@ -186,6 +186,7 @@ module.exports = {
     // console.log('queryData');
     // console.log(queryData);
     return new Promise((resolve, reject) => {
+      console.log('update, wantDAO');
       let queryString = `UPDATE want SET checked = ? WHERE want_item_id = ? AND required_item_id = ?`;
       let queryCondition = [queryData.type, queryData.want_item_id, queryData.required_item_id]
       // console.log('queryCondition');

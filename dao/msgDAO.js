@@ -73,8 +73,8 @@ module.exports = {
           }
         });
       } else if (queryData.action === 'getMsgForHeader') {
-        console.log('queryData')
-        console.log(queryData)
+        // console.log('queryData')
+        // console.log(queryData)
         queryString = 'SELECT m.* FROM message m JOIN users u ON u.id = m.receiver WHERE u.token = ? AND m.watched = "false"';
         queryCondition.length = 0;
         queryCondition.push(queryData.token);

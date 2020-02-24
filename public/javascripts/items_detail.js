@@ -86,6 +86,8 @@ if (page !== 'end') {
         url: `/api/1.0/items/all?page=${page}&user_nickname=${user_nickname}`,
         type: 'get',
         success: (itemsListArr) => {
+          console.log('itemsListArr')
+          console.log(itemsListArr)
           // 記得要順便 query wish table，如果 table 有記錄需寫進 lastOfferItems
           for (let i = 20 * page; i < (20 * page + itemsListArr.length); i++) {
             // Create link to item detail page

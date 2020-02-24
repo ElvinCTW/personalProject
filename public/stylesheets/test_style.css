@@ -663,6 +663,7 @@ form .new-item textarea {
 #search-by-required-item {
   margin-top: 10px;
   height: 50px;
+  padding: 0 10px;
 }
 
 .picture-area.div img {
@@ -1010,4 +1011,17 @@ span.title.user-item {
 .items-area.top.match-check {
   padding: 0 20px; ;
   justify-content: space-around;
+}
+
+#no-match-text {
+  padding-top:1em;
+  line-height: 30px;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.user-check-status {
+  color:rgba(0,0,0,0.6);
+  font-weight: bold;
+  
 }

@@ -56,40 +56,37 @@ module.exports = {
   },
   get: (queryData)=>{
     return new Promise((resolve, reject) => {
-      let queryString='';
-      let queryCondition =[];
       if (queryData.action === 'getConfirmedMatchMsg') {
-        queryString = 'SELECT content, sender, time FROM message WHERE matched_id = ? AND sender <> "system" ORDER BY time';
-        queryCondition.length = 0;
-        queryCondition.push(queryData.matched_id);
-        mysql.pool.query(queryString, queryCondition, (err, getConfirmedMatchMsgResult, fileds) => {
-          if (err) {
-            mysql.errLog(err,'getConfirmedMatchMsgResult','msgDAO')
-            reject(err)
-          } else {
-            // console.log('getConfirmedMatchMsgResult')
-            // console.log(getConfirmedMatchMsgResult)
-            resolve(getConfirmedMatchMsgResult)
-          }
-        });
+        let queryString = 
+        `SELECT content, sender, time 
+        FROM message 
+        WHERE matched_id = ? 
+        AND sender <> "system" 
+        ORDER BY time`;
+        mysql.advancedQuery({
+          queryString: queryString,
+          queryCondition: [queryData.matched_id],
+          queryName: 'confirmedMatchMsg',
+          DAO_name: 'msgDAO',
+          reject: reject,
+        },(confirmedMatchMsg)=>{
+          resolve(confirmedMatchMsg)
+        })
       } else if (queryData.action === 'getMsgForHeader') {
-        // console.log('queryData')
-        // console.log(queryData)
-        queryString = 'SELECT m.* FROM message m JOIN users u ON u.id = m.receiver WHERE u.token = ? AND m.watched = "false"';
-        queryCondition.length = 0;
-        queryCondition.push(queryData.token);
-        // console.log('queryCondition')
-        // console.log(queryCondition)
-        mysql.pool.query(queryString, queryCondition, (err, getMsgResult, fileds) => {
-          if (err) {
-            mysql.errLog(err,'getMsgResult','msgDAO')
-            reject(err)
-          } else {
-            // console.log('getMsgResult')
-            // console.log(getMsgResult)
-            resolve(getMsgResult)
-          }
-        });
+        let queryString = 
+        `SELECT m.* FROM message m 
+        JOIN users u ON u.id = m.receiver 
+        WHERE u.token = ? 
+        AND m.watched = "false"`;
+        mysql.advancedQuery({
+          queryString: queryString,
+          queryCondition: [queryData.token],
+          queryName: 'headerMsg',
+          DAO_name: 'msgDAO',
+          reject: reject,
+        },(headerMsg)=>{
+          resolve(headerMsg)
+        })
       }
     })
   },

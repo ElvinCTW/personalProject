@@ -115,36 +115,23 @@ router.get('/check', async (req, res, next) => {
         tripleMatchResultArr: tripleMatchResultArr,
       })
     } else {
+      console.log('curUserWantArr')
+      console.log(curUserWantArr)
+      console.log('secondItemWantArr')
+      console.log(secondItemWantArr)
       // 確認有沒有 Double Match
-      for (let i = 0; i < secondItemWantArr.length; i++) {
-        for (let j = 0; j < curUserWantArr.length; j++) {
-          if (secondItemWantArr[i].required_item_id === curUserWantArr[j].want_item_id
-            && secondItemWantArr[i].want_item_id === curUserWantArr[j].required_item_id) {
-            // doubleMatchResultArr.push(curUserWantArr[j]) // 裡面有兩個 item 的所有資料 wantItem = curUserItem
-            // doubleMatchResultArr.push({
-            //   curUserItem: {
-            //     id:curUserWantArr[j].want_item_id,
-            //     title:curUserWantArr[j].want_item_title,
-            //     tags:curUserWantArr[j].want_item_tags,
-            //     pictures:curUserWantArr[j].want_item_pictures,
-            //     checked:curUserWantArr[j].checked
-            //   },
-            //   secondUserItem: {
-            //     id:secondItemWantArr[i].want_item_id,
-            //     title:secondItemWantArr[i].want_item_title,
-            //     tags:secondItemWantArr[i].want_item_tags,
-            //     pictures:secondItemWantArr[i].want_item_pictures,
-            //     checked:secondItemWantArr[i].checked
-            //   },
-            // }) // 裡面有兩個 item 的所有資料 wantItem = curUserItem, 以及 want 的 check 狀態
+      for (let i = 0; i < curUserWantArr.length; i++) {
+        for (let j = 0; j < secondItemWantArr.length; j++) {
+          if (curUserWantArr[i].required_item_id === secondItemWantArr[j].want_item_id
+            && curUserWantArr[i].want_item_id === secondItemWantArr[j].required_item_id) {
             doubleMatchResultArr.push({
               curUserWant: {
-                item_id: curUserWantArr[j].want_item_id,
-                checked: curUserWantArr[j].checked
+                item_id: curUserWantArr[i].want_item_id,
+                checked: curUserWantArr[i].checked
               },
               secondUserWant: {
-                item_id: secondItemWantArr[i].want_item_id,
-                checked: secondItemWantArr[i].checked
+                item_id: secondItemWantArr[j].want_item_id,
+                checked: secondItemWantArr[j].checked
               },
             }) // 裡面有兩個 item_id, 以及 want 的 check 狀態
             break;
@@ -166,8 +153,8 @@ router.get('/check', async (req, res, next) => {
           }
         }
       }
-      console.log('combinedWantArr')
-      console.log(combinedWantArr[4])
+      // console.log('combinedWantArr')
+      // console.log(combinedWantArr[4])
       // 用新的 combinedWantArr的 required_item_id 去尋找 thirdItemsWantArr
       // 整理 third_item_id (和 second 是一樣)
       let thirdItemIdArr = combinedWantArr.map(combinedWant => combinedWant.required_item_id);
@@ -178,8 +165,8 @@ router.get('/check', async (req, res, next) => {
       });
       // console.log('thirdItemIdArr')
       // console.log(thirdItemIdArr)
-      console.log('thirdItemWantArr')
-      console.log(thirdItemWantArr[0])
+      // console.log('thirdItemWantArr')
+      // console.log(thirdItemWantArr[0])
       // 確認有沒有 Triple Match
       let tripleMatchResultArr = [];
       for (let i = 0; i < combinedWantArr.length; i++) {
@@ -204,8 +191,8 @@ router.get('/check', async (req, res, next) => {
           }
         }
       }
-      console.log('tripleMatchResultArr')
-      console.log(tripleMatchResultArr)
+      // console.log('tripleMatchResultArr')
+      // console.log(tripleMatchResultArr)
       // 取得資料參考集id
       let dataIdArr = [];
       doubleMatchResultArr.forEach(match => {

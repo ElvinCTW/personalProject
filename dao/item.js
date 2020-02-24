@@ -2,7 +2,23 @@ const mysql = require('../util/mysql');
 module.exports = {
   get: (data) => {
     return new Promise((resolve, reject)=>{
-      if (data.action === 'getHotCounts') {
+      if (data.action === 'checkVaildUserOfMatchDialog') {
+        let queryString = 
+        `SELECT * FROM items i
+        JOIN users u ON i.user_id = u.id
+        JOIN matched m ON m.id = i.matched_id
+        WHERE u.token = ?
+        AND i.matched_id = ?`;
+        mysql.advancedQuery({
+          queryString: queryString,
+          queryCondition: [data.token,data.matched_id],
+          queryName: 'checkVaildUserOfMatchDialog',
+          DAO_name: 'itemDAO',
+          reject: reject,
+        },(checkVaildUserOfMatchDialog)=>{
+          resolve(checkVaildUserOfMatchDialog)
+        })
+      } else if (data.action === 'getHotCounts') {
         let string = 'SELECT main_category hot_board, COUNT(*) count FROM items GROUP BY main_category ORDER BY count DESC LIMIT 0,500';
         // let data = [];
         mysql.pool.query(string, (err, hotCountsResult, fileds) => {
@@ -56,14 +72,24 @@ module.exports = {
             })
           }
         } else if (data.action === 'getConfirmedMatches') { 
-          string = 'SELECT i.matched_id, i2.title required_item_title FROM items i JOIN items i2 ON i.matched_item_id = i2.id WHERE i.availability = "false" AND i.matched_id > 0 AND i.user_nickname = ?';
-          mysql.pool.query(string, [data.user_nickname], (err, getConfirmedMatchesResult, fileds) => {
+          string = 
+          `SELECT i.matched_id, 
+          i2.title required_item_title, 
+          i2.pictures required_item_pictures,
+          i2.tags required_item_tags
+          FROM items i 
+          JOIN items i2 ON i.matched_item_id = i2.id 
+          JOIN users u ON i.user_id = u.id 
+          WHERE i.availability = "false" 
+          AND i.matched_id > 0 
+          AND u.token = ?`;
+          mysql.pool.query(string, [data.token], (err, getConfirmedMatchesResult, fileds) => {
             if (err) {
               mysql.errLog(err,'getConfirmedMatchesResult','itemDAO')
               reject(err)
             } else {
-              // console.log('getConfirmedMatchesResult')
-              // console.log(getConfirmedMatchesResult)
+              console.log('getConfirmedMatchesResult')
+              console.log(getConfirmedMatchesResult)
               resolve(getConfirmedMatchesResult);
             }
           });

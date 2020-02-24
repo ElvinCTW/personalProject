@@ -69,16 +69,16 @@ router.post('/new', async (req, res, next) => {
       introduction: req.body.introduction,
       pictures: picturesString,
       time: Date.now().toString(),
-    }).catch((err)=>{
+    }).catch((err) => {
       console.log('err')
       console.log(err)
-      res.status(500).render('items_add', {errorMsg:'DB error'})
+      res.status(500).render('items_add', { errorMsg: 'DB error' })
     })
     /** Output : success or error msg */
     if (insertItemResult.affectedRows > 0) {
-      res.status(200).render('items_add', {successMsg : 'Insert New Item success!'})
+      res.status(200).render('items_add', { successMsg: 'Insert New Item success!' })
     } else {
-      res.status(500).render('items_add', {errorMsg:'DB error'})
+      res.status(500).render('items_add', { errorMsg: 'DB error' })
     }
   });
 })
@@ -103,7 +103,7 @@ router.get('/:type', async (req, res, next) => {
       item_id: req.query.item_id || null,
       token: token,
       user_nickname: user_nickname,
-    }).catch((err)=>{
+    }).catch((err) => {
       res.status(500).send(err);
     })
     if (!getItemResultArr.errorMsg) {

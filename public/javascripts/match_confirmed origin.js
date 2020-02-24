@@ -1,67 +1,17 @@
 let currentMatchedId;
 
 // const alphabetArr = ['A', 'B', 'C']
-if (!localStorage.getItem('token')) {
+if (!localStorage.getItem('nickname')) {
   // 確認使用者有登入，如果沒有，跳alert請user登入
   alert('請登入以進入交換討論頁面');
   window.location.assign('/');
   // 應確認使用者為指定 user_nickname 的使用者
-} else {
-  let token = localStorage.getItem('token');
-
-  $.ajax({
-    url: `/api/1.0/matches/list`,
-    type: 'get',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    success: (confirmedMatchArr) => {
-      console.log(confirmedMatchArr);
-      if (confirmedMatchArr.length > 0) {
-        confirmedMatchArr.forEach(match => {
-          let link = $('<div></div>').attr({
-            'class': 'item-div user-item',
-          }).click(() => {
-            getMatchedResultData(match.matched_id, match.required_item_title);
-          });
-          $('#items-area-user-item').append(link);
-          let itemImgDiv = $('<div></div>').attr({ 'class': 'picture-div user-item' });
-          let itemContentDiv = $('<div></div>').attr({ 'class': 'content-div user-item' });
-          link.append(itemImgDiv);
-          link.append(itemContentDiv);
-          // add picture
-          let itemImg = $('<img></img>').attr({ 'src': s3_url + match.required_item_pictures.split(',')[0] });
-          itemImgDiv.append(itemImg);
-          // add title, item-info and tags Divs
-          let titleDiv = $('<span></span>').attr({ 'class': 'title user-item' }).html(`${match.required_item_title}`);
-          // let itemInfoDiv = $('<div></div>').attr({ 'class': 'item-info' });
-          let tagsDiv = $('<div></div>').attr({ 'class': 'introduction-div tags user-item' });
-          itemContentDiv.append(titleDiv);
-          itemContentDiv.append(tagsDiv);
-          // add tags to tagsDiv
-          let tagsArr = match.required_item_tags.split(' ');
-          for (let j = 0; j < tagsArr.length; j++) {
-            let tagSpan = $('<div />').attr('class', 'tag user-item').html(`${tagsArr[j]} `);
-            tagsDiv.append(tagSpan);
-          }
-        })
-      }
-    },
-    error: (err) => {
-      console.log(JSON.parse(err.responseText).errorMsg)
-      alert('暫時無法取得戰利品清單QQ，若持續發生請聯絡我們')
-      // alert(err.errorMsg);
-    }
-  })
 }
 
 function getMatchedResultData(matched_id, required_item_title) {
   $.ajax({
     url: `/api/1.0/matches/confirmed?matched_id=${matched_id}`,
     type: 'get',
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
-    },
     success: (confirmedMatchObj) => {
       currentMatchedId = matched_id;
       // 取得帶有訊息 array 和物品資料 array 的 obj
@@ -135,7 +85,7 @@ function getMatchedResultData(matched_id, required_item_title) {
         let msgContent = $('<div></div>').attr({ 'class': 'msg-content' }).html('目前沒有對話喔，快和交換的對方商量交換細節吧！');
         msgDiv.append(msgContent);
       }
-      confirmedMatchObj.msgArr.forEach(msg => {
+      confirmedMatchObj.msgArr.forEach(msg=>{
         let msgDivClass = 'msg-div'
         let who;
         if (msg.sender === localStorage.getItem('nickname')) {

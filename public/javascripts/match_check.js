@@ -99,12 +99,18 @@ if (!localStorage.getItem('token')) {
             // subsContent.append(subsSpan)
           })
         } else {
-          let subsItem = $('<div></div>').attr('class', 'subscribe-item')
-          subsItem.insertAfter($('#subs-subtext'));
-          let subsContent = $('<div></div>').attr('class', 'subscribe-content')
-          subsItem.append(subsContent);
-          let subsSpan = $('<span></span>').html('目前沒有配對');
-          subsContent.append(subsSpan)
+          let match = $('<div></div>').attr({ 
+            'class': 'match-container',
+            'id': 'no-match-text',
+           }).html('目前沒有配對');
+          $('#items-area-match').append(match);
+
+          // let subsItem = $('<div></div>').attr('class', 'subscribe-item')
+          // subsItem.insertAfter($('#subs-subtext'));
+          // let subsContent = $('<div></div>').attr('class', 'subscribe-content')
+          // subsItem.append(subsContent);
+          // let subsSpan = $('<span></span>').html('目前沒有配對');
+          // subsContent.append(subsSpan)
         }
       },
       error: (err) => {
@@ -140,8 +146,6 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
     let tempTArr = matchResultObj.tripleMatchResultArr.filter(match=>match.curUserWant.item_id === item_id)
     matchedItemsDataArr = tempDArr.concat(tempTArr);
   }
-  // 取得 matches 資料
-
   $('#items-area-match').empty();
   // 畫大框框給每個 match
   for (let i = 0; i < matchedItemsDataArr.length; i++) {
@@ -259,15 +263,17 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
         /**
          * 配對互動區
          */
+        console.log('matchedItemsDataArr[i].curUserWant.checked')
+        console.log(matchedItemsDataArr[i].curUserWant.checked)
         if (matchedItemsDataArr[i].curUserWant.checked === "confirm") {show = false}
-        matchedItemsDataArr[i][e].checked = matchedItemsDataArr[i][e].checked === 'confirm'?'已確認':'未確認'
+        let checked = matchedItemsDataArr[i][e].checked === 'confirm'?'已確認':'未確認'
         // if (itemData.checked === 'confirm') {
         //   itemData.checked = '已確認'
         // } else {
         //   itemData.checked = '未確認'
         // }
         let ownercheckStatsus = $('<div></div>').attr({ 'class': 'user-check-status' }).html(
-          `User : ${ownersArr[divCounter]}, ${matchedItemsDataArr[i][e].checked}`
+          `User : ${ownersArr[divCounter]}, ${checked}`
         );
         // if (matchedItemsDataArr[i][e].checked === "deny") {
         //   ownercheckStatsus.attr({

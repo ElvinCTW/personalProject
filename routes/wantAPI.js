@@ -8,7 +8,7 @@ const itemDAO = require('../dao/item');
 
 // item_detail page 建立 want 用
 router.post('/new', async (req, res, next) => {
-  // 確認使用者為本人
+  // 用 token 辨識使用者
   let checkUserResult = await userDAO.get({
     action: 'getUserDataByToken',
     token: req.body.token,
@@ -28,20 +28,39 @@ router.post('/new', async (req, res, next) => {
       wantArr: req.body.want_items_Arr.split(','),
       required_item_id: req.body.required_item,
     })
-    console.log('checkpoint')
-    console.log(_2n3MatchResultObj)
     // 建立通知被配對者的訊息
     let msgArr = [];
     if (newWantInsertResult.errorMsg) {
       res.status(500).send(newWantInsertResult.errorMsg)
     } else {
       // 建立 msg 通知交易者
+      // 如果沒有 match ，建立訊息給被申請者
+      /*
+      if (_2n3MatchResultObj.doubleMatchResultArr.length === 0 &&
+        _2n3MatchResultObj.tripleMatchResultArr.length === 0) {
+          let secondUserIdAndItemTitle = await userDAO.get({
+            action:'getUserDataByItemId',
+            item_id:req.body.required_item,
+          })
+          let insertCount = await msgDAO.insert({
+            action:'insertMsgToOtherUserWhenNoMatch',
+            msg: {
+              content:`您的物品"${secondUserIdAndItemTitle.title}"收到了來自"${checkUserResult.nickname}"的新交換申請，快到"請求"頁面查看一下吧`,
+              required_item_id: req.body.required_item,
+              secondUserId:secondUserIdAndItemTitle.id,
+            }
+          })
+          if (insertCount.affectedRows !== 1) {
+            console.log('insertCount not equal to 1, it is '+insertCount.affectedRows)
+          }
+      } 
+      */
       if (_2n3MatchResultObj.doubleMatchResultArr.length > 0) {
         // double match msg
         // content, sender, receiver, time, mentioned_item_id
         _2n3MatchResultObj.doubleMatchResultArr.forEach(doubleMatch => {
           // 通知 B_nickname A_title
-          msgArr.push([`已發現您對"${doubleMatch.A_title}"的一組新兩人配對，快到"配對"頁面確認吧！`, 'system', doubleMatch.B_id, Date.now().toString(), doubleMatch.required_item_id])
+          msgArr.push([`已建立您對"${doubleMatch.A_title}"的一組新兩人配對，快到"配對"頁面確認吧！`, 'system', doubleMatch.B_id, Date.now().toString(), doubleMatch.required_item_id])
         })
       }
       if (_2n3MatchResultObj.tripleMatchResultArr.length > 0) {
@@ -55,8 +74,8 @@ router.post('/new', async (req, res, next) => {
         _2n3MatchResultObj.tripleMatchResultArr.forEach(tripleMatch => {
           // 先做通知 B + C title 再做 C + A_title
           msgArr.push(
-            [`已發現您對"${tripleMatch.C_title}"的一組新三人配對，快到"配對"頁面確認吧！`, 'system', curUserId, Date.now().toString(), tripleMatch.want_item_id],
-            [`已發現您對"${tripleMatch.A_title}"的一組新三人配對，快到"配對"頁面確認吧！`, 'system', tripleMatch.C_id, Date.now().toString(), req.body.required_item]
+            [`已建立您對"${tripleMatch.C_title}"的一組新三人配對，快到"配對"頁面確認吧！`, 'system', curUserId, Date.now().toString(), tripleMatch.want_item_id],
+            [`已建立您對"${tripleMatch.A_title}"的一組新三人配對，快到"配對"頁面確認吧！`, 'system', tripleMatch.C_id, Date.now().toString(), req.body.required_item]
           )
         })
       }
@@ -209,13 +228,13 @@ router.get('/check', async (req, res, next) => {
       // console.log(dataIdArr)
       // 取得資料參考集
       let itemsDataArr;
-      if (dataIdArr.length>0) {
+      if (dataIdArr.length > 0) {
         itemsDataArr = await itemDAO.get({
           type: 'all',
           id_Arr: dataIdArr,
         })
       } else {
-        itemsDataArr=[];
+        itemsDataArr = [];
       }
       // console.log('tripleMatchResultArr')
       // console.log(tripleMatchResultArr)
@@ -247,8 +266,8 @@ router.post('/checked', async (req, res, next) => {
   // 更新 want table check，並檢查有無 confirmed match，回傳需下架名單
   if (userCheck.length > 0) {
     console.log('check user success');
-    let checkConfirmedMatchResult = await wantDAO.update(req.body).catch(err=>{
-      res.status(500).send({errorMsg:'資料庫錯誤'})
+    let checkConfirmedMatchResult = await wantDAO.update(req.body).catch(err => {
+      res.status(500).send({ errorMsg: '資料庫錯誤' })
     });
     if (checkConfirmedMatchResult.msg) {
       // 若有配對成功，繼續後續動作 id_Arr = [user, user_want, (3)]
@@ -272,10 +291,10 @@ router.post('/checked', async (req, res, next) => {
         console.log(updateAvailabilitiesCount);
       }
       // 3.取得製作通知訊息的資訊 (被通知物品id、被通知人暱稱、下架物品id、下架物品 title)
-      let notificationResult = await wantDAO.get({ 
-        action:'getSendMsgList',
+      let notificationResult = await wantDAO.get({
+        action: 'getSendMsgList',
         id_Arr: id_Arr,
-       })
+      })
       //  console.log('notificationResult')
       //  console.log(notificationResult)
       // 3.1 過濾通知名單，製作 msg 內容
@@ -283,9 +302,9 @@ router.post('/checked', async (req, res, next) => {
       let insertMsgQueryDataArr = [];
       notificationResult.forEach(notification => {
         if (id_Arr.indexOf(notification.notificated_item_id) === -1) {
-          insertMsgQueryDataArr.push([`哭哭！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}" 的交換請求，因該物品下架已被取消><`, 'system', notification.notificated_user, notification.gone_item_id, null, Date.now().toString()])
+          insertMsgQueryDataArr.push([`哭哭！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}"的交換請求，因該物品下架已被取消><`, 'system', notification.notificated_user, notification.gone_item_id, null, Date.now().toString()])
         } else {
-          insertMsgQueryDataArr.push([`恭喜！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}"的交換請求已成立～交換編號為${insertMatchId}，現在就打開交換溝通頁和對方討論交換細節吧！`, 'system', notification.notificated_user, notification.gone_item_id, insertMatchId, Date.now().toString()])
+          insertMsgQueryDataArr.push([`恭喜！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}"的交換請求已成立～交換編號為${insertMatchId}，現在就打開"對話"頁面，和對方討論交換細節吧！`, 'system', notification.notificated_user, notification.gone_item_id, insertMatchId, Date.now().toString()])
         }
       })
       console.log('insertMsgQueryDataArr')
@@ -307,7 +326,7 @@ router.post('/checked', async (req, res, next) => {
       }
       // 4.建立用戶溝通頁面
       res.send({
-        msg: '配對成功！商品已自動為您下架，請至配對頁查詢配對結果',
+        msg: '配對成功！商品已自動為您下架，請至"對話"頁面查詢配對結果～',
       })
     } else {
       res.send({

@@ -14,8 +14,8 @@ if (localStorage.getItem('token')) {
     // call msgDAO change watched => true
     if ($('#notification-count')) {
       $('#notification-count').remove();
-      if (msgCount>0) {
-        $.ajax({
+      if (msgCount>0) { 
+        $.ajax({ // 要改成針對每個 notification
           url: `/api/1.0/message/watched`,
           type: 'post',
           headers: {

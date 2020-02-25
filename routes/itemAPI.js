@@ -72,13 +72,13 @@ router.post('/new', async (req, res, next) => {
     }).catch((err) => {
       console.log('err')
       console.log(err)
-      res.status(500).render('items_add', { errorMsg: '資料庫有誤，請稍候再試QQ' })
+      res.status(500).render('item_result', { errorMsg: '資料庫有誤，請稍候再試QQ' })
     })
     /** Output : success or error msg */
     if (insertItemResult.affectedRows > 0) {
-      res.status(200).render('items_add', { successMsg: '新增物品成功!' })
+      res.status(200).render('item_result', { successMsg: '新增物品成功!' })
     } else {
-      res.status(500).render('items_add', { errorMsg: '資料庫有誤，請稍候再試QQ' })
+      res.status(500).render('item_result', { errorMsg: '資料庫有誤，請稍候再試QQ' })
     }
   });
 })

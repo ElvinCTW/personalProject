@@ -1,16 +1,29 @@
+const token = localStorage.getItem('token');
+if (token) {
+  $('#token-input').val(token);
+} else {
+  alert('plz sign in first');
+  window.location.assign('/');
+}
+
 /**
- * To do :
- * 上傳時確認暱稱與 token 為同一人
+ * 互動
  */
+// 
+if (localStorage.getItem('newItem')) {
+  console.log(localStorage.getItem('newItem'));
+  alert(localStorage.getItem('newItem'));
+  localStorage.removeItem('newItem');
+}
 // 生成母分類
 $.ajax({
   url: `/api/1.0/category/main`,
   type: 'get',
   success: (mainList) => {
-    console.log(mainList);
+    // console.log(mainList);
     mainList.forEach(main => {
-      console.log('main')
-      console.log(main)
+      // console.log('main')
+      // console.log(main)
       let option = $('<div></div>').attr({
         class: 'option',
         main_id: main.id,
@@ -22,15 +35,6 @@ $.ajax({
     alert(err.errorMsg);
   }
 })
-
-// 塞token
-const token = localStorage.getItem('token');
-if (token) {
-  $('#token-input').val(token);
-} else {
-  alert('plz sign in first');
-  window.location.assign('/');
-}
 // 顯示上傳圖片
 function readURL(input) {
   for (let i = 0; i < input.files.length; i++) {
@@ -48,25 +52,7 @@ $("#pics-input").change(function () {
   $('.item-add-pictures').attr('src', '');
   readURL(this);
 });
-
-function changeSubOption() {
-  console.log('change');
-  // $('#sub_category').empty();
-  // if ($('#main_category').val() === 'basketball') {
-  //   let subCategoryOption = $('<div></div>').attr({
-  //     'value': 'shoes',
-  //     // 'class': 'sub-option',
-  //   }).html('鞋');
-  //   $('#sub_category_list').append(subCategoryOption)
-  // } else if ($('#main_category').val() === 'photograph') {
-  //   let subCategoryOption = $('<option></option>').attr({
-  //     'value': 'camera',
-  //     // 'class': 'sub-option',
-  //   }).html('相機');
-  //   $('#sub_category').append(subCategoryOption)
-  // }
-}
-
+// 檢查圖片限制
 let vaildImageUpload = true;
 // check images size
 $('#pics-input').bind('change', function () {
@@ -111,8 +97,7 @@ $('#sub_category').click(() => {
 $('#status').click(() => {
   $('#status_box').toggle()
 })
-
-// 點擊主分類選單
+// 更新主分類
 $('#main_category_list').click((e) => {
   console.log('e')
   console.log(e)
@@ -142,7 +127,7 @@ $('#main_category_list').click((e) => {
     $('#add-items-btn').attr({ type: 'submit' })
   }
 })
-// 次分類
+// 更新次分類
 $('#sub_category_list').click((e) => {
   if ($('#main_category_input').val() === '') {
     alert('請先選擇主分類')
@@ -162,7 +147,6 @@ $('#status_list').click((e) => {
     $('#add-items-btn').attr({ type: 'submit' })
   }
 })
-
 // 上傳前檢查
 $('#add-items-btn').click(() => {
   if ($('#main_category_input').val() === '' || $('#sub_category_input').val() === '' || $('#status_input').val() === '') {
@@ -187,3 +171,11 @@ function tagsNormalization() {
     $('#tags_input').val(tags)
   }
 }
+// 避免重複按鍵上傳
+const form = document.getElementById('add-items-form')
+form.addEventListener('submit',()=>{
+  $('#add-items-btn').attr({
+    type:'button',
+    background:'rgba(20,59,81,0.5)'
+  }).html('上傳中');
+})

@@ -4,7 +4,19 @@ module.exports = {
     let queryCondition = [];
     let queryString = '';
     return new Promise((resolve, reject) => {
-      if (queryData.action === 'insertItemGoneMsgToUser') {
+      if (queryData.action === 'insertMsgToOtherUserWhenNoMatch') {
+        let queryString = 
+        `INSERT INTO message SET ?`;
+        mysql.advancedQuery({
+          queryString: queryString,
+          queryCondition: [queryData.curUser, queryData],
+          queryName: 'msgToOtherNonMatchUser',
+          DAO_name: 'msgDAO',
+          reject: reject,
+        },(msgToOtherNonMatchUser)=>{
+          resolve(msgToOtherNonMatchUser)
+        })
+      } else if (queryData.action === 'insertItemGoneMsgToUser') {
         queryString = 'INSERT INTO message(content, sender, receiver, mentioned_item_id, matched_id, time) VALUES ?';
         mysql.pool.query(queryString, [queryData.insertMsgQueryDataArr], (err, insertMsgResult, fileds) => {
           if (err) {
@@ -69,7 +81,7 @@ module.exports = {
           queryName: 'confirmedMatchMsg',
           DAO_name: 'msgDAO',
           reject: reject,
-        },(confirmedMatchMsg)=>{
+        },(confirmedMatchMsg)=>{  
           resolve(confirmedMatchMsg)
         })
       } else if (queryData.action === 'getMsgForHeader') {
@@ -77,7 +89,7 @@ module.exports = {
         `SELECT m.* FROM message m 
         JOIN users u ON u.id = m.receiver 
         WHERE u.token = ? 
-        AND m.watched = "false"`;
+        ORDER BY m.time DESC`;
         mysql.advancedQuery({
           queryString: queryString,
           queryCondition: [queryData.token],

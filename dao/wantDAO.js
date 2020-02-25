@@ -118,7 +118,6 @@ module.exports = {
           resolve(usersNeedToBeNotifiedList)
         })
       } else if (queryData.action === 'checkCurWantMatchable') {
-        // console.log('search double or triple non-confirmed match in wantDAO');
         // 查詢新增的 want 有沒有兩人或三人配對可供確認
         let parseIntArr = [];
         queryData.wantArr.forEach((item_id) => {
@@ -126,6 +125,7 @@ module.exports = {
         })
         // A = current user , B = item_deatil page owner, C = other
         // B_nickname 在裡面
+        // 尋找反向 ( second_user want cur_user) 的 want
         queryString = 
         `SELECT w.*, u.id B_id, i2.title A_title 
         FROM want w 

@@ -4,7 +4,21 @@ const crypto = require('crypto');
 module.exports = {
   get: (queryData) => {
     return new Promise((resolve, reject) => {
-     if (queryData.action === 'checkUpdateWantWithToken') {
+     if (queryData.action === 'getUserDataByItemId') {
+       let queryString = 
+       `SELECT u.id, i.title FROM users u
+       JOIN items i ON i.user_id = u.id
+       WHERE i.id = ?`;
+       mysql.advancedQuery({
+         queryString: queryString,
+         queryCondition: [queryData.item_id],
+         queryName: 'userDataOfItemId',
+         DAO_name: 'userDAO',
+         reject: reject,
+       },(userDataOfItemId)=>{
+         resolve(userDataOfItemId[0])
+       })
+     } else if (queryData.action === 'checkUpdateWantWithToken') {
        let queryString = 
        `SELECT * FROM users u 
        JOIN items i ON i.user_id = u.id 

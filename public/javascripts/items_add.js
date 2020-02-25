@@ -70,6 +70,7 @@ function changeSubOption() {
 let vaildImageUpload = true;
 // check images size
 $('#pics-input').bind('change', function () {
+  $('#plus-icon').attr('style','display:none;')
   // check files count
   let files = this.files;
   if (files.length > 4) {

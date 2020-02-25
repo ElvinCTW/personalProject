@@ -1,7 +1,7 @@
 const itemDAO = require('../dao/item')
 module.exports = {
   mainBoardsList: ['所有看板','熱門看板'],
-  allBoardsList: ['籃球','攝影','棒球','美妝','拳擊',],
+  allBoardsList: ['籃球','攝影','棒球','美妝','拳擊',],
   subscribeBoardsList: ['籃球','攝影','棒球','美妝','拳擊'],
   籃球: ['鞋','球衣','球員卡','紀念品','其他'],
   攝影: ['相機','鏡頭','底片','沖洗用具','紀念品','其他'],

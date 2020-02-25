@@ -161,7 +161,7 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
     data.want_item_id = matchedItemsDataArr[i].curUserWant.item_id; // user_item_id
     let confirmBtn = $('<button></button>').attr({
       'class': 'interaction-btn',
-    }).html('確認').click(() => {
+    }).html('確認').click(() => { // 送出確認請求
       data.type = 'confirm';
       console.log('data is:');
       console.log(data);

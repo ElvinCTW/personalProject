@@ -155,6 +155,8 @@ module.exports = {
     let string;
     let updateAvailabilitiesCount = 0;
     let id_Arr = data.id_Arr;
+    console.log('id_Arr')
+    console.log(id_Arr)
     return new Promise((resolve, reject) => {
       for (let i =0; i < id_Arr.length; i++ ) {
         // string = 'UPDATE items SET availability = "false", matched_id = ? WHERE id in (?)';
@@ -167,7 +169,15 @@ module.exports = {
             // console.log('updateAvailbilityResult')
             // console.log(updateAvailbilityResult)
             updateAvailabilitiesCount += updateAvailbilityResult.affectedRows
-            if (i = id_Arr.length-1) {
+            // console.log('i')
+            // console.log(i)
+            // console.log('updateAvailabilitiesCount')
+            // console.log(updateAvailabilitiesCount)
+            // console.log('updateAvailbilityResult.affectedRows')
+            // console.log(updateAvailbilityResult.affectedRows)
+            if (i === id_Arr.length-1) {
+              // console.log('i, when out')
+              // console.log(i)
               resolve(updateAvailabilitiesCount);
             }
           }

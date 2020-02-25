@@ -115,10 +115,6 @@ router.get('/check', async (req, res, next) => {
         tripleMatchResultArr: tripleMatchResultArr,
       })
     } else {
-      console.log('curUserWantArr')
-      console.log(curUserWantArr)
-      console.log('secondItemWantArr')
-      console.log(secondItemWantArr)
       // 確認有沒有 Double Match
       for (let i = 0; i < curUserWantArr.length; i++) {
         for (let j = 0; j < secondItemWantArr.length; j++) {
@@ -154,7 +150,7 @@ router.get('/check', async (req, res, next) => {
         }
       }
       // console.log('combinedWantArr')
-      // console.log(combinedWantArr[4])
+      // console.log(combinedWantArr)
       // 用新的 combinedWantArr的 required_item_id 去尋找 thirdItemsWantArr
       // 整理 third_item_id (和 second 是一樣)
       let thirdItemIdArr = combinedWantArr.map(combinedWant => combinedWant.required_item_id);
@@ -166,7 +162,7 @@ router.get('/check', async (req, res, next) => {
       // console.log('thirdItemIdArr')
       // console.log(thirdItemIdArr)
       // console.log('thirdItemWantArr')
-      // console.log(thirdItemWantArr[0])
+      // console.log(thirdItemWantArr)
       // 確認有沒有 Triple Match
       let tripleMatchResultArr = [];
       for (let i = 0; i < combinedWantArr.length; i++) {
@@ -209,11 +205,18 @@ router.get('/check', async (req, res, next) => {
           }
         }
       })
+      // console.log('dataIdArr')
+      // console.log(dataIdArr)
       // 取得資料參考集
-      let itemsDataArr = await itemDAO.get({
-        type: 'all',
-        id_Arr: dataIdArr,
-      })
+      let itemsDataArr;
+      if (dataIdArr.length>0) {
+        itemsDataArr = await itemDAO.get({
+          type: 'all',
+          id_Arr: dataIdArr,
+        })
+      } else {
+        itemsDataArr=[];
+      }
       // console.log('tripleMatchResultArr')
       // console.log(tripleMatchResultArr)
       // 兩個 Match Array 和參考資料都拿到了，回傳 object of array
@@ -244,7 +247,9 @@ router.post('/checked', async (req, res, next) => {
   // 更新 want table check，並檢查有無 confirmed match，回傳需下架名單
   if (userCheck.length > 0) {
     console.log('check user success');
-    let checkConfirmedMatchResult = await wantDAO.update(req.body);
+    let checkConfirmedMatchResult = await wantDAO.update(req.body).catch(err=>{
+      res.status(500).send({errorMsg:'資料庫錯誤'})
+    });
     if (checkConfirmedMatchResult.msg) {
       // 若有配對成功，繼續後續動作 id_Arr = [user, user_want, (3)]
       let id_Arr = [parseInt(req.body.want_item_id), parseInt(req.body.required_item_id)];
@@ -267,7 +272,12 @@ router.post('/checked', async (req, res, next) => {
         console.log(updateAvailabilitiesCount);
       }
       // 3.取得製作通知訊息的資訊 (被通知物品id、被通知人暱稱、下架物品id、下架物品 title)
-      let notificationResult = await wantDAO.get({ id_Arr: id_Arr })
+      let notificationResult = await wantDAO.get({ 
+        action:'getSendMsgList',
+        id_Arr: id_Arr,
+       })
+      //  console.log('notificationResult')
+      //  console.log(notificationResult)
       // 3.1 過濾通知名單，製作 msg 內容
       // 取得通知配對成功名單 && 配對取消名單
       let insertMsgQueryDataArr = [];
@@ -278,12 +288,14 @@ router.post('/checked', async (req, res, next) => {
           insertMsgQueryDataArr.push([`恭喜！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}"的交換請求已成立～交換編號為${insertMatchId}，現在就打開交換溝通頁和對方討論交換細節吧！`, 'system', notification.notificated_user, notification.gone_item_id, insertMatchId, Date.now().toString()])
         }
       })
+      console.log('insertMsgQueryDataArr')
+      console.log(insertMsgQueryDataArr)
       // 3.2 將 msg 插入 message table 
       let insertedRowsCount = 0;
       if (insertMsgQueryDataArr.length > 0) {
         insertedRowsCount = await msgDAO.insert({
-          insertMsgQueryDataArr: insertMsgQueryDataArr,
           action: 'insertItemGoneMsgToUser',
+          insertMsgQueryDataArr: insertMsgQueryDataArr,
         })
       }
       if (insertedRowsCount !== insertMsgQueryDataArr.length) {

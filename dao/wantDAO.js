@@ -96,13 +96,25 @@ module.exports = {
       } else if (queryData.action === 'getSendMsgList') {
         // console.log('search users that need to be notificate when other items gone, wantDAO, get');
         // 取得 required item id in (id_Arr) && check = confirmed 的 want，作為通知人候選名單
+        let queryString = 
+        `SELECT w.want_item_id notificated_item_id, 
+        i.title notificated_item_title, 
+        u.id notificated_user, 
+        w.required_item_id gone_item_id, 
+        i2.title gone_item_title 
+        FROM want w 
+        JOIN items i ON i.id = w.want_item_id 
+        JOIN items i2 ON i2.id = w.required_item_id 
+        JOIN users u ON i.user_id = u.id
+        WHERE w.required_item_id in (?) 
+        AND w.checked = "confirm"`;
         mysql.advancedQuery({
-          queryString: 'SELECT w.want_item_id notificated_item_id, i.title notificated_item_title, i.user_nickname notificated_user, w.required_item_id gone_item_id, i2.title gone_item_title FROM want w JOIN items i ON i.id = w.want_item_id JOIN items i2 ON i2.id = w.required_item_id WHERE w.required_item_id in (?) AND w.checked = "confirm"',
+          queryString: queryString,
           queryCondition: [queryData.id_Arr],
           queryName: 'usersNeedToBeNotifiedList',
           DAO_name: 'wantDAO',
           reject: reject,
-        }, (usersNeedToBeNotifiedList) => {
+        },(usersNeedToBeNotifiedList)=>{
           resolve(usersNeedToBeNotifiedList)
         })
       } else if (queryData.action === 'checkCurWantMatchable') {

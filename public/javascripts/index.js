@@ -2,6 +2,34 @@ let page = 0;
 let nomoreUpdate = false;
 let getData = true;
 createMoreItems();
+(()=>{
+  let token = localStorage.getItem('token')?localStorage.getItem('token'):null;
+  // ajax 取得熱門看板清單 (要可以擴充訂閱看板功能)
+  $.ajax({
+    url: `/api/1.0/category/boardList`,
+    type: 'get',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    success: (boardList) => {
+      console.log(boardList);
+      boardList.forEach(board=>{
+        let link = $('<a />').attr({
+          class:'sidebar-div left',
+          href:`/boards?main_category=${board.id}`,
+        })
+        link.insertAfter($('#hot-list-title'))
+        let div = $('<div />').attr('class','sidebar-div left')
+        link.append(div);
+        let text = $('<div />').attr('class','sidebar-text left').html(board.main_category);
+        div.append(text)
+      })
+    },
+    error: (err) => {
+      alert(err);
+    }
+  })
+})()
 /**
  * 捲動時自動帶入新物件
  */
@@ -29,27 +57,8 @@ $('#items-area-recommand').scroll(function () {
     }
   };
 });
-// origin
-// $(window).scroll(function () {
-//   // 判斷整體網頁的高度
-//   const $BodyHeight = $(document).height();
-//   // 判斷所見範圍的高度
-//   const $ViewportHeight = $(window).height();
-//   // 偵測目前捲軸頂點
-//   $ScrollTop = $(this).scrollTop();
-//   if ($BodyHeight - ($ViewportHeight + $ScrollTop) < 10 ) {
-//     if (page !== 'end') {
-//       createMoreItems();
-//     } else {
-//       if (!nomoreUpdate) {
-//         nomoreUpdate = true;
-//         $('#nomore-text-div').attr({'onclick': ''}).html('沒有更多物品囉～');
-//       }
-//     }
-//   };
-// });
 /**
- * 取得更多物件的 function，一次六件
+ * 取得更多物件
  */
 function createMoreItems() {
   if (page !== 'end') {

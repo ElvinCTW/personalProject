@@ -15,30 +15,28 @@ block content
                     .sidebar-div.left
                       .sidebar-text.left=mainBoardsList[i]
                   - i++
-            if subscribeBoardsList
-              .sidebar-div.left
-                .sidebar-text.left.separate 訂閱看板清單
-              - let j = 0
-              - let subsLength = subscribeBoardsList.length 
-              if subsLength > 0
-                while j < subsLength
-                  a.sidebar-div.left
-                    .sidebar-div.left
-                      .sidebar-text.left=subscribeBoardsList[j]
-                  - j++
-            //- - console.log((hotBoardsList()[0]))
-            if hotBoardsList
-              .sidebar-div.left
-                .sidebar-text.left.separate 即時熱門分類
-              - let k = 0
-              //- - let hotBoardsList = hotBoardsList()
-              - let hotsLength = hotBoardsList.length
-              if hotsLength > 0
-                while k < hotsLength
-                  a.sidebar-div.left
-                    .sidebar-div.left
-                      .sidebar-text.left=hotBoardsList[k].hot_board
-                  - k++
+            //- if subscribeBoardsList
+            //-   .sidebar-div.left
+            //-     .sidebar-text.left.separate 訂閱看板清單
+            //-   - let j = 0
+            //-   - let subsLength = subscribeBoardsList.length 
+            //-   if subsLength > 0
+            //-     while j < subsLength
+            //-       a.sidebar-div.left
+            //-         .sidebar-div.left
+            //-           .sidebar-text.left=subscribeBoardsList[j].hot_board
+            //-       - j++
+            //- if hotBoardsList
+            .sidebar-div.left(id="hot-list-title")
+              .sidebar-text.left.separate 即時熱門分類
+            //- - let k = 0
+            //- - let hotsLength = hotBoardsList.length
+            //- if hotsLength > 0
+              //- while k < hotsLength
+            //- a.sidebar-div.left
+            //-   .sidebar-div.left
+            //-     .sidebar-text.left=hotBoardsList[k].hot_board
+            //- - k++
       .inside-container.main.middle
         .sub-container.main.middle
           //- .subtext.news News

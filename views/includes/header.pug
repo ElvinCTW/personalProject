@@ -6,7 +6,7 @@ nav.nav
         .inside-container.middle.nav
             .search
                 form 
-                    input.search(type="text" name="search" placeholder="搜尋物品、分類、tags")
+                    input.search(type="text" name="search" placeholder="搜尋標題、分類、tags")
                     button.search(type="submit")
         .inside-container.right.nav
             .userbar
@@ -14,7 +14,7 @@ nav.nav
                     span.nav-right 登入/註冊
                     .notification-area.sign(id="sign-area")
                         .notification-div.outer.sign
-                            form.sign(action="/api/1.0/users/signin", method="post" id="sign-form")
+                            form.sign(action="/api/1.0/users/signin" method="post" id="sign-form")
                                 .input-div.sign
                                     input.id(placeholder="帳號" name="id" type="text" autocomplete="off" value="test")
                                     input.pwd(placeholder="密碼" name="password" type="password" value="123") 

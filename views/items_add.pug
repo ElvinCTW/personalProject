@@ -10,12 +10,12 @@ block content
             .items-area.top
               h1.sub-title(id="item-add-subtitle") 新增物品
               .button-div
+                if successMsg=successMsg
+                  .successMsgDiv=successMsg
+                if errorMsg
+                  .successMsgDiv=errorMsg
                 button(type="button" id="add-items-btn") 上傳
             .items-area.add-item
-              if successMsg
-                .successMsgDiv=successMsg
-              if errorMsg
-                .successMsgDiv=errorMsg
               .new-item
                 .content-div.outer
                   input(type="text" name="token" id="token-input" style="display:none;")

@@ -4,7 +4,7 @@ block content
     .outer-container.main
       .inside-container.main.left
         .sub-main-container
-          .subtext.subscribe 已確認的配對物品
+          .subtext.subscribe 
           //- - console.log(getConfirmedMatchesResultArr.length)
           //- if getConfirmedMatchesResultArr.length > 0
           //-   each match in getConfirmedMatchesResultArr
@@ -17,21 +17,20 @@ block content
           //-       span 目前沒有配對
       .inside-container.main.middle.detail
         .sub-container.main.middle.detail
-          .items-area.detail(id="items-area-recommand")
-        //- .sub-main-container.recommands
-        //-   .subtext.recommand(id="subtext-matched-result-page") 交易討論區
-        //-   .items-area.talk
-        //-     .msg-area(id="msg-area")
-        //-       .msg-line
-        //-         .msg-div 
-        //-           .msg-topbar
-        //-             .msg-name System
-        //-             .msg-time 2020/02/16
-        //-           .msg-content 請點選右邊配對結果，開啟對話視窗～
-        //-     .horizental-line
-        //-     .user-interact-area
-        //-       textarea.user-type-div(placeholder="請在此輸入訊息，最多250字元" name="user-type-content" id="user-type-content" maxlength="250")
-        //-       button.msg-send-btn(onclick="sendMsg()") 傳送訊息
+          .items-area.detail.msg(id="items-area-recommand")
+            .msg-top 對話清單
+            .items-area.talk(id="msg-scroll")
+              .msg-area(id="msg-area")
+                .msg-line
+                  .msg-div 
+                    .msg-topbar
+                      .msg-name System
+                      .msg-time 2020/02/16
+                    .msg-content 請點選右邊配對結果，開啟對話視窗～
+            .horizental-line
+            .user-interact-area
+              textarea.user-type-div(placeholder="請在此輸入訊息，最多250字元" name="user-type-content" id="user-type-content" maxlength="250")
+              button.msg-send-btn(onclick="sendMsg()") 傳送訊息
       .inside-container.main.right
         .sub-container.main.right.user-item
           .items-area.top

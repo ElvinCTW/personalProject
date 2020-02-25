@@ -1,5 +1,4 @@
 let currentMatchedId;
-
 // const alphabetArr = ['A', 'B', 'C']
 if (!localStorage.getItem('token')) {
   // 確認使用者有登入，如果沒有，跳alert請user登入
@@ -8,7 +7,6 @@ if (!localStorage.getItem('token')) {
   // 應確認使用者為指定 user_nickname 的使用者
 } else {
   let token = localStorage.getItem('token');
-
   $.ajax({
     url: `/api/1.0/matches/list`,
     type: 'get',
@@ -22,6 +20,8 @@ if (!localStorage.getItem('token')) {
           let link = $('<div></div>').attr({
             'class': 'item-div user-item',
           }).click(() => {
+            $('.item-div.user-item').attr('style', 'background:none;')
+            link.attr('style', 'background:rgb(235,235,235);')
             getMatchedResultData(match.matched_id, match.required_item_title);
           });
           $('#items-area-user-item').append(link);
@@ -136,13 +136,15 @@ function getMatchedResultData(matched_id, required_item_title) {
         msgDiv.append(msgContent);
       }
       confirmedMatchObj.msgArr.forEach(msg => {
+        let msgLineClass = 'msg-line'
         let msgDivClass = 'msg-div'
         let who;
         if (msg.sender === localStorage.getItem('nickname')) {
           msgDivClass += ' current-user'
+          msgLineClass += ' current-user'
           who = '您'
         }
-        let msgLine = $('<div></div>').attr({ 'class': 'msg-line' });
+        let msgLine = $('<div></div>').attr({ 'class': msgLineClass });
         $('#msg-area').append(msgLine);
         // make msg div and contents inside
         let msgDiv = $('<div></div>').attr({ 'class': msgDivClass });
@@ -156,6 +158,8 @@ function getMatchedResultData(matched_id, required_item_title) {
         msgTopbar.append(msgName);
         msgTopbar.append(msgTime);
       })
+      let msgArea = document.getElementById("msg-scroll");
+      msgArea.scrollTop = msgArea.scrollHeight;
     },
     error: (err) => {
       alert('金拍謝，暫時找不到這筆配對紀錄QQ，若持續發生請聯繫我們')
@@ -188,6 +192,9 @@ function sendMsg() {
     msgTopbar.append(msgTime);
     // clean msg after send msg
     $('#user-type-content').val('')
+    // auto scroll to bottom
+    let msgArea = document.getElementById("msg-scroll");
+    msgArea.scrollTop = msgArea.scrollHeight;
     // save msg into DB
     $.ajax({
       url: `/api/1.0/message/new`,

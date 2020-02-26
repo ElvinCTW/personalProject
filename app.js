@@ -8,6 +8,7 @@ const categoryAPI = require('./routes/categoryAPI');
 const matchesAPI = require('./routes/matchesAPI');
 const msgAPI = require('./routes/msgAPI');
 const itemDAO = require('./dao/item');
+const categoryDAO = require('./dao/categoryDAO');
 // const wantDAO = require('./dao/wantDAO');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -29,11 +30,26 @@ app.use(express.static(path.join(__dirname, 'public')));
  * Views 
  */
 // Index
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
+  let queryData = {};
+  if (!req.query.main_category) {
+    // 取得main_categories
+    queryData.action = 'getMainCategories'
+  } else if (req.query.main_category && !req.query.sub_category) {
+    // 取得sub_categories
+    queryData.action = 'getSubCategories'
+  } else {
+    // 不用取得list
+    queryData.action = 'doNothing'
+  }
+  let categories = await categoryDAO.get(queryData);
   res.render('index', {
     mainBoardsList: listData.mainBoardsList,
-    subscribeBoardsList: listData.subscribeBoardsList,
-    hotBoardsList:listData.subscribeBoardsList,
+    categories:categories, //裡面有 listData 和 判斷字
+    // subscribeBoardsList: listData.subscribeBoardsList,
+    // hotBoardsList:listData.subscribeBoardsList,
+    // main_category: boardList || null,
+    // sub_category:boardList||null,
   })
 });
 // sign up
@@ -57,16 +73,16 @@ app.get('/matches/confirmed', async (req, res) => {
 // Boards
 app.get('/boards', async (req, res) => {
   // call itemDAO to get board items
-  let sub_category = null;
-  if (req.query.sub_category) {
-    sub_category = req.query.sub_category;
-  }
-  let itemDetailData = await itemDAO.get({
-    type: 'all',
-    main_category: req.params.board,
-    sub_category: sub_category,
-    page: 0,
-  })
+  // let sub_category = null;
+  // if (req.query.sub_category) {
+  //   sub_category = req.query.sub_category;
+  // }
+  // let itemDetailData = await itemDAO.get({
+  //   type: 'all',
+  //   main_category: req.params.board,
+  //   sub_category: sub_category,
+  //   page: 0,
+  // })
   // after get data, render board page with data
   res.render('board', itemDetailData)
 });

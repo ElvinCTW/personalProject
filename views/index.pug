@@ -1,11 +1,25 @@
 extends layout
 block content
+  - let boardTitle;
+  //- '/'
+  if categories.mainCategories
+    //- input(type="text" value=`${main_category}` id="main-category-input" style="display:none;")
+    - boardTitle = '物品分類清單'
+  //- '/?main_category=?'
+  else if categories.subCategories
+    input(type="text" value=`${main_category}` id="main-category-input" style="display:none;")
+    //- input(type="text" value=`${sub_category}` id="sub-category-input" style="display:none;")
+    - boardTitle = '子分類清單'
+  //- '/main_category=?&sub_category=?'
+  else 
+    input(type="text" value=`${main_category}` id="main-category-input" style="display:none;")
+    input(type="text" value=`${sub_category}` id="sub-category-input" style="display:none;")
+    - boardTitle = ''
   main
     .outer-container.main
       .inside-container.main.left
         .sub-container.main.left
           .sidebar.left
-            //- href box 
             if mainBoardsList
               - let i = 0
               - let mainLength = mainBoardsList.length 
@@ -15,6 +29,24 @@ block content
                     .sidebar-div.left
                       .sidebar-text.left=mainBoardsList[i]
                   - i++
+            .sidebar-div.left(id="main-list-title")
+              .sidebar-text.left.separate=boardTitle
+            if categories.listData
+              //- 製作主分類清單
+              //- - let k = 0
+              //- - let listLength = categories.listData.length
+              //- if listLength > 0
+                //- while k < mainCategories
+              each category in categories.listData
+                a.sidebar-div.left(href=`/?main_category=${category.id}`)
+                  .sidebar-div.left
+                    if categories.mainCategories
+                      .sidebar-text.left=category.main_category
+                    else 
+                      .sidebar-text.left=category.sub_category
+                      //- - k++
+                //- else if sub_categories
+                  //- 製作子分類清單
             //- if subscribeBoardsList
             //-   .sidebar-div.left
             //-     .sidebar-text.left.separate 訂閱看板清單
@@ -27,16 +59,8 @@ block content
             //-           .sidebar-text.left=subscribeBoardsList[j].hot_board
             //-       - j++
             //- if hotBoardsList
-            .sidebar-div.left(id="hot-list-title")
-              .sidebar-text.left.separate 即時熱門分類
-            //- - let k = 0
-            //- - let hotsLength = hotBoardsList.length
-            //- if hotsLength > 0
-              //- while k < hotsLength
-            //- a.sidebar-div.left
-            //-   .sidebar-div.left
-            //-     .sidebar-text.left=hotBoardsList[k].hot_board
-            //- - k++
+            //- .sidebar-div.left(id="hot-list-title")
+            //-   .sidebar-text.left.separate 全部看板清單
       .inside-container.main.middle
         .sub-container.main.middle
           //- .subtext.news News

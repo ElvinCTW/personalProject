@@ -2,34 +2,34 @@ let page = 0;
 let nomoreUpdate = false;
 let getData = true;
 createMoreItems();
-// (()=>{
-//   let token = localStorage.getItem('token')?localStorage.getItem('token'):null;
-//   // ajax 取得熱門看板清單 (要可以擴充訂閱看板功能)
-//   $.ajax({
-//     url: `/api/1.0/category/boardList`,
-//     type: 'get',
-//     headers: {
-//       Authorization: `Bearer ${token}`,
-//     },
-//     success: (boardList) => {
-//       console.log(boardList);
-//       boardList.forEach(board=>{
-//         let link = $('<a />').attr({
-//           class:'sidebar-div left',
-//           href:`/?main_category=${board.id}`,
-//         })
-//         link.insertAfter($('#main-list-title'))
-//         let div = $('<div />').attr('class','sidebar-div left')
-//         link.append(div);
-//         let text = $('<div />').attr('class','sidebar-text left').html(board.main_category);
-//         div.append(text)
-//       })
-//     },
-//     error: (err) => {
-//       alert(err);
-//     }
-//   })
-// })()
+(()=>{
+  let token = localStorage.getItem('token')?localStorage.getItem('token'):null;
+  // ajax 取得熱門看板清單 (要可以擴充訂閱看板功能)
+  $.ajax({
+    url: `/api/1.0/category/boardList`,
+    type: 'get',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    success: (boardList) => {
+      console.log(boardList);
+      boardList.forEach(board=>{
+        let link = $('<a />').attr({
+          class:'sidebar-div left',
+          href:`/boards?main_category=${board.id}`,
+        })
+        link.insertAfter($('#hot-list-title'))
+        let div = $('<div />').attr('class','sidebar-div left')
+        link.append(div);
+        let text = $('<div />').attr('class','sidebar-text left').html(board.main_category);
+        div.append(text)
+      })
+    },
+    error: (err) => {
+      alert(err);
+    }
+  })
+})()
 /**
  * 捲動時自動帶入新物件
  */
@@ -63,7 +63,7 @@ $('#items-area-recommand').scroll(function () {
 function createMoreItems() {
   if (page !== 'end') {
     $.ajax({
-      url: `/api/1.0/items/all?page=${page}`,
+      url: `/api/1.0/items/all?page=${page}&main_category=${}`,
       type: 'get',
       success: (itemsListArr) => {
         for (let i = 20 * page; i < (20 * page + itemsListArr.length); i++) {

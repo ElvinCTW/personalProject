@@ -2,20 +2,18 @@ const express = require('express');
 const router = express.Router();
 const categoryDAO = require('../dao/categoryDAO');
 
-
-
-router.get('/boardList', async (req, res, next) => {
-  let token = req.headers.authorization.split(' ')[1];
-  let boardList = await categoryDAO.get({
-    action:'getBoardList',
-    token:token,
-  }).catch((err)=>{
-    res.status(500).send({errorMsg:'資料庫暫時出錯，請再試一次QQ'})
-  })
-  if (boardList) {
-    res.send(boardList);
-  }
-})
+// router.get('/boardList', async (req, res, next) => {
+//   let token = req.headers.authorization.split(' ')[1];
+//   let boardList = await categoryDAO.get({
+//     action:'getBoardList',
+//     token:token,
+//   }).catch((err)=>{
+//     res.status(500).send({errorMsg:'資料庫暫時出錯，請再試一次QQ'})
+//   })
+//   if (boardList) {
+//     res.send(boardList);
+//   }
+// })
 
 router.get('/item_insertion/:type', async (req, res, next) => {
   // call DAO

@@ -63,11 +63,12 @@ $('#items-area-recommand').scroll(function () {
 function createMoreItems() {
   if (page !== 'end') {
     let url = `/api/1.0/items/all?page=${page}`
-    if ($('#main-category-input').length>0) {
-      url+=`&main_category=${$('#main-category-input').val()}`
+    let params = (new URL(document.location)).searchParams;
+    if (params.get('main_category')) {
+      url+=`&main_category=${params.get('main_category')}`
     } 
-    if ($('#sub-category-input').length>0){
-      url+=`&sub_category=${$('#sub-category-input').val()}`
+    if (params.get('sub_category')){
+      url+=`&sub_category=${params.get('sub_category')}`
     }
     $.ajax({
       url: url,

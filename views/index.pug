@@ -8,14 +8,16 @@ block content
     - boardTitle = '物品分類清單'
   //- '/?main_category=?'
   else if categories.subCategories
-    input(type="text" value=`${main_category}` id="main-category-input" style="display:none;")
+    //- input(type="text" value=`${main_category}` id="main-category-input" style="display:none;")
     //- input(type="text" value=`${sub_category}` id="sub-category-input" style="display:none;")
     - boardTitle = '子分類清單'
+    - beforeSubtitle+=main+' > '
   //- '/main_category=?&sub_category=?'
   else 
-    input(type="text" value=`${main_category}` id="main-category-input" style="display:none;")
-    input(type="text" value=`${sub_category}` id="sub-category-input" style="display:none;")
+    //- input(type="text" value=`${main_category}` id="main-category-input" style="display:none;")
+    //- input(type="text" value=`${sub_category}` id="sub-category-input" style="display:none;")
     - boardTitle = ''
+    - beforeSubtitle+=main+' > '+sub+' > '
   main
     .outer-container.main
       .inside-container.main.left
@@ -44,7 +46,7 @@ block content
                     .sidebar-div.left
                       .sidebar-text.left=category.main_category
                 else if categories.subCategories
-                  a.sidebar-div.left(href=`/?main_category=${main_category}&sub_category=${category.id}`)
+                  a.sidebar-div.left(href=`/?main_category=${main_category}&main=${main}&sub_category=${category.id}&sub=${category.sub_category}`)
                     .sidebar-div.left
                       .sidebar-text.left=category.sub_category
                       //- - k++

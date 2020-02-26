@@ -40,13 +40,14 @@ app.get('/', async (req, res) => {
     // 取得sub_categories
     queryData.action = 'getSubCategories'
     queryData.main_category=req.query.main_category
-    resData.main_category=req.query.main_category
   } else {
     // 不用取得list
     queryData.action = 'doNothing'
-    resData.main_category=req.query.main_category
-    resData.sub_category=req.query.sub_category
   }
+  // 添加 queries
+  Object.keys(req.query).forEach(query=>{
+    resData[query]=req.query[query]
+  })
   resData.categories = await categoryDAO.get(queryData);
   console.log('resData')
   console.log(resData)

@@ -32,25 +32,25 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Index
 app.get('/', async (req, res) => {
   let queryData = {};
+  let resData = {mainBoardsList: listData.mainBoardsList};
   if (!req.query.main_category) {
     // 取得main_categories
     queryData.action = 'getMainCategories'
   } else if (req.query.main_category && !req.query.sub_category) {
     // 取得sub_categories
     queryData.action = 'getSubCategories'
+    queryData.main_category=req.query.main_category
+    resData.main_category=req.query.main_category
   } else {
     // 不用取得list
     queryData.action = 'doNothing'
+    resData.main_category=req.query.main_category
+    resData.sub_category=req.query.sub_category
   }
-  let categories = await categoryDAO.get(queryData);
-  res.render('index', {
-    mainBoardsList: listData.mainBoardsList,
-    categories:categories, //裡面有 listData 和 判斷字
-    // subscribeBoardsList: listData.subscribeBoardsList,
-    // hotBoardsList:listData.subscribeBoardsList,
-    // main_category: boardList || null,
-    // sub_category:boardList||null,
-  })
+  resData.categories = await categoryDAO.get(queryData);
+  console.log('resData')
+  console.log(resData)
+  res.render('index', resData)
 });
 // sign up
 app.get('/users/signup', (req, res) => { res.render('signup') });

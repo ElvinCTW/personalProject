@@ -24,14 +24,16 @@ module.exports = {
         if (queryData.action === 'getSubCategories') {
           categoriesType = 'subCategories'
           queryString = 
-          `SELECT * FROM sub_main sm 
+          `SELECT s.* FROM sub_main sm 
           JOIN main_category m 
           ON m.id = sm.main_id 
           JOIN sub_category s 
           ON s.id = sm.sub_id 
-          WHERE m.main_category = ? 
-          ORDER BY s.id DESC;`
+          WHERE m.id = ? 
+          ORDER BY s.id DESC`
           queryCondition.push(queryData.main_category)
+          console.log('queryCondition')
+          console.log(queryCondition)
         } else if (queryData.action === 'getMainCategories') {
           categoriesType = 'mainCategories'
           queryString = 'SELECT * FROM main_category m ORDER BY m.id DESC';

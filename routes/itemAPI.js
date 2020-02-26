@@ -106,12 +106,9 @@ router.get('/:type', async (req, res, next) => {
     }).catch((err) => {
       res.status(500).send(err);
     })
-    if (!getItemResultArr.errorMsg) {
+    if (getItemResultArr) {
       res.status(200).send(getItemResultArr);
-    } else {
-      console.log(getItemResultArr.errorMsg);
-      res.status(500).send(insertItemResult.errorMsg);
-    }
+    } 
   } else {
     res.status(400).send('plz choose correct type : /all /detail');
   }

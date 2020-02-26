@@ -66,8 +66,10 @@ module.exports = {
           } else {
             // select all by main and sub category
             let string = mysql.itemJoinString+'WHERE i.main_category = ? AND i.sub_category = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
-            mysql.pool.query(string, data.main_category, data.sub_category, data.page*20, (err, getItemResultArr, fields)=>{
+            mysql.pool.query(string, [data.main_category, data.sub_category, data.page*20], (err, getItemResultArr, fields)=>{
               if (err) {reject(err)};
+              console.log('getItemResultArr')
+              console.log(getItemResultArr)
               resolve(getItemResultArr);
             })
           }

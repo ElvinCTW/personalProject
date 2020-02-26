@@ -1,6 +1,7 @@
 extends layout
 block content
   - let boardTitle;
+  - let beforeSubtitle='';
   //- '/'
   if categories.mainCategories
     //- input(type="text" value=`${main_category}` id="main-category-input" style="display:none;")
@@ -38,11 +39,13 @@ block content
               //- if listLength > 0
                 //- while k < mainCategories
               each category in categories.listData
-                a.sidebar-div.left(href=`/?main_category=${category.id}`)
-                  .sidebar-div.left
-                    if categories.mainCategories
+                if categories.mainCategories
+                  a.sidebar-div.left(href=`/?main_category=${category.id}&main=${category.main_category}`)
+                    .sidebar-div.left
                       .sidebar-text.left=category.main_category
-                    else 
+                else if categories.subCategories
+                  a.sidebar-div.left(href=`/?main_category=${main_category}&sub_category=${category.id}`)
+                    .sidebar-div.left
                       .sidebar-text.left=category.sub_category
                       //- - k++
                 //- else if sub_categories
@@ -64,7 +67,7 @@ block content
       .inside-container.main.middle
         .sub-container.main.middle
           //- .subtext.news News
-          h1.sub-title 新商品清單
+          h1.sub-title=beforeSubtitle+'新商品清單'
           .items-area.recommands(id="items-area-recommand")
           //- .nomore-text-div(onclick="createMoreItems()" id="nomore-text-div") 點此查看更多物品
       .inside-container.main.right

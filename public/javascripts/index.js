@@ -62,8 +62,15 @@ $('#items-area-recommand').scroll(function () {
  */
 function createMoreItems() {
   if (page !== 'end') {
+    let url = `/api/1.0/items/all?page=${page}`
+    if ($('#main-category-input').length>0) {
+      url+=`&main_category=${$('#main-category-input').val()}`
+    } 
+    if ($('#sub-category-input').length>0){
+      url+=`&sub_category=${$('#sub-category-input').val()}`
+    }
     $.ajax({
-      url: `/api/1.0/items/all?page=${page}`,
+      url: url,
       type: 'get',
       success: (itemsListArr) => {
         for (let i = 20 * page; i < (20 * page + itemsListArr.length); i++) {

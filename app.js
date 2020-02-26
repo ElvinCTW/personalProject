@@ -71,22 +71,6 @@ app.get('/want/check', async (req, res) => { res.render('match_check') });
 app.get('/matches/confirmed', async (req, res) => {
   res.render('match_confirmed');
 });
-// Boards
-app.get('/boards', async (req, res) => {
-  // call itemDAO to get board items
-  // let sub_category = null;
-  // if (req.query.sub_category) {
-  //   sub_category = req.query.sub_category;
-  // }
-  // let itemDetailData = await itemDAO.get({
-  //   type: 'all',
-  //   main_category: req.params.board,
-  //   sub_category: sub_category,
-  //   page: 0,
-  // })
-  // after get data, render board page with data
-  res.render('board', itemDetailData)
-});
 
 /**
  * API Routers 

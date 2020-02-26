@@ -105,7 +105,7 @@ $('#main_category_list').click((e) => {
   $('#main_category_input').val(`${e.originalEvent.toElement.attributes.main_id.value}`);
   // 抽換次分類
   $.ajax({
-    url: `/api/1.0/category/item_insertion/sub?main_category=${e.toElement.innerText}`,
+    url: `/api/1.0/category/item_insertion/sub?main_category=${e.originalEvent.toElement.attributes.main_id.value}`,
     type: 'get',
     success: (subCategorylist) => {
       console.log(subCategorylist);

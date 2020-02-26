@@ -101,6 +101,7 @@ router.get('/:type', async (req, res, next) => {
       main_category: req.query.main_category || null,
       sub_category: req.query.sub_category || null,
       item_id: req.query.item_id || null,
+      status: req.query.status || null,
       token: token,
       user_nickname: user_nickname,
     }).catch((err) => {

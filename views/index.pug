@@ -4,25 +4,26 @@ block content
   - let beforeSubtitle='';
   //- '/'
   if categories.mainCategories
-    //- input(type="text" value=`${main_category}` id="main-category-input" style="display:none;")
     - boardTitle = '物品分類清單'
   //- '/?main_category=?'
   else if categories.subCategories
-    //- input(type="text" value=`${main_category}` id="main-category-input" style="display:none;")
-    //- input(type="text" value=`${sub_category}` id="sub-category-input" style="display:none;")
     - boardTitle = '子分類清單'
-    - beforeSubtitle+=main+' > '
+    - beforeSubtitle = main+' > '
   //- '/main_category=?&sub_category=?'
-  else 
-    //- input(type="text" value=`${main_category}` id="main-category-input" style="display:none;")
-    //- input(type="text" value=`${sub_category}` id="sub-category-input" style="display:none;")
+  else if statusList
+    - boardTitle = '物品狀態選單'
+    - beforeSubtitle = main+' > '+sub+' > '
+  else if status
     - boardTitle = ''
-    - beforeSubtitle+=main+' > '+sub+' > '
+    - beforeSubtitle = main+' > '+sub+' > '+status+' > '
   main
     .outer-container.main
       .inside-container.main.left
         .sub-container.main.left
           .sidebar.left
+            a.sidebar-div.left(href="/")
+              .sidebar-div.left
+                .sidebar-text.left 所有物品清單
             if mainBoardsList
               - let i = 0
               - let mainLength = mainBoardsList.length 
@@ -49,6 +50,11 @@ block content
                   a.sidebar-div.left(href=`/?main_category=${main_category}&main=${main}&sub_category=${category.id}&sub=${category.sub_category}`)
                     .sidebar-div.left
                       .sidebar-text.left=category.sub_category
+            if statusList
+              each status in statusList
+                a.sidebar-div.left(href=`/?main_category=${main_category}&main=${main}&sub_category=${sub_category}&sub=${sub}&status=${status}`)
+                  .sidebar-div.left
+                    .sidebar-text.left=status
                       //- - k++
                 //- else if sub_categories
                   //- 製作子分類清單
@@ -69,9 +75,9 @@ block content
       .inside-container.main.middle
         .sub-container.main.middle
           //- .subtext.news News
-          h1.sub-title=beforeSubtitle+'新商品清單'
+          .sub-title
+            .sub-text=beforeSubtitle+"新商品清單"
           .items-area.recommands(id="items-area-recommand")
-          //- .nomore-text-div(onclick="createMoreItems()" id="nomore-text-div") 點此查看更多物品
       .inside-container.main.right
         .sub-container.main.right
           .guide

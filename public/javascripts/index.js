@@ -70,10 +70,18 @@ function createMoreItems() {
     if (params.get('sub_category')){
       url+=`&sub_category=${params.get('sub_category')}`
     }
+    if (params.get('status')){
+      url+=`&status=${params.get('status')}`
+    }
     $.ajax({
       url: url,
       type: 'get',
       success: (itemsListArr) => {
+        if (itemsListArr.length===0) {
+          alert('此分類目前沒有更多商品囉～')
+          page = 'end'
+          return
+        }
         for (let i = 20 * page; i < (20 * page + itemsListArr.length); i++) {
           // Create link to item detail page
           let link = $('<a></a>').attr({ 

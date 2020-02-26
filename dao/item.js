@@ -1,21 +1,21 @@
 const mysql = require('../util/mysql');
 module.exports = {
   get: (data) => {
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve, reject) => {
       if (data.action === 'checkVaildUserOfMatchDialog') {
-        let queryString = 
-        `SELECT * FROM items i
+        let queryString =
+          `SELECT * FROM items i
         JOIN users u ON i.user_id = u.id
         JOIN matched m ON m.id = i.matched_id
         WHERE u.token = ?
         AND i.matched_id = ?`;
         mysql.advancedQuery({
           queryString: queryString,
-          queryCondition: [data.token,data.matched_id],
+          queryCondition: [data.token, data.matched_id],
           queryName: 'checkVaildUserOfMatchDialog',
           DAO_name: 'itemDAO',
           reject: reject,
-        },(checkVaildUserOfMatchDialog)=>{
+        }, (checkVaildUserOfMatchDialog) => {
           resolve(checkVaildUserOfMatchDialog)
         })
       } else if (data.action === 'getHotCounts') {
@@ -23,7 +23,7 @@ module.exports = {
         // let data = [];
         mysql.pool.query(string, (err, hotCountsResult, fileds) => {
           if (err) {
-            mysql.errLog(err,'hotCountsResult','itemDAO')
+            mysql.errLog(err, 'hotCountsResult', 'itemDAO')
             reject(err)
           } else {
             console.log('hotCountsResult')
@@ -32,10 +32,10 @@ module.exports = {
           }
         });
       } else if (data.action === 'getConfirmedMatchItemsData') {
-        let string = mysql.itemJoinString+'WHERE i.id in (?)';
+        let string = mysql.itemJoinString + 'WHERE i.id in (?)';
         mysql.pool.query(string, [data.idArr], (err, getConfirmedMatchItemsDataResult, fileds) => {
           if (err) {
-            mysql.errLog(err,'getConfirmedMatchItemsDataResult','itemDAO')
+            mysql.errLog(err, 'getConfirmedMatchItemsDataResult', 'itemDAO')
             reject(err)
           } else {
             // console.log('getConfirmedMatchItemsDataResult')
@@ -44,38 +44,47 @@ module.exports = {
           }
         });
       } else if (data.type === 'all') {
+        let string;
+        let condition;
         if (data.id_Arr) {
           // get data for id_Arr
-          let string = mysql.itemJoinString+'WHERE i.id IN (?) AND i.availability = "true"';
-          mysql.pool.query(string, [data.id_Arr], (err, getItemResultArr, fields)=>{
+          string = mysql.itemJoinString + 'WHERE i.id IN (?) AND i.availability = "true"';
+          mysql.pool.query(string, [data.id_Arr], (err, getItemResultArr, fields) => {
             if (err) {
               console.log(err.sqlMessage);
               console.log(err.sql);
               reject(err)
             };
             resolve(getItemResultArr);
-          }) 
+          })
         } else if (data.main_category) {
           if (!data.sub_category) {
             // select all by main category only
-            let string = mysql.itemJoinString+'WHERE i.main_category = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
-            mysql.pool.query(string, [data.main_category, data.page*20], (err, getItemResultArr, fields)=>{
-              if (err) {reject(err)};
-              resolve(getItemResultArr);
-            }) 
+            string = mysql.itemJoinString + 'WHERE i.main_category = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
+            condition = [data.main_category, data.page * 20]
           } else {
-            // select all by main and sub category
-            let string = mysql.itemJoinString+'WHERE i.main_category = ? AND i.sub_category = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
-            mysql.pool.query(string, [data.main_category, data.sub_category, data.page*20], (err, getItemResultArr, fields)=>{
-              if (err) {reject(err)};
-              console.log('getItemResultArr')
-              console.log(getItemResultArr)
-              resolve(getItemResultArr);
-            })
+            if (!data.status) {
+              // select all by main and sub category
+              string = mysql.itemJoinString + 'WHERE i.main_category = ? AND i.sub_category = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
+              condition = [data.main_category, data.sub_category, data.page * 20]
+            } else {
+              // select all by main and sub category and status
+              string = mysql.itemJoinString + 'WHERE i.main_category = ? AND i.sub_category = ? AND i.status = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
+              condition = [data.main_category, data.sub_category, data.status, data.page * 20]
+            }
           }
-        } else if (data.action === 'getConfirmedMatches') { 
-          string = 
-          `SELECT i.matched_id, 
+          mysql.advancedQuery({
+            queryString: string,
+            queryCondition: condition,
+            queryName: 'getItemResultArr',
+            DAO_name: 'itemDAO',
+            reject: reject,
+          }, (getItemResultArr) => {
+            resolve(getItemResultArr)
+          })
+        } else if (data.action === 'getConfirmedMatches') {
+          string =
+            `SELECT i.matched_id, 
           i2.title required_item_title, 
           i2.pictures required_item_pictures,
           i2.tags required_item_tags
@@ -87,7 +96,7 @@ module.exports = {
           AND u.token = ?`;
           mysql.pool.query(string, [data.token], (err, getConfirmedMatchesResult, fileds) => {
             if (err) {
-              mysql.errLog(err,'getConfirmedMatchesResult','itemDAO')
+              mysql.errLog(err, 'getConfirmedMatchesResult', 'itemDAO')
               reject(err)
             } else {
               console.log('getConfirmedMatchesResult')
@@ -98,40 +107,40 @@ module.exports = {
         } else if (!data.user_nickname) {
           // lastest
           mysql.advancedQuery({
-            queryString: mysql.itemJoinString+'WHERE i.availability = "true" ORDER BY i.time DESC LIMIT ?, 20',
-            queryCondition: [data.page*20],
+            queryString: mysql.itemJoinString + 'WHERE i.availability = "true" ORDER BY i.time DESC LIMIT ?, 20',
+            queryCondition: [data.page * 20],
             queryName: 'lastestItemsData',
             DAO_name: 'itemDAO',
             reject: reject,
-          },(lastestItemsData)=>{
-            if (lastestItemsData.length === 20) {lastestItemsData.next_paging = lastestItemsData.page+1 };
+          }, (lastestItemsData) => {
+            if (lastestItemsData.length === 20) { lastestItemsData.next_paging = lastestItemsData.page + 1 };
             resolve(lastestItemsData)
           })
         } else {
           // recommand
           mysql.advancedQuery({
-            queryString: mysql.itemJoinString+'WHERE u.nickname = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20',
-            queryCondition: [data.user_nickname,data.page*20],
+            queryString: mysql.itemJoinString + 'WHERE u.nickname = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20',
+            queryCondition: [data.user_nickname, data.page * 20],
             queryName: 'recommendItemsData',
             DAO_name: 'itemDAO',
             reject: reject,
-          },(recommendItemsData)=>{
-            if (recommendItemsData.length === 20) {recommendItemsData.next_paging = recommendItemsData.page+1 };
+          }, (recommendItemsData) => {
+            if (recommendItemsData.length === 20) { recommendItemsData.next_paging = recommendItemsData.page + 1 };
             resolve(recommendItemsData)
           })
-        } 
+        }
       } else if (data.type === 'detail') {
         mysql.advancedQuery({
-          queryString: mysql.itemJoinString+'WHERE i.id = ? AND i.availability = "true"',
+          queryString: mysql.itemJoinString + 'WHERE i.id = ? AND i.availability = "true"',
           queryCondition: [data.item_id],
           queryName: 'itemDetailResult',
           DAO_name: 'itemDAO',
           reject: reject,
-        },(itemDetailResult)=>{
+        }, (itemDetailResult) => {
           resolve(itemDetailResult)
         })
       } else {
-        reject({msg: 'wrong query type, error in items.get()'})
+        reject({ msg: 'wrong query type, error in items.get()' })
       }
     })
   },
@@ -140,7 +149,7 @@ module.exports = {
     return new Promise((resolve, reject) => {
       mysql.pool.query('INSERT INTO items SET ?', data, (err, insertItem, fields) => {
         if (err) {
-          mysql.errLog(err,'insertItem','itemDAO')
+          mysql.errLog(err, 'insertItem', 'itemDAO')
           reject(err)
         } else {
           console.log('insertItem')
@@ -152,7 +161,7 @@ module.exports = {
     /** To do: insert data to db */
     /** Output: Success or error msg*/
   },
-  update: (data)=>{
+  update: (data) => {
     // update items // turn item / availability to false
     let string;
     let updateAvailabilitiesCount = 0;
@@ -160,12 +169,12 @@ module.exports = {
     console.log('id_Arr')
     console.log(id_Arr)
     return new Promise((resolve, reject) => {
-      for (let i =0; i < id_Arr.length; i++ ) {
+      for (let i = 0; i < id_Arr.length; i++) {
         // string = 'UPDATE items SET availability = "false", matched_id = ? WHERE id in (?)';
         string = 'UPDATE items SET availability = "false", matched_id = ?, matched_item_id = ? WHERE id = ?';
-        mysql.pool.query(string, [ data.insertMatchId ,id_Arr[(i+1)%id_Arr.length] ,id_Arr[i%id_Arr.length]], (err, updateAvailbilityResult, fileds) => {
+        mysql.pool.query(string, [data.insertMatchId, id_Arr[(i + 1) % id_Arr.length], id_Arr[i % id_Arr.length]], (err, updateAvailbilityResult, fileds) => {
           if (err) {
-            mysql.errLog(err,'updateAvailbilityResult','itemDAO')
+            mysql.errLog(err, 'updateAvailbilityResult', 'itemDAO')
             reject(err)
           } else {
             // console.log('updateAvailbilityResult')
@@ -177,7 +186,7 @@ module.exports = {
             // console.log(updateAvailabilitiesCount)
             // console.log('updateAvailbilityResult.affectedRows')
             // console.log(updateAvailbilityResult.affectedRows)
-            if (i === id_Arr.length-1) {
+            if (i === id_Arr.length - 1) {
               // console.log('i, when out')
               // console.log(i)
               resolve(updateAvailabilitiesCount);

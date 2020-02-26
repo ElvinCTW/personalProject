@@ -32,21 +32,25 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Index
 app.get('/', async (req, res) => {
   let queryData = {};
-  let resData = {mainBoardsList: listData.mainBoardsList};
-  if (!req.query.main_category) {
+  let resData = { mainBoardsList: listData.mainBoardsList };
+  if (!req.query.main_category) { // '/'
     // 取得main_categories
     queryData.action = 'getMainCategories'
-  } else if (req.query.main_category && !req.query.sub_category) {
+  } else if (!req.query.sub_category) { // '/?main_category'
     // 取得sub_categories
     queryData.action = 'getSubCategories'
-    queryData.main_category=req.query.main_category
-  } else {
+    queryData.main_category = req.query.main_category
+  } else if (!req.query.status) { // '/?main_category&sub_category'
+    // 取得物品狀態
+    queryData.action = 'doNothing'
+    resData.statusList = listData.statusList
+  } else { // '/?main_category&sub_category&status'
     // 不用取得list
     queryData.action = 'doNothing'
   }
   // 添加 queries
-  Object.keys(req.query).forEach(query=>{
-    resData[query]=req.query[query]
+  Object.keys(req.query).forEach(query => {
+    resData[query] = req.query[query]
   })
   resData.categories = await categoryDAO.get(queryData);
   console.log('resData')

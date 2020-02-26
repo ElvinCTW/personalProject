@@ -27,7 +27,7 @@ router.get('/item_insertion/:type', async (req, res, next) => {
     obj.main_category = req.query.main_category
   }
   let categoryList = await categoryDAO.get(obj).catch(()=> {
-    res.send(500).send({errorMsg:'get categoryList error'})
+    res.status(500).send({errorMsg:'get categoryList error'})
   })
   if (categoryList) {
     res.status(200).send(categoryList)

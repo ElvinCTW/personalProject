@@ -10,6 +10,7 @@ const msgAPI = require('./routes/msgAPI');
 const itemDAO = require('./dao/item');
 const categoryDAO = require('./dao/categoryDAO');
 // const wantDAO = require('./dao/wantDAO');
+const awsConfig = require('./util/awsConfig');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -52,9 +53,38 @@ app.get('/', async (req, res) => {
   Object.keys(req.query).forEach(query => {
     resData[query] = req.query[query]
   })
+  if (req.query.search) {
+    let titleArr = [];
+    let hashtagArr = [];
+    req.query.search.split(' ').filter(string=> string!=='').forEach(string=>{
+      let array = string.slice(0,1)==='#'?hashtagArr:titleArr;
+      array.push(string);
+    });
+    hashtagArrWithHash = hashtagArr.filter(hash=>hash!=='')
+    hashtagArr = hashtagArrWithHash.map(hashtag=>hashtag.slice(1))
+    console.log('titleArr')
+    console.log(titleArr)
+    let itemsDataArr = await itemDAO.get({
+      action:'getItemDataFromSearchBar',
+      titleArr:titleArr,
+      hashtagArr:hashtagArr,
+    })
+    resData.searchDataArr = itemsDataArr
+    resData.s3_url = awsConfig.s3_url
+    resData.keywordString = ''
+    if (titleArr.length>0 && hashtagArrWithHash.length>0) {
+      // titleArr.concat(hashtagArrWithHash).forEach(keyword=>{resData.keywordString+='/'+keyword+' '})
+      titleArr.map(keyword=>'/'+keyword).concat(hashtagArrWithHash).forEach(keyword=>{resData.keywordString+=keyword+' '})
+    } else if (titleArr.length>0) {
+      titleArr.forEach(keyword=>{resData.keywordString+='/'+keyword+' '})
+    } else {
+      hashtagArrWithHash.forEach(keyword=>{resData.keywordString+=keyword+' '})
+    }
+    resData.keywordString+='> '
+    console.log('resData.keywordString')
+    console.log(resData.keywordString)
+  }
   resData.categories = await categoryDAO.get(queryData);
-  console.log('resData')
-  console.log(resData)
   res.render('index', resData)
 });
 // sign up

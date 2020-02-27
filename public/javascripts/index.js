@@ -1,7 +1,12 @@
 let page = 0;
 let nomoreUpdate = false;
 let getData = true;
-createMoreItems();
+if ($('#items-area-recommand').length>0) {
+  createMoreItems();
+} 
+if ($('#no-item').length>0) {
+  alert('此搜尋沒有上架中的匹配物品，請修改搜尋條件或晚點再試～')
+}
 // (()=>{
 //   let token = localStorage.getItem('token')?localStorage.getItem('token'):null;
 //   // ajax 取得熱門看板清單 (要可以擴充訂閱看板功能)

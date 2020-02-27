@@ -2,7 +2,59 @@ const mysql = require('../util/mysql');
 module.exports = {
   get: (data) => {
     return new Promise((resolve, reject) => {
-      if (data.action === 'checkVaildUserOfMatchDialog') {
+      if (data.action === 'getItemDataFromSearchBar') {
+        let queryString =
+          `SELECT *, COUNT(*) counts FROM ( `;
+        // add keywords
+        let count = 1;
+        console.log('data')
+        console.log(data)
+        if (data.titleArr.length > 0) {
+          console.log('data.titleArr.length')
+          console.log(data.titleArr.length)
+          for (let i = 1; i < data.titleArr.length+1; i++) {
+            queryString +=
+              `SELECT i${i}.* 
+              FROM items i${i}
+              WHERE i${i}.title
+              LIKE ? 
+              UNION ALL `
+            count++
+            console.log('yo');
+          }
+        }
+        // add tags
+        if (data.hashtagArr.length > 0) {
+          for (let j = count; j < data.hashtagArr.length+count; j++) {
+            queryString +=
+              `SELECT i${j}.*
+              FROM items i${j}
+              WHERE i${j}.tags
+              LIKE ?
+              UNION ALL `
+          }
+        }
+        // 蓋子
+        queryString+=
+        `SELECT i.* FROM items i WHERE i.id < 0 ) total 
+        GROUP BY id ORDER BY counts DESC`
+        console.log('data.titleArr.concat(data.hashtagArr)')
+        console.log(data.titleArr.concat(data.hashtagArr))
+        let queryCondition = data.titleArr.concat(data.hashtagArr).map(word=>`%${word}%`)
+        mysql.advancedQuery({
+          queryString: queryString,
+          queryCondition: queryCondition,
+          queryName: 'itemsIdOfKeyword',
+          DAO_name: 'itemDAO',
+          reject: reject,
+        }, (itemsIdOfKeyword) => {
+          console.log('queryString')
+          console.log(queryString)
+          console.log('itemsIdOfKeyword')
+          console.log(itemsIdOfKeyword)
+          resolve(itemsIdOfKeyword)
+        })
+      } else if (data.action === 'checkVaildUserOfMatchDialog') {
         let queryString =
           `SELECT * FROM items i
         JOIN users u ON i.user_id = u.id

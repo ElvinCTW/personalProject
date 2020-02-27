@@ -151,8 +151,6 @@ module.exports = {
               mysql.errLog(err, 'getConfirmedMatchesResult', 'itemDAO')
               reject(err)
             } else {
-              console.log('getConfirmedMatchesResult')
-              console.log(getConfirmedMatchesResult)
               resolve(getConfirmedMatchesResult);
             }
           });

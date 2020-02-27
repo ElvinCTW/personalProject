@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const msgDAO = require('../dao/msgDAO');
+// const io = require('../util/socketServer').io;
 
 router.post('/new', async (req, res, next)=>{
   // console.log('req.body')

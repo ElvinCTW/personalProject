@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const categoryDAO = require('../dao/categoryDAO');
 
-
-
 router.get('/boardList', async (req, res, next) => {
   let token = req.headers.authorization.split(' ')[1];
   let boardList = await categoryDAO.get({
@@ -17,21 +15,21 @@ router.get('/boardList', async (req, res, next) => {
   }
 })
 
-// router.get('/:type', async (req, res, next) => {
-//   // call DAO
-//   let obj = {};
-//   if (req.params.type === 'main') {
-//     obj.action = 'getMainCategory'
-//   } else if (req.params.type === 'sub') {
-//     obj.action = 'getSubCategory'
-//     obj.main_category = req.query.main_category
-//   }
-//   let categoryList = await categoryDAO.get(obj).catch(()=> {
-//     res.send(500).send({errorMsg:'get categoryList error'})
-//   })
-//   if (categoryList) {
-//     res.status(200).send(categoryList)
-//   }
-// })
+router.get('/item_insertion/:type', async (req, res, next) => {
+  // call DAO
+  let obj = {};
+  if (req.params.type === 'main') {
+    obj.action = 'getMainCategories'
+  } else if (req.params.type === 'sub') {
+    obj.action = 'getSubCategories'
+    obj.main_category = req.query.main_category
+  }
+  let resObj = await categoryDAO.get(obj).catch(()=> {
+    res.status(500).send({errorMsg:'get categoryList error'})
+  })
+  if (resObj) {
+    res.status(200).send(resObj.listData);
+  }
+})
 
 module.exports = router;

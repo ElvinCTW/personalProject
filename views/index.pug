@@ -1,11 +1,29 @@
 extends layout
 block content
+  - let boardTitle;
+  - let beforeSubtitle='';
+  //- '/'
+  if categories.mainCategories
+    - boardTitle = '物品分類清單'
+  //- '/?main_category=?'
+  else if categories.subCategories
+    - boardTitle = '子分類清單'
+    - beforeSubtitle = main+' > '
+  //- '/main_category=?&sub_category=?'
+  else if statusList
+    - boardTitle = '物品狀態選單'
+    - beforeSubtitle = main+' > '+sub+' > '
+  else if status
+    - boardTitle = ''
+    - beforeSubtitle = main+' > '+sub+' > '+status+' > '
   main
     .outer-container.main
       .inside-container.main.left
         .sub-container.main.left
           .sidebar.left
-            //- href box 
+            a.sidebar-div.left(href="/")
+              .sidebar-div.left
+                .sidebar-text.left 所有物品清單
             if mainBoardsList
               - let i = 0
               - let mainLength = mainBoardsList.length 
@@ -15,6 +33,31 @@ block content
                     .sidebar-div.left
                       .sidebar-text.left=mainBoardsList[i]
                   - i++
+            .sidebar-div.left(id="main-list-title")
+              .sidebar-text.left.separate=boardTitle
+            if categories.listData
+              //- 製作主分類清單
+              //- - let k = 0
+              //- - let listLength = categories.listData.length
+              //- if listLength > 0
+                //- while k < mainCategories
+              each category in categories.listData
+                if categories.mainCategories
+                  a.sidebar-div.left(href=`/?main_category=${category.id}&main=${category.main_category}`)
+                    .sidebar-div.left
+                      .sidebar-text.left=category.main_category
+                else if categories.subCategories
+                  a.sidebar-div.left(href=`/?main_category=${main_category}&main=${main}&sub_category=${category.id}&sub=${category.sub_category}`)
+                    .sidebar-div.left
+                      .sidebar-text.left=category.sub_category
+            if statusList
+              each status in statusList
+                a.sidebar-div.left(href=`/?main_category=${main_category}&main=${main}&sub_category=${sub_category}&sub=${sub}&status=${status}`)
+                  .sidebar-div.left
+                    .sidebar-text.left=status
+                      //- - k++
+                //- else if sub_categories
+                  //- 製作子分類清單
             //- if subscribeBoardsList
             //-   .sidebar-div.left
             //-     .sidebar-text.left.separate 訂閱看板清單
@@ -27,22 +70,38 @@ block content
             //-           .sidebar-text.left=subscribeBoardsList[j].hot_board
             //-       - j++
             //- if hotBoardsList
-            .sidebar-div.left(id="hot-list-title")
-              .sidebar-text.left.separate 即時熱門分類
-            //- - let k = 0
-            //- - let hotsLength = hotBoardsList.length
-            //- if hotsLength > 0
-              //- while k < hotsLength
-            //- a.sidebar-div.left
-            //-   .sidebar-div.left
-            //-     .sidebar-text.left=hotBoardsList[k].hot_board
-            //- - k++
+            //- .sidebar-div.left(id="hot-list-title")
+            //-   .sidebar-text.left.separate 全部看板清單
       .inside-container.main.middle
         .sub-container.main.middle
           //- .subtext.news News
-          h1.sub-title 新商品清單
-          .items-area.recommands(id="items-area-recommand")
-          //- .nomore-text-div(onclick="createMoreItems()" id="nomore-text-div") 點此查看更多物品
+          if !searchDataArr
+            .sub-title
+              .sub-text=beforeSubtitle+"新商品清單"
+            .items-area.recommands(id="items-area-recommand")
+          else 
+            .sub-title
+              .sub-text=keywordString+"搜尋結果"
+            - let searchCount = searchDataArr.length
+            .items-area.recommands(id="items-area-searched")
+              if searchCount > 0
+                each item in searchDataArr
+                  a.item-link(href=`/items/detail?item_id=${item.id}}`)
+                    .item-container.outside.main.index
+                      .item-container.inside.main.index
+                        .item-img.main
+                          - let pic_url = item.pictures.split(',')[0]
+                          img(src=s3_url+pic_url)
+                        .item.content
+                          .item.title=item.title
+                          .item.info
+                            span.nickname=item.user_nickname
+                          .item.tags
+                            -let tagsArr = item.tags.split(' ')
+                            each tag in tagsArr
+                              span=tag+' '
+              else  
+                .no-item(id='no-item')
       .inside-container.main.right
         .sub-container.main.right
           .guide

@@ -797,12 +797,6 @@ form .new-item textarea {
   /* flex-direction: column; */
 }
 
-.picture-div.item-detail::-webkit-scrollbar {
-  /* display: none;
-  color: #3397cf;
-  background: #3397cf; */
-}
-
 .picture-div.item-detail img {
   /* width: 100%; */
   /* max-width: 350px; */

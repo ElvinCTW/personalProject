@@ -1,35 +1,40 @@
 let page = 0;
 let nomoreUpdate = false;
 let getData = true;
-createMoreItems();
-(()=>{
-  let token = localStorage.getItem('token')?localStorage.getItem('token'):null;
-  // ajax 取得熱門看板清單 (要可以擴充訂閱看板功能)
-  $.ajax({
-    url: `/api/1.0/category/boardList`,
-    type: 'get',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    success: (boardList) => {
-      console.log(boardList);
-      boardList.forEach(board=>{
-        let link = $('<a />').attr({
-          class:'sidebar-div left',
-          href:`/boards?main_category=${board.id}`,
-        })
-        link.insertAfter($('#hot-list-title'))
-        let div = $('<div />').attr('class','sidebar-div left')
-        link.append(div);
-        let text = $('<div />').attr('class','sidebar-text left').html(board.main_category);
-        div.append(text)
-      })
-    },
-    error: (err) => {
-      alert(err);
-    }
-  })
-})()
+if ($('#items-area-recommand').length>0) {
+  createMoreItems();
+} 
+if ($('#no-item').length>0) {
+  alert('此搜尋沒有上架中的匹配物品，請修改搜尋條件或晚點再試～')
+}
+// (()=>{
+//   let token = localStorage.getItem('token')?localStorage.getItem('token'):null;
+//   // ajax 取得熱門看板清單 (要可以擴充訂閱看板功能)
+//   $.ajax({
+//     url: `/api/1.0/category/boardList`,
+//     type: 'get',
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//     success: (boardList) => {
+//       console.log(boardList);
+//       boardList.forEach(board=>{
+//         let link = $('<a />').attr({
+//           class:'sidebar-div left',
+//           href:`/?main_category=${board.id}`,
+//         })
+//         link.insertAfter($('#main-list-title'))
+//         let div = $('<div />').attr('class','sidebar-div left')
+//         link.append(div);
+//         let text = $('<div />').attr('class','sidebar-text left').html(board.main_category);
+//         div.append(text)
+//       })
+//     },
+//     error: (err) => {
+//       alert(err);
+//     }
+//   })
+// })()
 /**
  * 捲動時自動帶入新物件
  */
@@ -62,10 +67,26 @@ $('#items-area-recommand').scroll(function () {
  */
 function createMoreItems() {
   if (page !== 'end') {
+    let url = `/api/1.0/items/all?page=${page}`
+    let params = (new URL(document.location)).searchParams;
+    if (params.get('main_category')) {
+      url+=`&main_category=${params.get('main_category')}`
+    } 
+    if (params.get('sub_category')){
+      url+=`&sub_category=${params.get('sub_category')}`
+    }
+    if (params.get('status')){
+      url+=`&status=${params.get('status')}`
+    }
     $.ajax({
-      url: `/api/1.0/items/all?page=${page}`,
+      url: url,
       type: 'get',
       success: (itemsListArr) => {
+        if (itemsListArr.length===0) {
+          alert('此分類目前沒有更多商品囉～')
+          page = 'end'
+          return
+        }
         for (let i = 20 * page; i < (20 * page + itemsListArr.length); i++) {
           // Create link to item detail page
           let link = $('<a></a>').attr({ 

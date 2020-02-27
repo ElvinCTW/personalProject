@@ -101,17 +101,15 @@ router.get('/:type', async (req, res, next) => {
       main_category: req.query.main_category || null,
       sub_category: req.query.sub_category || null,
       item_id: req.query.item_id || null,
+      status: req.query.status || null,
       token: token,
       user_nickname: user_nickname,
     }).catch((err) => {
       res.status(500).send(err);
     })
-    if (!getItemResultArr.errorMsg) {
+    if (getItemResultArr) {
       res.status(200).send(getItemResultArr);
-    } else {
-      console.log(getItemResultArr.errorMsg);
-      res.status(500).send(insertItemResult.errorMsg);
-    }
+    } 
   } else {
     res.status(400).send('plz choose correct type : /all /detail');
   }

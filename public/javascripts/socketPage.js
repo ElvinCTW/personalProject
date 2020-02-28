@@ -1,4 +1,4 @@
-socket = io.connect('ws://localhost:3000');
+socket = io.connect(`ws://${window.location.host}`);
 /**
  * socket.emit => 送訊息給後端
  * socket.on => 建立監聽事件

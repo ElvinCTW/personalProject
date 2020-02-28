@@ -29,6 +29,7 @@ socket.on('join', (obj) => {
         $('.item-div.user-item').attr('style', 'background:none;')
         link.attr('style', 'background:rgb(235,235,235);')
         getMatchedResultData(match.matched_id, match.required_item_title);
+        $('#gone-item-area').empty();
       });
       $('#items-area-user-item').append(link);
       let itemImgDiv = $('<div></div>').attr({ 'class': 'picture-div user-item' });
@@ -74,19 +75,19 @@ socket.on('history', (confirmedMatchObj) => {
   if (confirmedMatchObj) {
     // currentMatchedId = matched_id;
     // 清空物品資訊區
-    $('#items-info-div').empty();
+    $('#gone-item-area').empty();
     // 根據物品數創造商品資訊框
     for (let i = 0; i < confirmedMatchObj.itemDataArr.length; i++) {
       // Create link to item detail page
-      // let link = $('<a></a>').attr('href',`/items/detail?item_id=${confirmedMatchObj.itemDataArr[i].id}`);
-      // let itemInfoDiv = $('<div></div>').attr({ 'class': 'item-info' });
-      let link = $('<div></div>').attr({ 'class': 'item-div user-item item-info' });
-      $('#items-info-div').append(link);
+      let link = $('<a></a>').attr('href',`/items/detail?item_id=${confirmedMatchObj.itemDataArr[i].id}`);
+      $('#gone-item-area').append(link);
+      let itemInfoDiv = $('<div></div>').attr({ 'class': 'item-div user-item item-info' });
+      link.append(itemInfoDiv);
       // link.append(itemInfoDiv)
       let itemImgDiv = $('<div></div>').attr({ 'class': 'picture-div user-item' });
       let itemContentDiv = $('<div></div>').attr({ 'class': 'content-div user-item item-info' });
-      link.append(itemImgDiv);
-      link.append(itemContentDiv);
+      itemInfoDiv.append(itemImgDiv);
+      itemInfoDiv.append(itemContentDiv);
       let itemImg = $('<img></img>').attr({ 'src': s3_url + confirmedMatchObj.itemDataArr[i].pictures.split(',')[0] });
       itemImgDiv.append(itemImg);
       let titleDiv = $('<span></span>').attr({ 'class': 'title user-item item-info' }).html(`${confirmedMatchObj.itemDataArr[i].title}`);

@@ -893,7 +893,8 @@ h1.sub-title.user-item {
   display: flex;
   justify-content: flex-start;
   /* width: 250px; */
-  width: calc(100% - 40px);
+  /* width: calc(100% - 40px); */
+  width: calc(100% - 20px);
   height: 70px;
   /* background: rgb(180,180,180); */
   /* border-radius: 4px; */
@@ -937,7 +938,8 @@ h1.sub-title.user-item {
 }
 
 .content-div.user-item.item-info {
-  width: calc(100% - 60px);
+  /* width: calc(100% - 60px); */
+  max-width: 100px;
 }
 
 .introduction-div.tags.user-item {
@@ -1158,16 +1160,22 @@ textarea.user-type-div {
 }
 
 .item-div.user-item.item-info {
+  margin-bottom: 0.5em;
   height: 60px;
   border-radius: 4px;
-  max-width:30%;
+  width:85%;
   background: rgb(235,235,235); 
   display:flex;
   border: none;
+  padding: 6px 10px;
 }
 
 .msg-top-area {
   width:100%;
   display: flex;
   justify-content: space-between;
+}
+
+#gone-item-area {
+  padding-top: 68px;
 }

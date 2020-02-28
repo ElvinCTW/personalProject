@@ -1,5 +1,3 @@
-// const alphabetArr = ['A', 'B', 'C']
-
 if (!localStorage.getItem('token')) {
   // 確認使用者有登入，如果沒有，跳alert請user登入
   alert('請登入以進入交換討論頁面');
@@ -35,13 +33,13 @@ let infoBtn = $('#items-info-btn')
 infoBtn.click(()=>{
   if ($('.item-info').length > 0) {
     if (infoBtn.attr('style')==='background:rgb(235,235,235)') {
-      $('#items-info-btn').attr('style','background:none');
+      infoBtn.attr('style','background:none').html('點擊顯示物品清單');
     } else {
-      $('#items-info-btn').attr('style','background:rgb(235,235,235)');
+      infoBtn.attr('style','background:rgb(235,235,235)').html('點擊隱藏物品清單');
     }
     // 點擊後變色
     // 點擊後開關 items-info-div
-    $('#items-info-div').toggle();
+    $('#gone-item-area').toggle();
   } else {
     alert('請先選擇對話～')
   }

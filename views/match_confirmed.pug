@@ -36,7 +36,7 @@ block content
             .horizental-line
             .user-interact-area
               textarea.user-type-div(placeholder="請在此輸入訊息，最多250字元" name="user-type-content" id="user-type-content" maxlength="250")
-              button.msg-send-btn(onclick="sendMsg()" id="send-msg-btn") 傳送訊息
+              button.msg-send-btn(type="button" id="send-msg-btn") 傳送訊息
       .inside-container.main.right
         .sub-container.main.right.user-item
           .items-area.top
@@ -45,7 +45,6 @@ block content
             //-   button(type="button" id="exchange-request-btn") 交換
           .items-area.user-items
             .sub-main-container.user-items(id="items-area-user-item")
-          
   script(src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js")
   script(src="/javascripts/socketPage.js")
   script(src="/javascripts/match_confirmed.js")

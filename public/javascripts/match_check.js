@@ -104,13 +104,15 @@ if (!localStorage.getItem('token')) {
             'id': 'no-match-text',
            }).html('目前沒有配對');
           $('#items-area-match').append(match);
-
           // let subsItem = $('<div></div>').attr('class', 'subscribe-item')
           // subsItem.insertAfter($('#subs-subtext'));
           // let subsContent = $('<div></div>').attr('class', 'subscribe-content')
           // subsItem.append(subsContent);
           // let subsSpan = $('<span></span>').html('目前沒有配對');
           // subsContent.append(subsSpan)
+        }
+        if ($('.item-div.user-item.cur-user').length>0) {
+          $('.item-div.user-item.cur-user:first').trigger('click');
         }
       },
       error: (err) => {
@@ -126,12 +128,18 @@ $('#search-by-curuser-item').click(() => {
   $('#search-by-required-item').attr('style', 'background:none;')
   $('.item-div.user-item.cur-user').attr('style', 'display:flex;background:none;')
   $('.item-div.user-item.required-user').attr('style', 'display:none;background:none;')
+  if ($('.item-div.user-item.cur-user').length>0) {
+    $('.item-div.user-item.cur-user:first').trigger('click');
+  }
 })
 $('#search-by-required-item').click(() => {
   $('#search-by-curuser-item').attr('style', 'background:none;')
   $('#search-by-required-item').attr('style', 'background:rgb(235,235,235);')
   $('.item-div.user-item.required-user').attr('style', 'display:flex;background:none;')
   $('.item-div.user-item.cur-user').attr('style', 'display:none;background:none;')
+  if ($('.item-div.user-item.required-user').length>0) {
+    $('.item-div.user-item.required-user:first').trigger('click');
+  }
 })
 
 function getMatchedResultData(item_id, matchResultObj, item_type) {

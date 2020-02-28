@@ -118,6 +118,7 @@ $('#main_category_list').click((e) => {
         }).html(sub.sub_category);
         $('#sub_category_list').append(option)
       })
+      $('#sub_category').trigger('click');
     },
     error: (err) => {
       alert(err);
@@ -137,6 +138,7 @@ $('#sub_category_list').click((e) => {
     if ($('#status_input').val() !== '' && $('#main_category_input').val() !== '') {
       $('#add-items-btn').attr({ type: 'submit' })
     }
+    $('#status').trigger('click');
   }
 })
 // 狀態
@@ -179,3 +181,5 @@ form.addEventListener('submit',()=>{
     background:'rgba(20,59,81,0.5)'
   }).html('上傳中');
 })
+// 自動點擊主分類
+$('#main_category').trigger('click');

@@ -31,13 +31,17 @@ module.exports = {
       } else if (queryData.action === 'addNewMatchedPageMsg') {
         // console.log('queryData')
         // console.log(queryData)
-        queryString = 'INSERT INTO message (content, sender, time, matched_id) values (?)';
-        queryCondition.length = 0;
-        delete queryData['action'];
+        console.log('msgDAO,inserting');
+        console.log('queryData')
+        console.log(queryData)
+        queryString = 'INSERT INTO message SET ?';
+        // queryCondition.length = 0;
+        // delete queryData['action'];
         // console.log('queryData')
         // console.log(queryData)
-        queryCondition.push(Object.values(queryData));
-        mysql.pool.query(queryString, queryCondition, (err, insertNewMatchedPageMsgResult, fileds) => {
+        // let queryCondition=queryData.data
+        // queryCondition.push(Object.values(queryData));
+        mysql.pool.query(queryString, [queryData.data], (err, insertNewMatchedPageMsgResult, fileds) => {
           if (err) {
             mysql.errLog(err,'insertNewMatchedPageMsgResult','msgDAO')
             reject(err)
@@ -68,15 +72,45 @@ module.exports = {
   },
   get: (queryData)=>{
     return new Promise((resolve, reject) => {
-      if (queryData.action === 'getConfirmedMatchMsg') {
+      if (queryData.action === 'getLastestMsg') {
+        let queryString = '';
+        if (queryData.matchedIdArr.length>0) {
+          for (let i=0;i<queryData.matchedIdArr.length-1;i++) {
+            queryString+=
+            `(SELECT * FROM message m${i}
+              WHERE m${i}.matched_id = ? 
+              AND sender <> "system" 
+              ORDER BY time DESC 
+              LIMIT 0,1 ) 
+              UNION ALL `
+          }
+          queryString+=
+          `(SELECT * FROM message m
+            WHERE m.matched_id = ? 
+            AND sender <> "system" 
+            ORDER BY time DESC 
+            LIMIT 0,1 ) `
+          mysql.advancedQuery({
+            queryString: queryString,
+            queryCondition: queryData.matchedIdArr,
+            queryName: 'lastestMsgArr',
+            DAO_name: 'msgDAO',
+            reject: reject,
+          },(lastestMsgArr)=>{
+            resolve(lastestMsgArr)
+          })
+        } else {
+          resolve([])
+        }
+      } else if (queryData.action === 'getConfirmedMatchMsg') {
         let queryString = 
         `SELECT content, sender, time 
         FROM message 
         WHERE matched_id = ? 
         AND sender <> "system" 
         ORDER BY time`;
-        console.log('queryData.matched_id')
-        console.log(queryData.matched_id)
+        // console.log('queryData.matched_id')
+        // console.log(queryData.matched_id)
         mysql.advancedQuery({
           queryString: queryString,
           queryCondition: [queryData.matched_id],
@@ -84,8 +118,8 @@ module.exports = {
           DAO_name: 'msgDAO',
           reject: reject,
         },(confirmedMatchMsg)=>{  
-          console.log('confirmedMatchMsg')
-          console.log(confirmedMatchMsg)
+          // console.log('confirmedMatchMsg')
+          // console.log(confirmedMatchMsg)
           resolve(confirmedMatchMsg)
         })
       } else if (queryData.action === 'getMsgForHeader') {

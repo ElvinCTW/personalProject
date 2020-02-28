@@ -63,14 +63,14 @@ router.get('/confirmed', async (req, res, next) => {
 
 // get match_confirmed page items data
 router.get('/list', async (req, res, next) => {
-  let confirmedMatchArr = await itemDAO.get({
-    action: 'getConfirmedMatches',
-    token: req.headers.authorization.split(' ')[1],
-    type: 'all',
-  }).catch(err => { res.status(500).send({ errorMsg: '資料庫錯誤' }) });
-  if (confirmedMatchArr) {
-    res.send(confirmedMatchArr)
-  }
+  // let confirmedMatchArr = await itemDAO.get({
+  //   action: 'getConfirmedMatches',
+  //   token: req.headers.authorization.split(' ')[1],
+  //   type: 'all',
+  // }).catch(err => { res.status(500).send({ errorMsg: '資料庫錯誤' }) });
+  // if (confirmedMatchArr) {
+  //   res.send(confirmedMatchArr)
+  // }
 })
 
 // router.post('/status', async (req, res, next) => {

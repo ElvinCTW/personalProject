@@ -75,6 +75,8 @@ module.exports = {
         WHERE matched_id = ? 
         AND sender <> "system" 
         ORDER BY time`;
+        console.log('queryData.matched_id')
+        console.log(queryData.matched_id)
         mysql.advancedQuery({
           queryString: queryString,
           queryCondition: [queryData.matched_id],
@@ -82,6 +84,8 @@ module.exports = {
           DAO_name: 'msgDAO',
           reject: reject,
         },(confirmedMatchMsg)=>{  
+          console.log('confirmedMatchMsg')
+          console.log(confirmedMatchMsg)
           resolve(confirmedMatchMsg)
         })
       } else if (queryData.action === 'getMsgForHeader') {

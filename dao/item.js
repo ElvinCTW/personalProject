@@ -12,7 +12,7 @@ module.exports = {
         if (data.titleArr.length > 0) {
           console.log('data.titleArr.length')
           console.log(data.titleArr.length)
-          for (let i = 1; i < data.titleArr.length+1; i++) {
+          for (let i = 1; i < data.titleArr.length + 1; i++) {
             queryString +=
               `SELECT i${i}.* 
               FROM items i${i}
@@ -25,7 +25,7 @@ module.exports = {
         }
         // add tags
         if (data.hashtagArr.length > 0) {
-          for (let j = count; j < data.hashtagArr.length+count; j++) {
+          for (let j = count; j < data.hashtagArr.length + count; j++) {
             queryString +=
               `SELECT i${j}.*
               FROM items i${j}
@@ -35,12 +35,12 @@ module.exports = {
           }
         }
         // 蓋子
-        queryString+=
-        `SELECT i.* FROM items i WHERE i.id < 0 ) total 
+        queryString +=
+          `SELECT i.* FROM items i WHERE i.id < 0 ) total 
         GROUP BY id ORDER BY counts DESC`
         console.log('data.titleArr.concat(data.hashtagArr)')
         console.log(data.titleArr.concat(data.hashtagArr))
-        let queryCondition = data.titleArr.concat(data.hashtagArr).map(word=>`%${word}%`)
+        let queryCondition = data.titleArr.concat(data.hashtagArr).map(word => `%${word}%`)
         mysql.advancedQuery({
           queryString: queryString,
           queryCondition: queryCondition,

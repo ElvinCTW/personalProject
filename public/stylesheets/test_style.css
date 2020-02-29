@@ -1132,6 +1132,7 @@ textarea.user-type-div {
 
 .msg-div.current-user {
   background: #3397CF;
+  white-space: pre-wrap;
   color: white;
 }
 

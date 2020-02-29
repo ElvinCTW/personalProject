@@ -44,3 +44,9 @@ infoBtn.click(()=>{
     alert('請先選擇對話～')
   }
 })
+// textarea 點擊 enter 自動送出
+// $("#user-type-content").keypress(function (e) {
+//   if(e.which == 13 && !e.shiftKey) {        
+//     $('#send-msg-btn').trigger('click');
+//   }
+// });

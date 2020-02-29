@@ -32,6 +32,7 @@ module.exports = {
         // console.log('queryData')
         // console.log(queryData)
         console.log('msgDAO,inserting');
+        queryData.data.content = queryData.data.content.replace(/\n/g, '\r\n')
         console.log('queryData')
         console.log(queryData)
         queryString = 'INSERT INTO message SET ?';
@@ -41,7 +42,7 @@ module.exports = {
         // console.log(queryData)
         // let queryCondition=queryData.data
         // queryCondition.push(Object.values(queryData));
-        mysql.pool.query(queryString, [queryData.data], (err, insertNewMatchedPageMsgResult, fileds) => {
+        mysql.pool.query(queryString, queryData.data, (err, insertNewMatchedPageMsgResult, fileds) => {
           if (err) {
             mysql.errLog(err,'insertNewMatchedPageMsgResult','msgDAO')
             reject(err)

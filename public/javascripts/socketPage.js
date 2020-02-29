@@ -117,9 +117,13 @@ socket.on('history', (confirmedMatchObj) => {
       let msgDiv = $('<div></div>').attr({ 'class': msgDivClass });
       msgLine.append(msgDiv);
       let msgTopbar = $('<div></div>').attr({ 'class': 'msg-topbar' });
-      let msgContent = $('<div></div>').attr({ 'class': 'msg-content' }).html(msg.content);
+      console.log('msg.content')
+      console.log(msg.content)
+      let msgContent = $('<div></div>').attr({ 'class': 'msg-content' }).text(msg.content);
       msgDiv.append(msgTopbar);
       msgDiv.append(msgContent);
+      // let msgSpan = $('<span />').html(msg.content);
+      // msgContent.append(msgSpan)
       let msgName = $('<div></div>').attr({ 'class': 'msg-name' }).html(msg.sender);
       let msgTime = $('<div></div>').attr({ 'class': 'msg-time' }).html(new Date(parseInt(msg.time)).toString().slice(4, 24));
       msgTopbar.append(msgName);

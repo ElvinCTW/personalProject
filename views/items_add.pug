@@ -39,9 +39,9 @@ block content
                           .option 全新
                           .option 二手
                           .option 觀賞用
-                  input.title(name="title" type="text" placeholder="標題" autocomplete="off" required maxlength="30")
+                  input.title(name="title" type="text" placeholder="標題" autocomplete="off" required maxlength="30" id="title_input")
                   input.tags(name="tags" type="text" placeholder="標籤 (用#分隔)" autocomplete="off" maxlength="40" onchange="tagsNormalization()" id="tags_input")
-                  textarea.introduction(name="introduction" type="text" placeholder="簡介" value="yoyoyo")
+                  textarea.introduction(name="introduction" type="text" placeholder="簡介" value="yoyoyo" id="introduction_input")
                 label(for="pics-input")
                   .picture-area.outer
                     input.pictures(type="file", name="pictures" accept="image/*" id="pics-input" multiple required hidden)

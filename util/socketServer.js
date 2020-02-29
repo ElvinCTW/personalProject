@@ -37,8 +37,8 @@ module.exports = {
         })
         // console.log('socket')
         // console.log(socket)
-        console.log('socket.rooms')
-        console.log(socket.rooms)
+        // console.log('socket.rooms')
+        // console.log(socket.rooms)
         if (confirmedMatchArr&&lastestMsgArr) {
           io.to(socket.id).emit('join', { 
             confirmedMatchArr: confirmedMatchArr,
@@ -111,19 +111,19 @@ module.exports = {
           action:'getUserDataByToken',
           token:obj.token,
         })
-        console.log('checkUser')
-        console.log(checkUser)
+        // console.log('checkUser')
+        // console.log(checkUser)
         if (checkUser.length>0 && checkUser[0].nickname === obj.data.sender) {
           // DB儲存對話
-          console.log('start saving db');
+          // console.log('start saving db');
           let currentTime = Date.now();
           obj.data.time=currentTime;
           obj.action='addNewMatchedPageMsg';
-          console.log('obj')
-          console.log(obj)
+          // console.log('obj')
+          // console.log(obj)
           let affectedRows = await msgDAO.insert(obj);
-          console.log('affectedRows')
-          console.log(affectedRows)
+          // console.log('affectedRows')
+          // console.log(affectedRows)
           if (affectedRows !== 1) {
             io.to(socket.id).emit('message-fail', {
               errorMsg:'用戶驗證失敗，請重新登入'
@@ -131,11 +131,11 @@ module.exports = {
             console.log('msgAPI did not insert msg correctly');
           } else {
             // 儲存成功後回傳訊息給聊天室
-            console.log('here')
-            console.log('obj.data.matched_id')
-            console.log(obj.data.matched_id)
-            console.log('socket.rooms')
-            console.log(socket.rooms)
+            // console.log('here')
+            // console.log('obj.data.matched_id')
+            // console.log(obj.data.matched_id)
+            // console.log('socket.rooms')
+            // console.log(socket.rooms)
             io.to(obj.data.matched_id).emit('message', obj.data)
           }
         } else {
@@ -147,8 +147,8 @@ module.exports = {
         
       })
 
-      console.log('socket.rooms')
-      console.log(socket.rooms)
+      // console.log('socket.rooms')
+      // console.log(socket.rooms)
 
       socket.on("disconnect", () => {
         console.log("a user go out");

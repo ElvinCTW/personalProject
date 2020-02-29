@@ -198,6 +198,8 @@ module.exports = {
     /** Input: user_id(optional) and item information*/
     return new Promise((resolve, reject) => {
       mysql.pool.query('INSERT INTO items SET ?', data, (err, insertItem, fields) => {
+        console.log('data in itemDAO ,insert')
+        console.log(data)
         if (err) {
           mysql.errLog(err, 'insertItem', 'itemDAO')
           reject(err)

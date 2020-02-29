@@ -17,7 +17,7 @@ module.exports = {
           resolve(msgToOtherNonMatchUser)
         })
       } else if (queryData.action === 'insertItemGoneMsgToUser') {
-        queryString = 'INSERT INTO message(content, sender, receiver, mentioned_item_id, matched_id, time) VALUES ?';
+        queryString = 'INSERT INTO message(content, sender, receiver, mentioned_item_id, matched_id, time, type) VALUES ?';
         mysql.pool.query(queryString, [queryData.insertMsgQueryDataArr], (err, insertMsgResult, fileds) => {
           if (err) {
             mysql.errLog(err,'insertMsgResult','msgDAO')
@@ -55,8 +55,9 @@ module.exports = {
       } else if (queryData.action === 'insertNewMatchMsg') {
         // console.log('queryData')
         // console.log(queryData)
-        queryString = 'INSERT INTO message (content, sender, receiver, time, mentioned_item_id) values ?';
+        queryString = 'INSERT INTO message (content, sender, receiver, time, mentioned_item_id, type) values ?';
         queryCondition.length = 0;
+        queryData.msgArr[0].push('/want/check/')
         queryCondition.push(queryData.msgArr);
         mysql.pool.query(queryString, queryCondition, (err, insertNewMatchedPageMsgResult, fileds) => {
           if (err) {

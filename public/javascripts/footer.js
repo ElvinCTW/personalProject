@@ -11,6 +11,7 @@ if (localStorage.getItem('token')) {
   showNotification(token);
   $('#general-notification').click(() => {
     $('#notification-area').toggle()
+    $('.guide').toggle()
     // call msgDAO change watched => true
     if ($('#notification-count')) {
       $('#notification-count').remove();
@@ -41,8 +42,8 @@ if (localStorage.getItem('token')) {
   // get notification counts
 } else {
   $('#navbar-member-link').click(() => {
-    // console.log('asdads');
     $('#sign-area').show();
+    $('.id').trigger('focus')
   });
   $('.fast-btn').click(() => {
     alert('請先登入或註冊以使用會員功能');
@@ -67,8 +68,13 @@ function showNotification(token) {
         notificationCount.insertAfter($('#notification-span'))
         // insert msg into msg area
         unreadMsgArr.forEach(msgObj => {
+          let link = $('<a />').attr({
+            href: msgObj.type,
+            class: 'header-msg',
+          })
+          $('#notification-area').append(link);
           let outerNotificationDiv = $('<div></div>').attr({ 'class': 'notification-div outer notification' });
-          $('#notification-area').append(outerNotificationDiv);
+          link.append(outerNotificationDiv);
           let notificationDiv = $('<div></div>').attr({ 'class': 'notification-div new' }).html(`${msgObj.content}`);
           $(outerNotificationDiv).append(notificationDiv);
         })

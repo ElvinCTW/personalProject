@@ -529,11 +529,11 @@ main {
 }
 
 .guide {
-  background: rgb(235,235,235);
+  background: rgb(250,250,250);
   border-radius: 4px;
   display: flex;
   flex-direction: column;
-  margin-top: 200px;
+  /* margin-top: 200px; */
 }
 
 .guide-content {
@@ -1179,4 +1179,9 @@ textarea.user-type-div {
 
 #gone-item-area {
   padding-top: 68px;
+}
+
+.notification-area.notification a.header-msg {
+  color: black;
+  margin-left: 0px;
 }

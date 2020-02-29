@@ -15,7 +15,7 @@ if (localStorage.getItem('token')) {
     // call msgDAO change watched => true
     if ($('#notification-count')) {
       $('#notification-count').remove();
-      if (msgCount>0) { 
+      if (msgCount > 0) {
         // $.ajax({ // 要改成針對每個 notification
         //   url: `/api/1.0/message/watched`,
         //   type: 'post',
@@ -59,12 +59,9 @@ function showNotification(token) {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    success: (unreadMsgArr) => { 
+    success: (unreadMsgArr) => {
       console.log(unreadMsgArr);
       if (unreadMsgArr.length > 0) {
-        // update number of fast btn
-        let notificationCount = $('<div></div>').attr({ 'id': 'notification-count' });
-        notificationCount.insertAfter($('#notification-span'))
         // insert msg into msg area
         unreadMsgArr.forEach(msgObj => {
           // show unread dot
@@ -85,7 +82,7 @@ function showNotification(token) {
           $(outerNotificationDiv).append(notificationDiv);
           if (msgObj.watched === 'false') {
             // 標示為已讀
-            link.click(()=>{
+            link.click(() => {
               $.ajax({ // 要改成針對每個 notification
                 url: `/api/1.0/message/watched?id=${msgObj.id}`,
                 type: 'post',
@@ -105,6 +102,11 @@ function showNotification(token) {
             })
           }
         })
+        if (msgCount>0) {
+          // update number of fast btn
+          let notificationCount = $('<div></div>').attr({ 'id': 'notification-count' });
+          notificationCount.insertAfter($('#notification-span'))
+        }
       } else {
         let outerNotificationDiv = $('<div></div>').attr({ 'class': 'notification-div outer notification' });
         $('#notification-area').append(outerNotificationDiv);

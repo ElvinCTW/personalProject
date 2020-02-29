@@ -147,9 +147,9 @@ module.exports = {
       let queryString='';
       let queryCondition =[];
       if (queryData.action === 'markedAsWatched') {
-        queryString = 'UPDATE message m JOIN users u ON u.id = m.receiver SET m.watched = "true" WHERE u.token = ? AND m.watched = "false"';
+        queryString = 'UPDATE message m JOIN users u ON u.id = m.receiver SET m.watched = "true" WHERE u.token = ? AND m.watched = "false" AND m.id = ?';
         queryCondition.length = 0;
-        queryCondition.push(queryData.token);
+        queryCondition.push(queryData.token, queryData.id);
         mysql.pool.query(queryString, queryCondition, (err, markedAsWatchedResult, fileds) => {
           if (err) {
             console.log('err here');

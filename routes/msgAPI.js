@@ -19,6 +19,7 @@ router.post('/watched', async (req, res, next)=>{
   let affectedRows = await msgDAO.update({
     action: 'markedAsWatched',
     token: req.headers.authorization.split(' ')[1],
+    id:req.query.id,
   })
   res.send(`${affectedRows}`);
 })

@@ -212,6 +212,10 @@ select.list {
   margin-bottom: 1px;
 }
 
+.notification-div.outer.notification.new {
+  background: rgb(250,250,250);
+}
+
 form.sign {
   display: flex;
   z-index: 30;

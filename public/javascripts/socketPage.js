@@ -79,7 +79,7 @@ socket.on('history', (confirmedMatchObj) => {
     // 根據物品數創造商品資訊框
     for (let i = 0; i < confirmedMatchObj.itemDataArr.length; i++) {
       // Create link to item detail page
-      let link = $('<a></a>').attr('href',`/items/detail?item_id=${confirmedMatchObj.itemDataArr[i].id}`);
+      let link = $('<a></a>').attr('href',`/items/gone?item_id=${confirmedMatchObj.itemDataArr[i].id}`);
       $('#gone-item-area').append(link);
       let itemInfoDiv = $('<div></div>').attr({ 'class': 'item-div user-item item-info' });
       link.append(itemInfoDiv);

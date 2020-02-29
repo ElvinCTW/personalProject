@@ -91,6 +91,14 @@ app.get('/', async (req, res) => {
 app.get('/users/signup', (req, res) => { res.render('signup') });
 // Items
 app.get('/items/new', (req, res) => { res.render('items_add') });
+app.get('/items/gone', async (req, res) => {
+  let itemDetailData = await itemDAO.get({
+    type: 'detail',
+    subtype:'gone',
+    item_id: req.query.item_id,
+  })
+  res.render('items_detail_gone', itemDetailData[0])
+});
 app.get('/items/detail', async (req, res) => {
   let itemDetailData = await itemDAO.get({
     type: 'detail',

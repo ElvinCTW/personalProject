@@ -145,7 +145,8 @@ module.exports = {
           JOIN users u ON i.user_id = u.id 
           WHERE i.availability = "false" 
           AND i.matched_id > 0 
-          AND u.token = ?`;
+          AND u.token = ?
+          ORDER BY matched_id DESC`;
           mysql.pool.query(string, [data.token], (err, getConfirmedMatchesResult, fileds) => {
             if (err) {
               mysql.errLog(err, 'getConfirmedMatchesResult', 'itemDAO')
@@ -180,8 +181,14 @@ module.exports = {
           })
         }
       } else if (data.type === 'detail') {
+        let string;
+        if (!data.subtype) {
+          string = mysql.itemJoinString + 'WHERE i.id = ? AND i.availability = "true"'
+        } else if (data.subtype === 'gone') {
+          string = mysql.itemJoinString + 'WHERE i.id = ? AND i.availability = "false"'
+        }
         mysql.advancedQuery({
-          queryString: mysql.itemJoinString + 'WHERE i.id = ? AND i.availability = "true"',
+          queryString: string,
           queryCondition: [data.item_id],
           queryName: 'itemDetailResult',
           DAO_name: 'itemDAO',

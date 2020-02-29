@@ -1,0 +1,35 @@
+extends layout
+block content
+  main
+    .outer-container.main
+      .inside-container.main.left
+      .inside-container.main.middle.detail
+        .sub-container.main.middle.detail
+          if title
+            .items-area.detail(id="items-area-recommand")
+              .sub-main-container.item-detail
+                .info-div.item-detail
+                  .nickname.item-detail(id="required-owner")=user_nickname
+                  .title.item-detail(id="item-detail-title")
+                    p=title
+                  .sub-title-div.detail
+                    .sub-title.category=main_category_text
+                    .sub-title.category=sub_category_text
+                    .sub-title.category=status
+                    .sub-title.time(id="item-detail-time")=time
+                .picture-div.item-detail(id="item-detail-pic-div")
+                  - let imgArr = pictures.split(',').map(pic=>'https://triangletradeelvintokyo.s3-ap-northeast-1.amazonaws.com/'+pic)
+                  - let i = 0
+                  while i < imgArr.length-1
+                    img(src=imgArr[i] style="display:none;" id=`img${i}`)
+                    - i++
+              .sub-main-container.text-content
+                .introduction-div.tags
+                  - let tagsArr = tags.split(' ')
+                  each tag in tagsArr
+                    .tag=tag
+                .introduction-div.item-detail=introduction
+          else 
+            h1.sub-title 您來晚了><物品已不在架上～
+      .inside-container.main.right
+  script(src="/javascripts/items_detail.js")

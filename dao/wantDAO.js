@@ -32,16 +32,6 @@ module.exports = {
     // settings
     return new Promise((resolve, reject) => {
       if (queryData.action === 'getItemsWantByItemIds') {
-        // i.title want_item_title , 
-        // i.tags want_item_tags , 
-        // i.pictures want_item_pictures , 
-        // u.nickname want_item_user_nickname , 
-        // i2.title required_item_title , 
-        // i2.tags required_item_tags , 
-        // i2.pictures required_item_pictures , 
-        // u2.nickname required_item_user_nickname 
-        // JOIN users u ON u.id = i.user_id
-        // JOIN users u2 ON u2.id = i2.user_id
         let queryString = 
         `SELECT w.* 
         FROM want w 
@@ -281,44 +271,3 @@ module.exports = {
     })
   }
 }
-
-
-
-/**
-
-// -- O(n^2) loop 產生 CwantAwantB
-let CwantAwantBtable = [];
-for (let i = 0; i < CwantAtable.length; i++) {
-  for (let j = 0; j < AwantBtable.length; j++) {
-    if (CwantAtable[i].A_id === AwantBtable[j].A_id) {
-      CwantAwantBtable.push({
-        A_id: CwantAwantBtable.A_id,
-        B_id: AwantBtable.B_id,
-        C_id: CwantAwantBtable.C_id,
-      })
-    }
-  }
-}
-
-let tripleMatchResultArr = [];
-BwantCtable.forEach(BwantC => {
-
-})
-for (let i = 0; i < CwantAwantBtable.length; i++) {
-  for (let j = 0; j < BwantCtable.length; j++) {
-    if (CwantAwantBtable[i].C_id === BwantCtable.C_id && CwantAwantBtable[i].B_id === BwantCtable.B_id) {
-      tripleMatchResultArr.push(CwantAwantBtable[i])
-      break;
-    }
-  }
-}
-
-// 取得 CwantAtalbe
-queryString = `SELECT want_item_id C_id, required_item_id A_id FROM want w JOIN items i ON w.required_item_id = i.id WHERE i.user_nickname = ?`
-queryCondition = queryData.user_nickname
-console.log(queryCondition);
-mysql.pool.query(queryString, [queryCondition], (err, CwantAtable, fileds) => {
-
-})
-
-*/

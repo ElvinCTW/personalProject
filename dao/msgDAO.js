@@ -9,7 +9,7 @@ module.exports = {
         `INSERT INTO message SET ?`;
         mysql.advancedQuery({
           queryString: queryString,
-          queryCondition: [queryData.curUser, queryData],
+          queryCondition: [queryData.msg],
           queryName: 'msgToOtherNonMatchUser',
           DAO_name: 'msgDAO',
           reject: reject,

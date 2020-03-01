@@ -35,7 +35,6 @@ router.post('/new', async (req, res, next) => {
     } else {
       // 建立 msg 通知交易者
       // 如果沒有 match ，建立訊息給被申請者
-      /*
       if (_2n3MatchResultObj.doubleMatchResultArr.length === 0 &&
         _2n3MatchResultObj.tripleMatchResultArr.length === 0) {
           let secondUserIdAndItemTitle = await userDAO.get({
@@ -45,16 +44,17 @@ router.post('/new', async (req, res, next) => {
           let insertCount = await msgDAO.insert({
             action:'insertMsgToOtherUserWhenNoMatch',
             msg: {
-              content:`您的物品"${secondUserIdAndItemTitle.title}"收到了來自"${checkUserResult.nickname}"的新交換申請，快到"請求"頁面查看一下吧`,
-              required_item_id: req.body.required_item,
-              secondUserId:secondUserIdAndItemTitle.id,
+              content:`您的物品"${secondUserIdAndItemTitle.title}"收到了來自"${checkUserResult[0].nickname}"的新交換邀請，快到"邀請"頁面查看一下吧`,
+              receiver:secondUserIdAndItemTitle.id,
+              sender:'system',
+              time:Date.now().toString(),
+              type:'/want/invitation'
             }
           })
           if (insertCount.affectedRows !== 1) {
             console.log('insertCount not equal to 1, it is '+insertCount.affectedRows)
           }
       } 
-      */
       if (_2n3MatchResultObj.doubleMatchResultArr.length > 0) {
         // double match msg
         // content, sender, receiver, time, mentioned_item_id

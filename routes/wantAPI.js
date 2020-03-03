@@ -17,6 +17,8 @@ router.post('/new', async (req, res, next) => {
     // 確認現在是否已經有存在的 want 可以連回 curUser
     let curUserId = checkUserResult[0].id
     req.body.required_item = parseInt(req.body.required_item);
+    // decouple : 拆成兩個 function
+    
     const _2n3MatchResultObj = await wantDAO.get({
       action: 'checkCurWantMatchable',
       wantArr: req.body.want_items_Arr.split(','),

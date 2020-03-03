@@ -32,80 +32,37 @@ module.exports = {
     // settings
     return new Promise((resolve, reject) => {
       if (queryData.action === 'getItemsWantByItemIds') {
-        let queryString = 
-        `SELECT w.* 
-        FROM want w 
-        JOIN items i ON i.id = w.want_item_id 
-        JOIN items i2 ON i2.id = w.required_item_id
-        WHERE i.id in (?)
-        AND i.availability = "true" 
-        AND i2.availability = "true"`;
-        mysql.advancedQuery({
-          queryString: queryString,
-          queryCondition: [queryData.id_Arr],
-          queryName: 'wantByItemIds',
-          DAO_name: 'wantDAO',
-          reject: reject,
-        },(wantByItemIds)=>{
-          resolve(wantByItemIds)
+        getWantOfItemsByItemIds(queryData.id_Arr,(output)=>{
+          if (output.result) {
+            resolve(output.result)
+          } else {
+            reject(output.err)
+          }
         })
       } else if (queryData.action === 'getUserWantByToken') {
         // JOIN users u2 ON u2.id = i2.user_id 
-        let queryString = 
-        `SELECT w.*  
-        FROM want w 
-        JOIN items i ON i.id = w.want_item_id 
-        JOIN items i2 ON i2.id = w.required_item_id 
-        JOIN users u ON u.id = i.user_id 
-        WHERE u.token = ? 
-        AND i.availability = "true" 
-        AND i2.availability = "true"`;
-        mysql.advancedQuery({
-          queryString: queryString,
-          queryCondition: [queryData.token],
-          queryName: 'userWantByToken',
-          DAO_name: 'wantDAO',
-          reject: reject,
-        },(userWantByToken)=>{
-          resolve(userWantByToken)
+        getUserWantByToken(queryData.token,(output)=>{
+          if (output.result) {
+            resolve(output.result)
+          } else {
+            reject(output.err)
+          }
         })
       } else if (queryData.action === 'getUserSelectedItemIdArr') {
-        console.log('queryData.item_id')
-        console.log(queryData.item_id)
-        console.log('queryData.user_nickname')
-        console.log(queryData.user_nickname)
-        mysql.advancedQuery({
-          queryString: 'SELECT i.id FROM want w JOIN items i ON i.id = w.want_item_id JOIN users u ON i.user_id = u.id WHERE w.required_item_id = ? AND u.nickname = ?',
-          queryCondition: [queryData.item_id, queryData.user_nickname],
-          queryName: 'lastTimeSelectedItemList',
-          DAO_name: 'wantDAO',
-          reject: reject,
-        }, (lastTimeSelectedItemList) => {
-          resolve(lastTimeSelectedItemList)
+        getUserSelectedItemIdArr(queryData.item_id, queryData.user_nickname, (output)=>{
+          if (output.result) {
+            resolve(output.result)
+          } else {
+            reject(output.err)
+          }
         })
       } else if (queryData.action === 'getSendMsgList') {
-        // console.log('search users that need to be notificate when other items gone, wantDAO, get');
-        // 取得 required item id in (id_Arr) && check = confirmed 的 want，作為通知人候選名單
-        let queryString = 
-        `SELECT w.want_item_id notificated_item_id, 
-        i.title notificated_item_title, 
-        u.id notificated_user, 
-        w.required_item_id gone_item_id, 
-        i2.title gone_item_title 
-        FROM want w 
-        JOIN items i ON i.id = w.want_item_id 
-        JOIN items i2 ON i2.id = w.required_item_id 
-        JOIN users u ON i.user_id = u.id
-        WHERE w.required_item_id in (?) 
-        AND w.checked = "confirm"`;
-        mysql.advancedQuery({
-          queryString: queryString,
-          queryCondition: [queryData.id_Arr],
-          queryName: 'usersNeedToBeNotifiedList',
-          DAO_name: 'wantDAO',
-          reject: reject,
-        },(usersNeedToBeNotifiedList)=>{
-          resolve(usersNeedToBeNotifiedList)
+        getSendMsgList(queryData.id_Arr, (output)=>{
+          if (output.result) {
+            resolve(output.result)
+          } else {
+            reject(output.err)
+          }
         })
       } else if (queryData.action === 'checkCurWantMatchable') {
         // 查詢新增的 want 有沒有兩人或三人配對可供確認
@@ -116,6 +73,7 @@ module.exports = {
         // A = current user , B = item_deatil page owner, C = other
         // B_nickname 在裡面
         // 尋找反向 ( second_user want cur_user) 的 want
+        // getWantBetweenItemIds(wantItemIdArr, requiredItemIdArr) 
         queryString = 
         `SELECT w.*, u.id B_id, i2.title A_title 
         FROM want w 
@@ -136,6 +94,7 @@ module.exports = {
             reject(err);
           } else {
             // C_nickname, C_title, A_title 缺 B_nickname
+            // getWant
             queryString = 
             `SELECT w.*, u.id C_id, i.title C_title, i2.title A_title 
             FROM want w 
@@ -152,9 +111,7 @@ module.exports = {
             ) 
             AND w.required_item_id in (?) 
             AND i.availability = "true"`;
-            // return new Promise((resolve, reject) => {
             mysql.pool.query(queryString, queryCondition, (err, tripleMatchResultArr, fileds) => {
-              // console.log(tripleMatchResultArr);
               if (err) {
                 console.log('error in tripleMatchResultPromise');
                 console.log(err.sqlMessage);
@@ -171,15 +128,15 @@ module.exports = {
         })
       } else {
         // console.log('search item wish list in wantDAO by item_id');
-        mysql.advancedQuery({
-          queryString: `SELECT * FROM want JOIN items i ON i.id = want.required_item_id WHERE want_item_id = ? AND i.availability = "true"`,
-          queryCondition: [queryData.item_id],
-          queryName: 'checkPreviousWant',
-          DAO_name: 'wantDAo',
-          reject: reject,
-        },(checkPreviousWant)=>{
-          resolve(checkPreviousWant)
-        })
+        // mysql.advancedQuery({
+        //   queryString: `SELECT * FROM want JOIN items i ON i.id = want.required_item_id WHERE want_item_id = ? AND i.availability = "true"`,
+        //   queryCondition: [queryData.item_id],
+        //   queryName: 'checkPreviousWant',
+        //   DAO_name: 'wantDAo',
+        //   reject: reject,
+        // },(checkPreviousWant)=>{
+        //   resolve(checkPreviousWant)
+        // })
       }
     })
   },
@@ -271,3 +228,109 @@ module.exports = {
     })
   }
 }
+
+function getWantOfItemsByItemIds(itemIds, cb){
+  let queryString = 
+  `SELECT w.* 
+  FROM want w 
+  JOIN items i ON i.id = w.want_item_id 
+  JOIN items i2 ON i2.id = w.required_item_id
+  WHERE i.id in (?)
+  AND i.availability = "true" 
+  AND i2.availability = "true"`;
+  let queryCondition = [itemIds];
+  mysql.pool.query(queryString, queryCondition, (err, result, fileds) => {
+    if (err) {
+      mysql.errLog(err,arguments.callee.toString(),__filename)
+      cb({err})
+    } else {
+      cb({result})
+    }
+  });
+}
+
+function getUserWantByToken(token, cb) {
+  let queryString = 
+  `SELECT w.*  
+  FROM want w 
+  JOIN items i ON i.id = w.want_item_id 
+  JOIN items i2 ON i2.id = w.required_item_id 
+  JOIN users u ON u.id = i.user_id 
+  WHERE u.token = ? 
+  AND i.availability = "true" 
+  AND i2.availability = "true"`;
+  let queryCondition = [token];
+  mysql.pool.query(queryString, queryCondition, (err, result, fileds) => {
+    if (err) {
+      mysql.errLog(err,arguments.callee.toString(),__filename)
+      cb({err})
+    } else {
+      cb({result})
+    }
+  });
+}
+
+function getUserSelectedItemIdArr(item_id, user_nickname,cb) {
+  let queryString = 
+  `SELECT i.id FROM want w 
+  JOIN items i ON i.id = w.want_item_id 
+  JOIN users u ON i.user_id = u.id 
+  WHERE w.required_item_id = ? 
+  AND u.nickname = ?`
+  let queryCondition = [item_id, user_nickname];
+  mysql.pool.query(queryString, queryCondition, (err, result, fileds) => {
+    if (err) {
+      mysql.errLog(err,arguments.callee.toString(),__filename)
+      cb({err})
+    } else {
+      cb({result})
+    }
+  });
+}
+
+function getSendMsgList(idArr, cb) {
+  let queryString = 
+  `SELECT w.want_item_id notificated_item_id, 
+  i.title notificated_item_title, 
+  u.id notificated_user, 
+  w.required_item_id gone_item_id, 
+  i2.title gone_item_title 
+  FROM want w 
+  JOIN items i ON i.id = w.want_item_id 
+  JOIN items i2 ON i2.id = w.required_item_id 
+  JOIN users u ON i.user_id = u.id
+  WHERE w.required_item_id in (?) 
+  AND w.checked = "confirm"`;
+  let queryCondition = [idArr];
+  mysql.pool.query(queryString, queryCondition, (err, result, fileds) => {
+    if (err) {
+      mysql.errLog(err,arguments.callee.toString(),__filename)
+      cb({err})
+    } else {
+      cb({result})
+    }
+  });
+}
+
+// function getWantBetweenItemIds(firstIds, secondIds) {
+//   queryString = 
+//   `SELECT w.*
+//   FROM want w 
+//   JOIN items i ON i.id = w.want_item_id 
+//   JOIN users u ON i.user_id = u.id 
+//   JOIN items i2 ON i2.id = w.required_item_id 
+//   WHERE w.want_item_id in (?) 
+//   AND w.required_item_id in (?) 
+//   AND i.availability = "true"
+//   AND i2.availability = "true"`;
+//   queryCondition = [firstIds, secondIds];
+//   mysql.advancedQuery({
+//     queryString: queryString,
+//     queryCondition: queryCondition,
+//     queryName: '',
+//     DAO_name: '',
+//     reject: reject,
+//   },()=>{
+//     resolve()
+//   })
+// }

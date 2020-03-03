@@ -10,10 +10,12 @@ pool=mysql.createPool({
 })
 module.exports = {
   pool: pool,
-  errLog: (err, promise, DAO)=>{
-    console.log(`error in ${promise}, ${DAO}`);
+  errLog: (err, functionName, fileName)=>{
+    console.log(`-------------ERROR START-------------`)
+    console.log(`error in ${functionName}, ${fileName}`);
     console.log(err.sqlMessage);
     console.log(err.sql);
+    console.log(`--------------ERROR END--------------`)
   },
   itemJoinString: `SELECT i.*, 
   u.nickname user_nickname,

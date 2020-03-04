@@ -19,6 +19,7 @@ module.exports = {
   },
   itemJoinString: `SELECT i.*, 
   u.nickname user_nickname,
+  u.id user_id,
   m.main_category main_category_text,
   s.sub_category sub_category_text
   FROM triangle_trade.items i 

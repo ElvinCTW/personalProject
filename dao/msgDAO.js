@@ -1,22 +1,17 @@
 const mysql = require('../util/mysql');
 module.exports = {
   insert: (queryData)=>{
-    let queryCondition = [];
     let queryString = '';
     return new Promise((resolve, reject) => {
       if (queryData.action === 'insertMsgToOtherUserWhenNoMatch') {
-        let queryString = 
-        `INSERT INTO message SET ?`;
-        mysql.advancedQuery({
-          queryString: queryString,
-          queryCondition: [queryData.msg],
-          queryName: 'msgToOtherNonMatchUser',
-          DAO_name: 'msgDAO',
-          reject: reject,
-        },(msgToOtherNonMatchUser)=>{
-          resolve(msgToOtherNonMatchUser)
+        insertMsgToOtherUserWhenNoMatch(queryData.msg, (output)=>{
+          if (output.result) {
+            resolve(output.result.affectedRows)
+          } else {
+            reject(output.err)
+          }
         })
-      } else if (queryData.action === 'insertItemGoneMsgToUser') {
+      } else if (queryData.insertMsgQueryDataArr) {
         queryString = 'INSERT INTO message(content, sender, receiver, mentioned_item_id, matched_id, time, type) VALUES ?';
         mysql.pool.query(queryString, [queryData.insertMsgQueryDataArr], (err, insertMsgResult, fileds) => {
           if (err) {
@@ -53,22 +48,13 @@ module.exports = {
           }
         });
       } else if (queryData.action === 'insertNewMatchMsg') {
-        // console.log('queryData')
-        // console.log(queryData)
-        queryString = 'INSERT INTO message (content, sender, receiver, time, mentioned_item_id, type) values ?';
-        queryCondition.length = 0;
-        queryData.msgArr[0].push('/want/check/')
-        queryCondition.push(queryData.msgArr);
-        mysql.pool.query(queryString, queryCondition, (err, insertNewMatchedPageMsgResult, fileds) => {
-          if (err) {
-            mysql.errLog(err,'insertNewMatchedPageMsgResult','msgDAO')
-            reject(err)
+        insertNewMatchMsg(queryData.msgArr,(output)=>{
+          if (output.result) {
+            resolve(output.result.affectedRows)
           } else {
-            // console.log('insertNewMatchedPageMsgResult.affectedRows')
-            // console.log(insertNewMatchedPageMsgResult.affectedRows)
-            resolve(insertNewMatchedPageMsgResult.affectedRows)
+            reject(output.err)
           }
-        });
+        })
       }
     })
   },
@@ -162,4 +148,40 @@ module.exports = {
       }
     })  
   }
+}
+
+function insertMsgToOtherUserWhenNoMatch(msg, cb) {
+  let string = `INSERT INTO message SET ?`;
+  let condition = [msg];
+  mysql.pool.query(string, condition, (err, result, fileds) => {
+    if (err) {
+      let functionName = arguments.callee.toString();
+      functionName = functionName.substr('function '.length);
+      functionName = functionName.substr(0, functionName.indexOf('('));
+      mysql.errLog(err, functionName, __filename)
+      cb({err})
+    } else {
+      cb({result})
+    }
+  });
+}
+
+function insertNewMatchMsg(msgArr, cb) {
+  let string = 'INSERT INTO message (content, sender, receiver, time, mentioned_item_id, type) values ?';
+  let condition = [];
+  msgArr.forEach(msg=>{
+    msg.push('/want/check/')
+    condition.push(msg)
+  })
+  mysql.pool.query(string, [condition], (err, result, fileds) => {
+    if (err) {
+      let functionName = arguments.callee.toString();
+      functionName = functionName.substr('function '.length);
+      functionName = functionName.substr(0, functionName.indexOf('('));
+      mysql.errLog(err, functionName, __filename)
+      cb({err})
+    } else {
+      cb({result})
+    }
+  });
 }

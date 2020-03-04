@@ -32,86 +32,20 @@ app.use(express.static(path.join(__dirname, 'public')));
  */
 // Index
 app.get('/', async (req, res) => {
-  let queryData = {};
-  let resData = { mainBoardsList: listData.mainBoardsList };
-  if (!req.query.main_category) { // '/'
-    // 取得main_categories
-    queryData.action = 'getMainCategories'
-  } else if (!req.query.sub_category) { // '/?main_category'
-    // 取得sub_categories
-    queryData.action = 'getSubCategories'
-    queryData.main_category = req.query.main_category
-  } else if (!req.query.status) { // '/?main_category&sub_category'
-    // 取得物品狀態
-    queryData.action = 'doNothing'
-    resData.statusList = listData.statusList
-  } else { // '/?main_category&sub_category&status'
-    // 不用取得list
-    queryData.action = 'doNothing'
-  }
-  // 添加 queries
-  Object.keys(req.query).forEach(query => {
-    resData[query] = req.query[query]
-  })
-  if (req.query.search) {
-    let titleArr = [];
-    let hashtagArr = [];
-    req.query.search.split(' ').filter(string=> string!=='').forEach(string=>{
-      let array = string.slice(0,1)==='#'?hashtagArr:titleArr;
-      array.push(string);
-    });
-    hashtagArrWithHash = hashtagArr.filter(hash=>hash!=='')
-    hashtagArr = hashtagArrWithHash.map(hashtag=>hashtag.slice(1))
-    console.log('titleArr')
-    console.log(titleArr)
-    let itemsDataArr = await itemDAO.get({
-      action:'getItemDataFromSearchBar',
-      titleArr:titleArr,
-      hashtagArr:hashtagArr,
-    })
-    resData.searchDataArr = itemsDataArr
-    resData.s3_url = awsConfig.s3_url
-    resData.keywordString = ''
-    if (titleArr.length>0 && hashtagArrWithHash.length>0) {
-      // titleArr.concat(hashtagArrWithHash).forEach(keyword=>{resData.keywordString+='/'+keyword+' '})
-      titleArr.map(keyword=>'/'+keyword).concat(hashtagArrWithHash).forEach(keyword=>{resData.keywordString+=keyword+' '})
-    } else if (titleArr.length>0) {
-      titleArr.forEach(keyword=>{resData.keywordString+='/'+keyword+' '})
-    } else {
-      hashtagArrWithHash.forEach(keyword=>{resData.keywordString+=keyword+' '})
-    }
-    resData.keywordString+='> '
-    console.log('resData.keywordString')
-    console.log(resData.keywordString)
-  }
-  resData.categories = await categoryDAO.get(queryData);
-  res.render('index', resData)
+  res.render('index', await getIndexData(req))
 });
 // sign up
 app.get('/users/signup', (req, res) => { res.render('signup') });
+// Matches
+app.get('/want/check', async (req, res) => { res.render('match_check') });
+app.get('/matches/confirmed', async (req, res) => {res.render('match_confirmed')});
 // Items
 app.get('/items/new', (req, res) => { res.render('items_add') });
 app.get('/items/gone', async (req, res) => {
-  let itemDetailData = await itemDAO.get({
-    type: 'detail',
-    subtype:'gone',
-    item_id: req.query.item_id,
-  })
-  res.render('items_detail_gone', itemDetailData[0])
+  res.render('items_detail_gone', await itemDAO.getItemDetail(req.query.item_id, 'gone'))
 });
 app.get('/items/detail', async (req, res) => {
-  let itemDetailData = await itemDAO.get({
-    type: 'detail',
-    item_id: req.query.item_id,
-  })
-  res.render('items_detail', itemDetailData[0])
-});
-// Matches
-// Check non-confirmed matches
-app.get('/want/check', async (req, res) => { res.render('match_check') });
-// Check confirmed matches
-app.get('/matches/confirmed', async (req, res) => {
-  res.render('match_confirmed');
+  res.render('items_detail', await itemDAO.getItemDetail(req.query.item_id))
 });
 
 /**
@@ -139,3 +73,64 @@ app.use(function (err, req, res, next) {
 });
 
 module.exports = app;
+
+async function getIndexData(req) {
+  let resData = { mainBoardsList: listData.mainBoardsList };
+  resData.categories = await getSideBarList(req.query)
+  if (!req.query.status&&req.query.main_category&&req.query.sub_category) {
+    resData.statusList = listData.statusList
+  }
+  // 添加 queries
+  Object.keys(req.query).forEach(query => {
+    resData[query] = req.query[query]
+  })
+  if (req.query.search) {
+    let { itemsDataArr, keywordString } = await getSearchData(req.query.search);
+    resData.s3_url = awsConfig.s3_url
+    resData.searchDataArr = itemsDataArr
+    resData.keywordString = keywordString
+  }
+  return resData
+
+  async function getSideBarList(query) {
+    let queryData = {};
+    if (!query.main_category) { // '/'
+      // 取得main_categories
+      queryData.action = 'getMainCategories'
+    } else if (!query.sub_category) { // '/?main_category'
+      // 取得sub_categories
+      queryData.action = 'getSubCategories'
+      queryData.main_category = query.main_category
+    } else if (!query.status) { // '/?main_category&sub_category'
+      // 取得物品狀態
+      queryData.action = 'doNothing'
+    } else { // '/?main_category&sub_category&status'
+      // 不用取得list
+      queryData.action = 'doNothing'
+    }
+    let categories = await categoryDAO.get(queryData);
+    return categories
+  }
+
+  async function getSearchData(search) {
+    let titleArr = [];
+    let hashtagArr = [];
+    search.split(' ').filter(string => string !== '').forEach(string => {
+      let array = string.slice(0, 1) === '#' ? hashtagArr : titleArr;
+      array.push(string);
+    });
+    hashtagArrWithHash = hashtagArr.filter(hash => hash !== '')
+    hashtagArr = hashtagArrWithHash.map(hashtag => hashtag.slice(1))
+    let itemsDataArr = await itemDAO.getItemDataFromSearchBar(titleArr, hashtagArr)
+    let keywordString = ''
+    if (titleArr.length > 0 && hashtagArrWithHash.length > 0) {
+      titleArr.map(keyword => '/' + keyword).concat(hashtagArrWithHash).forEach(keyword => { resData.keywordString += keyword + ' ' })
+    } else if (titleArr.length > 0) {
+      titleArr.forEach(keyword => { keywordString += '/' + keyword + ' ' })
+    } else {
+      hashtagArrWithHash.forEach(keyword => { keywordString += keyword + ' ' })
+    }
+    keywordString += '> '
+    return { itemsDataArr, keywordString }
+  }
+}

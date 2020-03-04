@@ -11,6 +11,12 @@ time.html(new Date(parseInt(time.html())).toString().slice(4, 21))
  * 申請用戶選擇完畢後，點選按鈕送出申請資料
  */
 $('#exchange-request-btn').click(() => {
+  // 避免重複按鍵上傳
+  $('#exchange-request-btn').attr({
+    type: 'button',
+    style: 'display:none;',
+    background: 'rgba(20,59,81,0.5)',
+  }).html('送出中');
   if (!localStorage.getItem('nickname')) {
     // 確認使用者有登入，如果沒有，跳alert請user登入
     alert('請登入以進行物品交換申請');
@@ -57,19 +63,18 @@ $('#exchange-request-btn').click(() => {
 
 let picCount = 0;
 let imgLength = $('img').length
-$('#img0').attr('style','display:``')
+$('#img0').attr('style', 'display:``')
 
 // 點擊換照
-$('#item-detail-pic-div').click(()=>{changePic()})
+$('#item-detail-pic-div').click(() => { changePic() })
 // 輪播照片
-window.setInterval(()=>{changePic()}, 3000);
+window.setInterval(() => { changePic() }, 3000);
 // 換照function
 function changePic() {
-  $(`#img${picCount%imgLength}`).attr('style','display:none;')
+  $(`#img${picCount % imgLength}`).attr('style', 'display:none;')
   picCount++
-  $(`#img${picCount%imgLength}`).attr('style','display:``')
+  $(`#img${picCount % imgLength}`).attr('style', 'display:``')
 }
-
 
 // 讀取 user items 
 if (page !== 'end') {
@@ -99,7 +104,7 @@ if (page !== 'end') {
                 'style': 'background:rgb(235,235,235)',
               });
             } else {
-              link = $('<div></div>').attr({ 
+              link = $('<div></div>').attr({
                 'class': 'item-div user-item',
                 'item_id': itemsListArr[i - 20 * page].id,
               });
@@ -146,7 +151,7 @@ if (page !== 'end') {
             page = 'end'
           }
         },
-        error: (err)=>{
+        error: (err) => {
           alert('金拍謝，暫時找不到你的物品資訊QQ，若持續發生請聯繫我們')
           return;
         }
@@ -161,6 +166,6 @@ if (page !== 'end') {
 } else {
   if (!nomoreUpdate) {
     nomoreUpdate = true;
-    $('#change-btn-item-detail').attr({'onclick': ''}).html('沒有更多物品囉');
+    $('#change-btn-item-detail').attr({ 'onclick': '' }).html('沒有更多物品囉');
   }
 }

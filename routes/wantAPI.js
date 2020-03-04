@@ -19,8 +19,8 @@ router.post('/new', async (req, res, next) => {
     const { wantOfSecondUserToCurUserItems, wantOfThirdItemsToCurUserItems, thirdItemsIds }
       = await getInvitationMatchResult(secondItemId, intCurUserItemsIdArr)
     // 建立當前 user's want
-    const newWantInsertResult = await insertNewWant(intCurUserItemsIdArr, secondItemId)
-    if (newWantInsertResult.errorMsg) {
+    const newWantInsertResult = await wantDAO.insertNewWant(intCurUserItemsIdArr, secondItemId)
+    if (newWantInsertResult.affectedRows < 1) {
       res.status(500).send(newWantInsertResult.errorMsg)
     } else {
       // 取得物品資料
@@ -370,13 +370,13 @@ async function discontinueItem(id_Arr, insertedMatchId) {
   }
 }
 
-function insertNewWant(intCurUserItemsIdArr, secondItemId) {
-  return wantDAO.insert({
-    action: 'insertNewWant',
-    wantArr: intCurUserItemsIdArr,
-    required_item_id: secondItemId,
-  })
-}
+// function insertNewWant(intCurUserItemsIdArr, secondItemId) {
+//   return wantDAO.insert({
+//     action: 'insertNewWant',
+//     wantArr: intCurUserItemsIdArr,
+//     required_item_id: secondItemId,
+//   })
+// }
 
 async function wantConfirmTransaction(curUserItemId,required_item_id) {
   return new Promise((resolve, reject) => {

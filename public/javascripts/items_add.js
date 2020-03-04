@@ -16,15 +16,17 @@ if (localStorage.getItem('newItem')) {
   localStorage.removeItem('newItem');
 }
 // 註冊分類開關
-$('#main_category').click(() => {
-  $('#main_category_box').toggle();
-})
-$('#sub_category').click(() => {
-  $('#sub_category_box').toggle()
-})
-$('#status').click(() => {
-  $('#status_box').toggle()
-})
+(()=>{
+  $('#main_category').click(() => {
+    $('#main_category_box').toggle();
+  })
+  $('#sub_category').click(() => {
+    $('#sub_category_box').toggle()
+  })
+  $('#status').click(() => {
+    $('#status_box').toggle()
+  })
+})()
 // 進入頁面自動點擊主分類
 $('#main_category').trigger('click');
 // 取得母分類資料

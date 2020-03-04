@@ -1,60 +1,71 @@
 const mysql = require('../util/mysql');
 module.exports = {
+  getItemDataFromSearchBar: async (titleArr, hashtagArr) => {
+    return new Promise((resolve, reject) => {
+      let queryString =
+        `SELECT *, COUNT(*) counts FROM ( `;
+      // add keywords
+      let count = 1;
+      if (titleArr.length > 0) {
+        for (let i = 1; i < titleArr.length + 1; i++) {
+          queryString +=
+            `SELECT i${i}.* 
+          FROM items i${i}
+          WHERE i${i}.title
+          LIKE ? 
+          UNION ALL `
+          count++
+        }
+      }
+      // add tags
+      if (hashtagArr.length > 0) {
+        for (let j = count; j < hashtagArr.length + count; j++) {
+          queryString +=
+            `SELECT i${j}.*
+          FROM items i${j}
+          WHERE i${j}.tags
+          LIKE ?
+          UNION ALL `
+        }
+      }
+      // 蓋子
+      queryString +=
+        `SELECT i.* FROM items i WHERE i.id < 0 ) total 
+        GROUP BY id ORDER BY counts DESC`
+      let queryCondition = titleArr.concat(hashtagArr).map(word => `%${word}%`)
+      mysql.advancedQuery({
+        queryString: queryString,
+        queryCondition: queryCondition,
+        queryName: 'itemsIdOfKeyword',
+        DAO_name: 'itemDAO',
+        reject: reject,
+      }, (itemsIdOfKeyword) => {
+        resolve(itemsIdOfKeyword)
+      })
+    })
+  },
+  getItemDetail: async (itemId,gone)=>{
+    return new Promise((resolve, reject) => {
+      let string;
+      if (!gone) {
+        string = mysql.itemJoinString + 'WHERE i.id = ? AND i.availability = "true"'
+      } else {
+        string = mysql.itemJoinString + 'WHERE i.id = ? AND i.availability = "false"'
+      }
+      mysql.advancedQuery({
+        queryString: string,
+        queryCondition: [itemId],
+        queryName: 'itemDetailResult',
+        DAO_name: 'itemDAO',
+        reject: reject,
+      }, (itemDetailResult) => {
+        resolve(itemDetailResult[0])
+      })
+    })
+  },
   get: (data) => {
     return new Promise((resolve, reject) => {
-      if (data.action === 'getItemDataFromSearchBar') {
-        let queryString =
-          `SELECT *, COUNT(*) counts FROM ( `;
-        // add keywords
-        let count = 1;
-        console.log('data')
-        console.log(data)
-        if (data.titleArr.length > 0) {
-          console.log('data.titleArr.length')
-          console.log(data.titleArr.length)
-          for (let i = 1; i < data.titleArr.length + 1; i++) {
-            queryString +=
-              `SELECT i${i}.* 
-              FROM items i${i}
-              WHERE i${i}.title
-              LIKE ? 
-              UNION ALL `
-            count++
-            console.log('yo');
-          }
-        }
-        // add tags
-        if (data.hashtagArr.length > 0) {
-          for (let j = count; j < data.hashtagArr.length + count; j++) {
-            queryString +=
-              `SELECT i${j}.*
-              FROM items i${j}
-              WHERE i${j}.tags
-              LIKE ?
-              UNION ALL `
-          }
-        }
-        // 蓋子
-        queryString +=
-          `SELECT i.* FROM items i WHERE i.id < 0 ) total 
-        GROUP BY id ORDER BY counts DESC`
-        console.log('data.titleArr.concat(data.hashtagArr)')
-        console.log(data.titleArr.concat(data.hashtagArr))
-        let queryCondition = data.titleArr.concat(data.hashtagArr).map(word => `%${word}%`)
-        mysql.advancedQuery({
-          queryString: queryString,
-          queryCondition: queryCondition,
-          queryName: 'itemsIdOfKeyword',
-          DAO_name: 'itemDAO',
-          reject: reject,
-        }, (itemsIdOfKeyword) => {
-          console.log('queryString')
-          console.log(queryString)
-          console.log('itemsIdOfKeyword')
-          console.log(itemsIdOfKeyword)
-          resolve(itemsIdOfKeyword)
-        })
-      } else if (data.action === 'checkVaildUserOfMatchDialog') {
+      if (data.action === 'checkVaildUserOfMatchDialog') {
         let queryString =
           `SELECT * FROM items i
         JOIN users u ON i.user_id = u.id
@@ -180,22 +191,6 @@ module.exports = {
             resolve(recommendItemsData)
           })
         }
-      } else if (data.type === 'detail') {
-        let string;
-        if (!data.subtype) {
-          string = mysql.itemJoinString + 'WHERE i.id = ? AND i.availability = "true"'
-        } else if (data.subtype === 'gone') {
-          string = mysql.itemJoinString + 'WHERE i.id = ? AND i.availability = "false"'
-        }
-        mysql.advancedQuery({
-          queryString: string,
-          queryCondition: [data.item_id],
-          queryName: 'itemDetailResult',
-          DAO_name: 'itemDAO',
-          reject: reject,
-        }, (itemDetailResult) => {
-          resolve(itemDetailResult)
-        })
       } else {
         reject({ msg: 'wrong query type, error in items.get()' })
       }

@@ -1,19 +1,28 @@
 const mysql = require('../util/mysql');
 
 module.exports = {
-  insert: (queryData) => {
+  insertNewWant: (wantItemsIdArr, requiredItemId)=>{
     return new Promise((resolve, reject) => {
-      if (queryData.action === 'insertNewWant') {
-        insertNewWant(queryData.wantArr, queryData.required_item_id, (output) => {
-          if (output.result) {
-            resolve(output.result)
-          } else {
-            reject(output.err)
-          }
-        })
-      } else {
-        reject('no such action')
-      }
+      let insertWantsArr = [];
+      wantItemsIdArr.forEach(wantItemID => {
+        // make want row
+        let wantRow = [parseInt(wantItemID), parseInt(requiredItemId)];
+        // push in arr
+        insertWantsArr.push(wantRow)
+      });
+      let string = `INSERT INTO want(want_item_id, required_item_id) VALUES ?`;
+      let condition = insertWantsArr;
+      mysql.pool.query(string, [condition], (err, result, fileds) => {
+        if (err) {
+          let functionName = arguments.callee.toString();
+          functionName = functionName.substr('function '.length);
+          functionName = functionName.substr(0, functionName.indexOf('('));
+          mysql.errLog(err, functionName, __filename)
+          reject(err)
+        } else {
+          resolve(result)
+        }
+      });
     });
   },
   getWantBetweenItemIds: (firstIds, secondIds) => {
@@ -317,57 +326,6 @@ function getSendMsgList(idArr, cb) {
   AND w.checked = "confirm"`;
   let queryCondition = [idArr];
   mysql.pool.query(queryString, queryCondition, (err, result, fileds) => {
-    if (err) {
-      let functionName = arguments.callee.toString();
-      functionName = functionName.substr('function '.length);
-      functionName = functionName.substr(0, functionName.indexOf('('));
-      mysql.errLog(err, functionName, __filename)
-      cb({ err })
-    } else {
-      cb({ result })
-    }
-  });
-}
-
-function getWantBetweenItemIds(firstIds, secondIds) {
-  return new Promise((resolve, reject) => {
-    let string =
-      `SELECT w.*
-    FROM want w 
-    JOIN items i ON i.id = w.want_item_id 
-    JOIN users u ON i.user_id = u.id 
-    JOIN items i2 ON i2.id = w.required_item_id 
-    WHERE w.want_item_id in (?) 
-    AND w.required_item_id in (?) 
-    AND i.availability = "true"
-    AND i2.availability = "true"`;
-    let condition = [firstIds, secondIds];
-    mysql.pool.query(string, condition, (err, result, fileds) => {
-      if (err) {
-        let functionName = arguments.callee.toString();
-        functionName = functionName.substr('function '.length);
-        functionName = functionName.substr(0, functionName.indexOf('('));
-        mysql.errLog(err, functionName, __filename)
-        reject(error)
-      } else {
-        resolve(result)
-      }
-    });
-
-  })
-}
-
-function insertNewWant(wantArr, required_item_id, cb) {
-  let insertWantsArr = [];
-  wantArr.forEach(wantItemID => {
-    // make want row
-    let wantRow = [parseInt(wantItemID), parseInt(required_item_id)];
-    // push in arr
-    insertWantsArr.push(wantRow)
-  });
-  let string = `INSERT INTO want(want_item_id, required_item_id) VALUES ?`;
-  let condition = insertWantsArr;
-  mysql.pool.query(string, [condition], (err, result, fileds) => {
     if (err) {
       let functionName = arguments.callee.toString();
       functionName = functionName.substr('function '.length);

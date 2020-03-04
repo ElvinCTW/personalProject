@@ -2,6 +2,7 @@ const mysql = require('../util/mysql');
 // change to online crypto in the future ?
 const crypto = require('crypto');
 module.exports = {
+  getUserDataByToken,
   get: (queryData) => {
     return new Promise((resolve, reject) => {
       if (queryData.token) {
@@ -81,28 +82,30 @@ module.exports = {
   },
 }
 
-function getUserDataByToken(queryData, cb) {
-  let string;
-  let condition;
-  if (queryData.item_id) {
-    string =
-      `SELECT * FROM users u 
-    JOIN items i ON i.user_id = u.id 
-    WHERE u.token = ? AND i.id = ?`;
-    condition = [queryData.token, queryData.item_id];
-  } else {
-    string = 'SELECT * FROM users WHERE token = ?';
-    condition = [queryData.token];
-  }
-  mysql.pool.query(string, condition, (err, result, fileds) => {
-    if (err) {
-      let functionName = arguments.callee.toString();
-      functionName = functionName.substr('function '.length);
-      functionName = functionName.substr(0, functionName.indexOf('('));
-      mysql.errLog(err, functionName, __filename)
-      cb({err})
+function getUserDataByToken(token, item_id) {
+  return new Promise((resolve, reject)=>{    
+    let string;
+    let condition;
+    if (item_id) {
+      string =
+        `SELECT * FROM users u 
+      JOIN items i ON i.user_id = u.id 
+      WHERE u.token = ? AND i.id = ?`;
+      condition = [token, item_id];
     } else {
-      cb({result})
+      string = 'SELECT * FROM users WHERE token = ?';
+      condition = [token];
     }
-  });
+    mysql.pool.query(string, condition, (err, result, fileds) => {
+      if (err) {
+        let functionName = arguments.callee.toString();
+        functionName = functionName.substr('function '.length);
+        functionName = functionName.substr(0, functionName.indexOf('('));
+        mysql.errLog(err, functionName, __filename)
+        reject(err)
+      } else {
+        resolve(result)
+      }
+    });
+  })
 }

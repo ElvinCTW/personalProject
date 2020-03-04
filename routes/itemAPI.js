@@ -18,6 +18,7 @@ router.post('/new', async (req, res, next) => {
   console.log(req.body)
   let userID;
   let userNickname;
+  // multer-s3 setting
   const upload = multer({
     storage: multerS3({
       s3: s3,
@@ -25,8 +26,6 @@ router.post('/new', async (req, res, next) => {
       contentType: multerS3.AUTO_CONTENT_TYPE,
       acl: 'public-read',
       key: async function (req, file, cb) {
-        // check picture uploaded
-        // get user data
         const userDataArr = await userDAO.get({
           action: 'getUserDataByToken',
           token: req.body.token,
@@ -59,13 +58,11 @@ router.post('/new', async (req, res, next) => {
     // insert item
     const insertItemResult = await itemDAO.insert({
       user_id: userID,
-      // user_nickname: userNickname,
       main_category: req.body.main_category,
       sub_category: req.body.sub_category,
       tags: req.body.tags,
       title: req.body.title,
       status: req.body.status,
-      // count: req.body.count,
       introduction: req.body.introduction,
       pictures: picturesString,
       time: Date.now().toString(),

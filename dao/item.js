@@ -1,68 +1,8 @@
 const mysql = require('../util/mysql');
 module.exports = {
-  getItemDataFromSearchBar: async (titleArr, hashtagArr) => {
-    return new Promise((resolve, reject) => {
-      let queryString =
-        `SELECT *, COUNT(*) counts FROM ( `;
-      // add keywords
-      let count = 1;
-      if (titleArr.length > 0) {
-        for (let i = 1; i < titleArr.length + 1; i++) {
-          queryString +=
-            `SELECT i${i}.* 
-          FROM items i${i}
-          WHERE i${i}.title
-          LIKE ? 
-          UNION ALL `
-          count++
-        }
-      }
-      // add tags
-      if (hashtagArr.length > 0) {
-        for (let j = count; j < hashtagArr.length + count; j++) {
-          queryString +=
-            `SELECT i${j}.*
-          FROM items i${j}
-          WHERE i${j}.tags
-          LIKE ?
-          UNION ALL `
-        }
-      }
-      // 蓋子
-      queryString +=
-        `SELECT i.* FROM items i WHERE i.id < 0 ) total 
-        GROUP BY id ORDER BY counts DESC`
-      let queryCondition = titleArr.concat(hashtagArr).map(word => `%${word}%`)
-      mysql.advancedQuery({
-        queryString: queryString,
-        queryCondition: queryCondition,
-        queryName: 'itemsIdOfKeyword',
-        DAO_name: 'itemDAO',
-        reject: reject,
-      }, (itemsIdOfKeyword) => {
-        resolve(itemsIdOfKeyword)
-      })
-    })
-  },
-  getItemDetail: async (itemId,gone)=>{
-    return new Promise((resolve, reject) => {
-      let string;
-      if (!gone) {
-        string = mysql.itemJoinString + 'WHERE i.id = ? AND i.availability = "true"'
-      } else {
-        string = mysql.itemJoinString + 'WHERE i.id = ? AND i.availability = "false"'
-      }
-      mysql.advancedQuery({
-        queryString: string,
-        queryCondition: [itemId],
-        queryName: 'itemDetailResult',
-        DAO_name: 'itemDAO',
-        reject: reject,
-      }, (itemDetailResult) => {
-        resolve(itemDetailResult[0])
-      })
-    })
-  },
+  getItemDataByIdArr,
+  getItemDataFromSearchBar,
+  getItemDetail,
   get: (data) => {
     return new Promise((resolve, reject) => {
       if (data.action === 'checkVaildUserOfMatchDialog') {
@@ -109,18 +49,7 @@ module.exports = {
       } else if (data.type === 'all') {
         let string;
         let condition;
-        if (data.id_Arr) {
-          // get data for id_Arr
-          string = mysql.itemJoinString + 'WHERE i.id IN (?) AND i.availability = "true"';
-          mysql.pool.query(string, [data.id_Arr], (err, getItemResultArr, fields) => {
-            if (err) {
-              console.log(err.sqlMessage);
-              console.log(err.sql);
-              reject(err)
-            };
-            resolve(getItemResultArr);
-          })
-        } else if (data.main_category) {
+        if (data.main_category) {
           if (!data.sub_category) {
             // select all by main category only
             string = mysql.itemJoinString + 'WHERE i.main_category = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
@@ -250,4 +179,83 @@ module.exports = {
       }
     })
   }
+}
+
+function getItemDataByIdArr(idArr) {
+  return new Promise((resolve,reject)=>{
+    let string = mysql.itemJoinString + 'WHERE i.id IN (?) AND i.availability = "true"';
+    mysql.pool.query(string, [idArr], (err, getItemResultArr, fields) => {
+      if (err) {
+        console.log(err.sqlMessage);
+        console.log(err.sql);
+        reject(err)
+      };
+      resolve(getItemResultArr);
+    })
+  })
+}
+
+async function getItemDataFromSearchBar(titleArr, hashtagArr){
+  return new Promise((resolve, reject) => {
+    let queryString =
+      `SELECT *, COUNT(*) counts FROM ( `;
+    // add keywords
+    let count = 1;
+    if (titleArr.length > 0) {
+      for (let i = 1; i < titleArr.length + 1; i++) {
+        queryString +=
+          `SELECT i${i}.* 
+        FROM items i${i}
+        WHERE i${i}.title
+        LIKE ? 
+        UNION ALL `
+        count++
+      }
+    }
+    // add tags
+    if (hashtagArr.length > 0) {
+      for (let j = count; j < hashtagArr.length + count; j++) {
+        queryString +=
+          `SELECT i${j}.*
+        FROM items i${j}
+        WHERE i${j}.tags
+        LIKE ?
+        UNION ALL `
+      }
+    }
+    // 蓋子
+    queryString +=
+      `SELECT i.* FROM items i WHERE i.id < 0 ) total 
+      GROUP BY id ORDER BY counts DESC`
+    let queryCondition = titleArr.concat(hashtagArr).map(word => `%${word}%`)
+    mysql.advancedQuery({
+      queryString: queryString,
+      queryCondition: queryCondition,
+      queryName: 'itemsIdOfKeyword',
+      DAO_name: 'itemDAO',
+      reject: reject,
+    }, (itemsIdOfKeyword) => {
+      resolve(itemsIdOfKeyword)
+    })
+  })
+}
+
+async function getItemDetail(itemId,gone) {
+  return new Promise((resolve, reject) => {
+    let string;
+    if (!gone) {
+      string = mysql.itemJoinString + 'WHERE i.id = ? AND i.availability = "true"'
+    } else {
+      string = mysql.itemJoinString + 'WHERE i.id = ? AND i.availability = "false"'
+    }
+    mysql.advancedQuery({
+      queryString: string,
+      queryCondition: [itemId],
+      queryName: 'itemDetailResult',
+      DAO_name: 'itemDAO',
+      reject: reject,
+    }, (itemDetailResult) => {
+      resolve(itemDetailResult[0])
+    })
+  })
 }

@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const wantDAO = require('../dao/wantDAO');
+const {getWantBetweenItemIds, getWantOfItemsByItemIds} = require('../dao/wantDAO');
 const matchDAO = require('../dao/matchDAO');
-const userDAO = require('../dao/user');
+const {getUserDataByToken} = require('../dao/user');
 const msgDAO = require('../dao/msgDAO');
+const {getItemDataByIdArr} = require('../dao/item');
 const itemDAO = require('../dao/item');
 const mysql = require('../util/mysql')
 
@@ -62,14 +64,14 @@ router.get('/check', async (req, res, next) => {
 
 // 配對頁面按下確認鍵時用
 router.post('/checked', async (req, res, next) => {
-  let {want_item_id,required_item_id} = req.body
+  let { want_item_id, required_item_id } = req.body
   const token = req.headers.authorization.split(' ')[1];
   const item_id = parseInt(req.body.want_item_id);
   const userCheck = await getUserDataByToken(token, item_id)
-  
+
   if (userCheck.length > 0) {
-    let response = await wantConfirmTransaction(want_item_id,required_item_id)
-      .catch(err=>console.log(err))
+    let response = await wantConfirmTransaction(want_item_id, required_item_id)
+      .catch(err => console.log(err))
     res.send(response)
   } else { res.status(400).send({ errorMsg: '身份驗證失敗' }) }
 })
@@ -108,39 +110,12 @@ router.get('/last', async (req, res, next) => {
 /**
  * functions
  */
-function getUserDataByToken(token, item_id) {
-  let obj = { token }
-  if (item_id) {
-    obj.item_id = item_id;
-  }
-  return userDAO.get(obj).catch(err => { res.status(500).send('資料庫錯誤'); })
-}
-
-function getDatasOfAllItems(idArr) {
-  return itemDAO.get({
-    type: 'all',
-    id_Arr: idArr,
-  })
-}
-
-function getWantOfsecondItemToThirdItems(secondItemId) {
-  return wantDAO.get({
-    action: 'getItemsWantByItemIds',
-    id_Arr: [secondItemId],
-  })
-}
 
 async function getInvitationMatchResult(secondItemId, intCurUserItemsIdArr) {
-  const wantOfSecondUserToCurUserItems = await wantDAO.getWantBetweenItemIds([secondItemId], intCurUserItemsIdArr)
-  const wantOfsecondItemToThirdItems = await getWantOfsecondItemToThirdItems(secondItemId)
+  const wantOfSecondUserToCurUserItems = await getWantBetweenItemIds([secondItemId], intCurUserItemsIdArr)
+  const wantOfsecondItemToThirdItems = await getWantOfItemsByItemIds(secondItemId)
   const thirdItemsIds = wantOfsecondItemToThirdItems.map(want => want.required_item_id);
-
-  let wantOfThirdItemsToCurUserItems;
-  if (thirdItemsIds.length > 1) {
-    wantOfThirdItemsToCurUserItems = await wantDAO.getWantBetweenItemIds(thirdItemsIds, intCurUserItemsIdArr)
-  } else {
-    wantOfThirdItemsToCurUserItems = [];
-  }
+  const wantOfThirdItemsToCurUserItems=thirdItemsIds.length>1?await getWantBetweenItemIds(thirdItemsIds, intCurUserItemsIdArr):[];
   return {
     wantOfSecondUserToCurUserItems,
     wantOfThirdItemsToCurUserItems,
@@ -164,7 +139,7 @@ function sendMsgToNoMatcher(itemsDataOfAllObj, secondItemId, checkUserResult) {
 async function getRelatedItemsData(thirdItemsIds, intCurUserItemsIdArr, secondItemId) {
   let itemsIdOfAll = thirdItemsIds.concat(intCurUserItemsIdArr)
   itemsIdOfAll.push(secondItemId)
-  const itemsDataOfAll = await getDatasOfAllItems(itemsIdOfAll)
+  const itemsDataOfAll = await getItemDataByIdArr(itemsIdOfAll)
   const itemsDataOfAllObj = {};
   itemsDataOfAll.forEach(data => {
     itemsDataOfAllObj[data.id] = data;
@@ -370,15 +345,7 @@ async function discontinueItem(id_Arr, insertedMatchId) {
   }
 }
 
-// function insertNewWant(intCurUserItemsIdArr, secondItemId) {
-//   return wantDAO.insert({
-//     action: 'insertNewWant',
-//     wantArr: intCurUserItemsIdArr,
-//     required_item_id: secondItemId,
-//   })
-// }
-
-async function wantConfirmTransaction(curUserItemId,required_item_id) {
+async function wantConfirmTransaction(curUserItemId, required_item_id) {
   return new Promise((resolve, reject) => {
     mysql.pool.getConnection(async (err, con) => {
       if (err) { con.release(); }
@@ -412,7 +379,7 @@ async function wantConfirmTransaction(curUserItemId,required_item_id) {
           // 回傳訊息給客戶端
           resolve({ msg: '配對成功！商品已自動為您下架，請至"對話"頁面查詢配對結果～' })
         } else {
-          resolve({ msg: '目前尚未配對成功，請耐心等候～' }) 
+          resolve({ msg: '目前尚未配對成功，請耐心等候～' })
         }
         con.commit((err) => {
           if (err) { con.rollback(() => { con.release() }) }

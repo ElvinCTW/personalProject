@@ -3,17 +3,10 @@ const mysql = require('../util/mysql');
 const crypto = require('crypto');
 module.exports = {
   getUserDataByToken,
+  checkVaildUserOfChat,
   get: (queryData) => {
     return new Promise((resolve, reject) => {
-      if (queryData.token) {
-        getUserDataByToken(queryData, (output)=>{
-          if (output.result) {
-            resolve(output.result)
-          } else {
-            reject(output.err)
-          }
-        }) 
-      } else if (queryData.action === 'checkdoubleUserInfo') {
+      if (queryData.action === 'checkdoubleUserInfo') {
         let queryString = 'SELECT * FROM users WHERE sign_id = ? OR nickname = ?';
         let queryCondition = [queryData.user.sign_id, queryData.user.nickname];
         mysql.pool.query(queryString, queryCondition, (err, checkdoubleUserInfo, fileds) => {
@@ -82,8 +75,29 @@ module.exports = {
   },
 }
 
+function checkVaildUserOfChat(token, matched_id) {
+  return new Promise((resolve, reject) => {
+    let queryString =
+      `SELECT u.* FROM items i
+      JOIN users u ON i.user_id = u.id
+      JOIN matched m ON m.id = i.matched_id
+      WHERE u.token = ?
+      AND i.matched_id = ?`;
+    mysql.advancedQuery({
+      queryString: queryString,
+      queryCondition: [token, matched_id],
+      queryName: 'checkVaildUserOfChat',
+      DAO_name: 'itemDAO',
+      reject: reject,
+    }, (result) => {
+      let response = result.length > 0 ? result[0] : null;
+      resolve(response);
+    })
+  })
+}
+
 function getUserDataByToken(token, item_id) {
-  return new Promise((resolve, reject)=>{    
+  return new Promise((resolve, reject) => {
     let string;
     let condition;
     if (item_id) {

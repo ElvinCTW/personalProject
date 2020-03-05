@@ -1,22 +1,17 @@
 // Settings
-const createError = require('http-errors');
 const express = require('express');
+const app = express();
+const path = require('path');
+const logger = require('morgan');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const createError = require('http-errors');
 const userAPI = require('./routes/userAPI');
 const itemAPI = require('./routes/itemAPI');
 const wantAPI = require('./routes/wantAPI');
-const categoryAPI = require('./routes/categoryAPI');
-const matchesAPI = require('./routes/matchesAPI');
 const msgAPI = require('./routes/msgAPI');
-const itemDAO = require('./dao/item');
-const categoryDAO = require('./dao/categoryDAO');
-// const wantDAO = require('./dao/wantDAO');
-const awsConfig = require('./util/awsConfig');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-const logger = require('morgan');
-const app = express();
-const listData = require('./util/listData');
+const categoryAPI = require('./routes/categoryAPI');
+const {getItemDetail, getItemDataFromSearchBar} = require('./dao/item');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use(logger('dev'));
@@ -42,10 +37,10 @@ app.get('/matches/confirmed', async (req, res) => {res.render('match_confirmed')
 // Items
 app.get('/items/new', (req, res) => { res.render('items_add') });
 app.get('/items/gone', async (req, res) => {
-  res.render('items_detail_gone', await itemDAO.getItemDetail(req.query.item_id, 'gone'))
+  res.render('items_detail_gone', await getItemDetail(req.query.item_id, 'gone'))
 });
 app.get('/items/detail', async (req, res) => {
-  res.render('items_detail', await itemDAO.getItemDetail(req.query.item_id))
+  res.render('items_detail', await getItemDetail(req.query.item_id))
 });
 
 /**
@@ -54,7 +49,6 @@ app.get('/items/detail', async (req, res) => {
 app.use('/api/1.0/users', userAPI);
 app.use('/api/1.0/items', itemAPI);
 app.use('/api/1.0/want', wantAPI);
-app.use('/api/1.0/matches', matchesAPI);
 app.use('/api/1.0/message', msgAPI);
 app.use('/api/1.0/category', categoryAPI);
 
@@ -72,13 +66,13 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
-
 async function getIndexData(req) {
-  let resData = { mainBoardsList: listData.mainBoardsList };
+  const { mainBoardsList,statusList } = require('./util/listData');
+  const awsConfig = require('./util/awsConfig');
+  let resData = { mainBoardsList };
   resData.categories = await getSideBarList(req.query)
   if (!req.query.status&&req.query.main_category&&req.query.sub_category) {
-    resData.statusList = listData.statusList
+    resData.statusList = statusList
   }
   // 添加 queries
   Object.keys(req.query).forEach(query => {
@@ -94,6 +88,7 @@ async function getIndexData(req) {
 
   async function getSideBarList(query) {
     let queryData = {};
+    const categoryDAO = require('./dao/categoryDAO');
     if (!query.main_category) { // '/'
       // 取得main_categories
       queryData.action = 'getMainCategories'
@@ -121,7 +116,7 @@ async function getIndexData(req) {
     });
     hashtagArrWithHash = hashtagArr.filter(hash => hash !== '')
     hashtagArr = hashtagArrWithHash.map(hashtag => hashtag.slice(1))
-    let itemsDataArr = await itemDAO.getItemDataFromSearchBar(titleArr, hashtagArr)
+    let itemsDataArr = await getItemDataFromSearchBar(titleArr, hashtagArr)
     let keywordString = ''
     if (titleArr.length > 0 && hashtagArrWithHash.length > 0) {
       titleArr.map(keyword => '/' + keyword).concat(hashtagArrWithHash).forEach(keyword => { resData.keywordString += keyword + ' ' })
@@ -134,3 +129,5 @@ async function getIndexData(req) {
     return { itemsDataArr, keywordString }
   }
 }
+
+module.exports = app;

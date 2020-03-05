@@ -19,6 +19,7 @@ function sendMsg() {
     console.log('send emit from page');
     socket.emit('message', {
       token:localStorage.getItem('token'),
+      matched_id:currentMatchedId,
       data: {
         content:userInputContent,
         sender:localStorage.getItem('nickname'),

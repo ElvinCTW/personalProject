@@ -1,35 +1,14 @@
 module.exports = {
   getWantOfItemsByItemIds,
+  getUserWantByToken,
+  insertMatchRecord,
+  getUserSelectedItemIdArr,
+  getSendMsgList,
   get: (queryData) => {
     // settings
     return new Promise((resolve, reject) => {
       if (queryData.firstIds && queryData.secondIds) {
         getWantBetweenItemIds(queryData.firstIds, queryData.secondIds, (output) => {
-          if (output.result) {
-            resolve(output.result)
-          } else {
-            reject(output.err)
-          }
-        })
-      } else if (queryData.action === 'getUserWantByToken') {
-        // JOIN users u2 ON u2.id = i2.user_id 
-        getUserWantByToken(queryData.token, (output) => {
-          if (output.result) {
-            resolve(output.result)
-          } else {
-            reject(output.err)
-          }
-        })
-      } else if (queryData.action === 'getUserSelectedItemIdArr') {
-        getUserSelectedItemIdArr(queryData.item_id, queryData.user_nickname, (output) => {
-          if (output.result) {
-            resolve(output.result)
-          } else {
-            reject(output.err)
-          }
-        })
-      } else if (queryData.id_Arr) {
-        getSendMsgList(queryData.id_Arr, (output) => {
           if (output.result) {
             resolve(output.result)
           } else {
@@ -246,8 +225,8 @@ async function checkDoubleMatch(curUserItemId, required_item_id, con) {
   })
 }
 
-function getWantOfItemsByItemIds(itemIds, cb) {
-  return new Promise((resolve,reject)=>{
+function getWantOfItemsByItemIds(itemIds) {
+  return new Promise((resolve, reject) => {
     let queryString =
       `SELECT w.* 
     FROM want w 
@@ -271,74 +250,101 @@ function getWantOfItemsByItemIds(itemIds, cb) {
   })
 }
 
-function getUserWantByToken(token, cb) {
-  let queryString =
-    `SELECT w.*  
-  FROM want w 
-  JOIN items i ON i.id = w.want_item_id 
-  JOIN items i2 ON i2.id = w.required_item_id 
-  JOIN users u ON u.id = i.user_id 
-  WHERE u.token = ? 
-  AND i.availability = "true" 
-  AND i2.availability = "true"`;
-  let queryCondition = [token];
-  mysql.pool.query(queryString, queryCondition, (err, result, fileds) => {
-    if (err) {
-      let functionName = arguments.callee.toString();
-      functionName = functionName.substr('function '.length);
-      functionName = functionName.substr(0, functionName.indexOf('('));
-      mysql.errLog(err, functionName, __filename)
-      cb({ err })
-    } else {
-      cb({ result })
-    }
-  });
+function getUserWantByToken(token) {
+  return new Promise((resolve, reject) => {
+    let queryString =
+      `SELECT w.*  
+      FROM want w 
+      JOIN items i ON i.id = w.want_item_id 
+      JOIN items i2 ON i2.id = w.required_item_id 
+      JOIN users u ON u.id = i.user_id 
+      WHERE u.token = ? 
+      AND i.availability = "true" 
+      AND i2.availability = "true"`;
+    let queryCondition = [token];
+    mysql.pool.query(queryString, queryCondition, (err, result, fileds) => {
+      if (err) {
+        let functionName = arguments.callee.toString();
+        functionName = functionName.substr('function '.length);
+        functionName = functionName.substr(0, functionName.indexOf('('));
+        mysql.errLog(err, functionName, __filename)
+        reject(err)
+      } else {
+        resolve(result)
+      }
+    });
+  })
 }
 
-function getUserSelectedItemIdArr(item_id, user_nickname, cb) {
-  let queryString =
-    `SELECT i.id FROM want w 
-  JOIN items i ON i.id = w.want_item_id 
-  JOIN users u ON i.user_id = u.id 
-  WHERE w.required_item_id = ? 
-  AND u.nickname = ?`
-  let queryCondition = [item_id, user_nickname];
-  mysql.pool.query(queryString, queryCondition, (err, result, fileds) => {
-    if (err) {
-      let functionName = arguments.callee.toString();
-      functionName = functionName.substr('function '.length);
-      functionName = functionName.substr(0, functionName.indexOf('('));
-      mysql.errLog(err, functionName, __filename)
-      cb({ err })
-    } else {
-      cb({ result })
-    }
-  });
+function getUserSelectedItemIdArr(item_id, user_nickname) {
+  return new Promise((resolve, reject) => {
+    let queryString =
+      `SELECT i.id FROM want w 
+      JOIN items i ON i.id = w.want_item_id 
+      JOIN users u ON i.user_id = u.id 
+      WHERE w.required_item_id = ? 
+      AND u.nickname = ?`
+    let queryCondition = [item_id, user_nickname];
+    mysql.pool.query(queryString, queryCondition, (err, result, fileds) => {
+      if (err) {
+        let functionName = arguments.callee.toString();
+        functionName = functionName.substr('function '.length);
+        functionName = functionName.substr(0, functionName.indexOf('('));
+        mysql.errLog(err, functionName, __filename)
+        reject(err)
+      } else {
+        resolve(result)
+      }
+    });
+  })
 }
 
 function getSendMsgList(idArr, cb) {
-  let queryString =
-    `SELECT w.want_item_id notificated_item_id, 
-  i.title notificated_item_title, 
-  u.id notificated_user, 
-  w.required_item_id gone_item_id, 
-  i2.title gone_item_title 
-  FROM want w 
-  JOIN items i ON i.id = w.want_item_id 
-  JOIN items i2 ON i2.id = w.required_item_id 
-  JOIN users u ON i.user_id = u.id
-  WHERE w.required_item_id in (?) 
-  AND w.checked = "confirm"`;
-  let queryCondition = [idArr];
-  mysql.pool.query(queryString, queryCondition, (err, result, fileds) => {
-    if (err) {
-      let functionName = arguments.callee.toString();
-      functionName = functionName.substr('function '.length);
-      functionName = functionName.substr(0, functionName.indexOf('('));
-      mysql.errLog(err, functionName, __filename)
-      cb({ err })
-    } else {
-      cb({ result })
+  return new Promise((resolve, reject) => {
+    let queryString =
+      `SELECT w.want_item_id notificated_item_id, 
+      i.title notificated_item_title, 
+      u.id notificated_user, 
+      w.required_item_id gone_item_id, 
+      i2.title gone_item_title 
+      FROM want w 
+      JOIN items i ON i.id = w.want_item_id 
+      JOIN items i2 ON i2.id = w.required_item_id 
+      JOIN users u ON i.user_id = u.id
+      WHERE w.required_item_id in (?) 
+      AND w.checked = "confirm"`;
+    let queryCondition = [idArr];
+    mysql.pool.query(queryString, queryCondition, (err, result, fileds) => {
+      if (err) {
+        let functionName = arguments.callee.toString();
+        functionName = functionName.substr('function '.length);
+        functionName = functionName.substr(0, functionName.indexOf('('));
+        mysql.errLog(err, functionName, __filename)
+        reject(err)
+      } else {
+        resolve(result)
+      }
+    });
+  })
+}
+
+function insertMatchRecord(id_Arr) {
+  return new Promise((resolve, reject) => {
+    let queryString = '';
+    if (id_Arr) {
+      if (id_Arr.length === 3) {
+        queryString = 'INSERT INTO matched(start_item_id, middle_item_id, end_item_id) VALUES(?)';
+      } else if (id_Arr.length === 2) {
+        queryString = 'INSERT INTO matched(start_item_id, end_item_id) VALUES(?)';
+      }
+      mysql.pool.query(queryString, [id_Arr], (err, insertMatchTableResult, fileds) => {
+        if (err) {
+          mysql.errLog(err, 'insertMatchTableResult', 'matchDAO')
+          reject(err)
+        } else {
+          resolve(insertMatchTableResult.insertId);
+        }
+      });
     }
-  });
+  })
 }

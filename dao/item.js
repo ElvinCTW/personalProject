@@ -3,186 +3,107 @@ module.exports = {
   getItemDataByIdArr,
   getItemDataFromSearchBar,
   getItemDetail,
-  get: (data) => {
-    return new Promise((resolve, reject) => {
-      if (data.action === 'checkVaildUserOfMatchDialog') {
-        let queryString =
-          `SELECT * FROM items i
-        JOIN users u ON i.user_id = u.id
-        JOIN matched m ON m.id = i.matched_id
-        WHERE u.token = ?
-        AND i.matched_id = ?`;
-        mysql.advancedQuery({
-          queryString: queryString,
-          queryCondition: [data.token, data.matched_id],
-          queryName: 'checkVaildUserOfMatchDialog',
-          DAO_name: 'itemDAO',
-          reject: reject,
-        }, (checkVaildUserOfMatchDialog) => {
-          resolve(checkVaildUserOfMatchDialog)
-        })
-      } else if (data.action === 'getHotCounts') {
-        let string = 'SELECT main_category hot_board, COUNT(*) count FROM items GROUP BY main_category ORDER BY count DESC LIMIT 0,500';
-        // let data = [];
-        mysql.pool.query(string, (err, hotCountsResult, fileds) => {
-          if (err) {
-            mysql.errLog(err, 'hotCountsResult', 'itemDAO')
-            reject(err)
-          } else {
-            console.log('hotCountsResult')
-            console.log(hotCountsResult)
-            resolve(hotCountsResult)
-          }
-        });
-      } else if (data.action === 'getConfirmedMatchItemsData') {
-        let string = mysql.itemJoinString + 'WHERE i.id in (?)';
-        mysql.pool.query(string, [data.idArr], (err, getConfirmedMatchItemsDataResult, fileds) => {
-          if (err) {
-            mysql.errLog(err, 'getConfirmedMatchItemsDataResult', 'itemDAO')
-            reject(err)
-          } else {
-            // console.log('getConfirmedMatchItemsDataResult')
-            // console.log(getConfirmedMatchItemsDataResult)
-            resolve(getConfirmedMatchItemsDataResult)
-          }
-        });
-      } else if (data.type === 'all') {
-        let string;
-        let condition;
-        if (data.main_category) {
-          if (!data.sub_category) {
-            // select all by main category only
-            string = mysql.itemJoinString + 'WHERE i.main_category = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
-            condition = [data.main_category, data.page * 20]
-          } else {
-            if (!data.status) {
-              // select all by main and sub category
-              string = mysql.itemJoinString + 'WHERE i.main_category = ? AND i.sub_category = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
-              condition = [data.main_category, data.sub_category, data.page * 20]
-            } else {
-              // select all by main and sub category and status
-              string = mysql.itemJoinString + 'WHERE i.main_category = ? AND i.sub_category = ? AND i.status = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
-              condition = [data.main_category, data.sub_category, data.status, data.page * 20]
-            }
-          }
-          mysql.advancedQuery({
-            queryString: string,
-            queryCondition: condition,
-            queryName: 'getItemResultArr',
-            DAO_name: 'itemDAO',
-            reject: reject,
-          }, (getItemResultArr) => {
-            resolve(getItemResultArr)
-          })
-        } else if (data.action === 'getConfirmedMatches') {
-          string =
-            `SELECT i.matched_id, 
-          i2.title required_item_title, 
-          i2.pictures required_item_pictures,
-          i2.tags required_item_tags
-          FROM items i 
-          JOIN items i2 ON i.matched_item_id = i2.id 
-          JOIN users u ON i.user_id = u.id 
-          WHERE i.availability = "false" 
-          AND i.matched_id > 0 
-          AND u.token = ?
-          ORDER BY matched_id DESC`;
-          mysql.pool.query(string, [data.token], (err, getConfirmedMatchesResult, fileds) => {
-            if (err) {
-              mysql.errLog(err, 'getConfirmedMatchesResult', 'itemDAO')
-              reject(err)
-            } else {
-              resolve(getConfirmedMatchesResult);
-            }
-          });
-        } else if (!data.user_nickname) {
-          // lastest
-          mysql.advancedQuery({
-            queryString: mysql.itemJoinString + 'WHERE i.availability = "true" ORDER BY i.time DESC LIMIT ?, 20',
-            queryCondition: [data.page * 20],
-            queryName: 'lastestItemsData',
-            DAO_name: 'itemDAO',
-            reject: reject,
-          }, (lastestItemsData) => {
-            if (lastestItemsData.length === 20) { lastestItemsData.next_paging = lastestItemsData.page + 1 };
-            resolve(lastestItemsData)
-          })
-        } else {
-          // recommand
-          mysql.advancedQuery({
-            queryString: mysql.itemJoinString + 'WHERE u.nickname = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20',
-            queryCondition: [data.user_nickname, data.page * 20],
-            queryName: 'recommendItemsData',
-            DAO_name: 'itemDAO',
-            reject: reject,
-          }, (recommendItemsData) => {
-            if (recommendItemsData.length === 20) { recommendItemsData.next_paging = recommendItemsData.page + 1 };
-            resolve(recommendItemsData)
-          })
-        }
+  getHotBoardList,
+  getConfirmedMatches,
+  getConfirmedMatchItemsData,
+  getItemDataByType,
+  discontinueItem,
+  insertNewItem,
+}
+
+function getItemDataByType(page, category, token) {
+  return new Promise((resolve, reject) => {
+    if (category.main_category) {
+      let string;
+      let condition;
+      if (!category.sub_category) {
+        // select all by main category only
+        string = mysql.itemJoinString + 'WHERE i.main_category = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
+        condition = [category.main_category, page * 20]
       } else {
-        reject({ msg: 'wrong query type, error in items.get()' })
-      }
-    })
-  },
-  insert: (data) => {
-    /** Input: user_id(optional) and item information*/
-    return new Promise((resolve, reject) => {
-      mysql.pool.query('INSERT INTO items SET ?', data, (err, insertItem, fields) => {
-        console.log('data in itemDAO ,insert')
-        console.log(data)
-        if (err) {
-          mysql.errLog(err, 'insertItem', 'itemDAO')
-          reject(err)
+        if (!category.status) {
+          // select all by main and sub category
+          string = mysql.itemJoinString + 'WHERE i.main_category = ? AND i.sub_category = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
+          condition = [category.main_category, category.sub_category, page * 20]
         } else {
-          console.log('insertItem')
-          console.log(insertItem)
-          resolve(insertItem);
+          // select all by main and sub category and status
+          string = mysql.itemJoinString + 'WHERE i.main_category = ? AND i.sub_category = ? AND i.status = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
+          condition = [category.main_category, category.sub_category, category.status, page * 20]
         }
+      }
+      mysql.advancedQuery({
+        queryString: string,
+        queryCondition: condition,
+        queryName: 'getItemResultArr',
+        DAO_name: 'itemDAO',
+        reject: reject,
+      }, (getItemResultArr) => {
+        resolve(getItemResultArr)
       })
-    })
-    /** To do: insert data to db */
-    /** Output: Success or error msg*/
-  },
-  update: (data) => {
-    // update items // turn item / availability to false
-    let string;
-    let updateAvailabilitiesCount = 0;
-    let id_Arr = data.id_Arr;
-    console.log('id_Arr')
-    console.log(id_Arr)
-    return new Promise((resolve, reject) => {
-      for (let i = 0; i < id_Arr.length; i++) {
-        // string = 'UPDATE items SET availability = "false", matched_id = ? WHERE id in (?)';
-        string = 'UPDATE items SET availability = "false", matched_id = ?, matched_item_id = ? WHERE id = ?';
-        mysql.pool.query(string, [data.insertMatchId, id_Arr[(i + 1) % id_Arr.length], id_Arr[i % id_Arr.length]], (err, updateAvailbilityResult, fileds) => {
-          if (err) {
-            mysql.errLog(err, 'updateAvailbilityResult', 'itemDAO')
-            reject(err)
-          } else {
-            // console.log('updateAvailbilityResult')
-            // console.log(updateAvailbilityResult)
-            updateAvailabilitiesCount += updateAvailbilityResult.affectedRows
-            // console.log('i')
-            // console.log(i)
-            // console.log('updateAvailabilitiesCount')
-            // console.log(updateAvailabilitiesCount)
-            // console.log('updateAvailbilityResult.affectedRows')
-            // console.log(updateAvailbilityResult.affectedRows)
-            if (i === id_Arr.length - 1) {
-              // console.log('i, when out')
-              // console.log(i)
-              resolve(updateAvailabilitiesCount);
-            }
-          }
-        });
+    } else  {
+      // lastest
+      mysql.advancedQuery({
+        queryString: mysql.itemJoinString + 'WHERE i.availability = "true" ORDER BY i.time DESC LIMIT ?, 20',
+        queryCondition: [page * 20],
+        queryName: 'lastestItemsData',
+        DAO_name: 'itemDAO',
+        reject: reject,
+      }, (lastestItemsData) => {
+        if (lastestItemsData.length === 20) { lastestItemsData.next_paging = lastestItemsData.page + 1 };
+        resolve(lastestItemsData)
+      })
+    } 
+  })
+}
+
+function insertNewItem(data) {
+  return new Promise((resolve, reject) => {
+    mysql.pool.query('INSERT INTO items SET ?', data, (err, insertItem, fields) => {
+      console.log('data in itemDAO ,insert')
+      console.log(data)
+      if (err) {
+        mysql.errLog(err, 'insertItem', 'itemDAO')
+        reject(err)
+      } else {
+        resolve(insertItem);
       }
     })
-  }
+  })
+}
+
+function getHotBoardList() {
+  return new Promise((resolve, reject) => {
+    let string = 'SELECT main_category hot_board, COUNT(*) count FROM items GROUP BY main_category ORDER BY count DESC LIMIT 0,500';
+    // let data = [];
+    mysql.pool.query(string, (err, hotCountsResult, fileds) => {
+      if (err) {
+        mysql.errLog(err, 'hotCountsResult', 'itemDAO')
+        reject(err)
+      } else {
+        console.log('hotCountsResult')
+        console.log(hotCountsResult)
+        resolve(hotCountsResult)
+      }
+    });
+  })
+}
+
+function getConfirmedMatchItemsData(idArr) {
+  return new Promise((resolve, reject) => {
+    let string = mysql.itemJoinString + 'WHERE i.id in (?)';
+    mysql.pool.query(string, [idArr], (err, getConfirmedMatchItemsDataResult, fileds) => {
+      if (err) {
+        mysql.errLog(err, 'getConfirmedMatchItemsDataResult', 'itemDAO')
+        reject(err)
+      } else {
+        resolve(getConfirmedMatchItemsDataResult)
+      }
+    });
+  })
 }
 
 function getItemDataByIdArr(idArr) {
-  return new Promise((resolve,reject)=>{
+  return new Promise((resolve, reject) => {
     let string = mysql.itemJoinString + 'WHERE i.id IN (?) AND i.availability = "true"';
     mysql.pool.query(string, [idArr], (err, getItemResultArr, fields) => {
       if (err) {
@@ -195,7 +116,32 @@ function getItemDataByIdArr(idArr) {
   })
 }
 
-async function getItemDataFromSearchBar(titleArr, hashtagArr){
+function getConfirmedMatches(token) {
+  return new Promise((resolve, reject) => {
+    string =
+      `SELECT i.matched_id, 
+      i2.title required_item_title, 
+      i2.pictures required_item_pictures,
+      i2.tags required_item_tags
+      FROM items i 
+      JOIN items i2 ON i.matched_item_id = i2.id 
+      JOIN users u ON i.user_id = u.id 
+      WHERE i.availability = "false" 
+      AND i.matched_id > 0 
+      AND u.token = ?
+      ORDER BY matched_id DESC`;
+    mysql.pool.query(string, [token], (err, result, fileds) => {
+      if (err) {
+        mysql.errLog(err, 'result', 'itemDAO')
+        reject(err)
+      } else {
+        resolve(result);
+      }
+    });
+  })
+}
+
+async function getItemDataFromSearchBar(titleArr, hashtagArr) {
   return new Promise((resolve, reject) => {
     let queryString =
       `SELECT *, COUNT(*) counts FROM ( `;
@@ -240,7 +186,7 @@ async function getItemDataFromSearchBar(titleArr, hashtagArr){
   })
 }
 
-async function getItemDetail(itemId,gone) {
+async function getItemDetail(itemId, gone) {
   return new Promise((resolve, reject) => {
     let string;
     if (!gone) {
@@ -257,5 +203,52 @@ async function getItemDetail(itemId,gone) {
     }, (itemDetailResult) => {
       resolve(itemDetailResult[0])
     })
+  })
+}
+
+/**
+ * 
+ * @param {*} id_Arr single ID or ID array
+ * @param {*} insertedMatchId optional, only work for matched discontinue
+ */
+function discontinueItem(id_Arr, insertedMatchId) {
+  // update items // turn item / availability to false
+  let updateAvailabilitiesCount = 0;
+  return new Promise((resolve, reject) => {
+    let string = insertedMatchId ?
+      'UPDATE items SET availability = "false", matched_id = ?, matched_item_id = ? WHERE id = ?' :
+      'UPDATE items SET availability = "false" WHERE id = ?';
+    if (insertedMatchId) {
+      for (let i = 0; i < id_Arr.length; i++) {
+        mysql.pool.query(string, [insertedMatchId, id_Arr[(i + 1) % id_Arr.length], id_Arr[i % id_Arr.length]], (err, updateAvailbilityResult, fileds) => {
+          if (err) {
+            mysql.errLog(err, 'updateAvailbilityResult', 'itemDAO')
+            reject(err)
+          } else {
+            updateAvailabilitiesCount += updateAvailbilityResult.affectedRows
+            if (i === id_Arr.length - 1) {
+              if (updateAvailabilitiesCount !== id_Arr.length) {
+                console.log('updateAvailabilitiesCount is not identical with id_Arr.length, updateAvailabilitiesCount is :');
+                console.log(updateAvailabilitiesCount);
+              }
+              resolve(updateAvailabilitiesCount);
+            }
+          }
+        });
+      }
+    } else {
+      mysql.pool.query(string, [id_Arr], (err, result, fileds) => {
+        if (err) {
+          let functionName = arguments.callee.toString();
+          functionName = functionName.substr('function '.length);
+          functionName = functionName.substr(0, functionName.indexOf('('));
+          mysql.errLog(err, functionName, __filename)
+          reject(err)
+        } else {
+          if (result.affectedRows !== 1) { console.log(`discontinueItem err, actually count ${result.affectedRows}`); }
+          resolve()
+        }
+      });
+    }
   })
 }

@@ -1,12 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { updateWantToConfirm, getUserSelectedItemIdArr, getUserWantByToken,
-  getWantBetweenItemIds, getWantOfItemsByItemIds, insertNewWant,
-  checkDoubleMatch, checkTripleMatch, getSendMsgList } = require('../dao/wantDAO');
+const { getWantOfItemsByItemIds, insertNewWant } = require('../dao/wantDAO');
 const { getUserDataByToken } = require('../dao/user');
-const { sendMsgToNoMatcher, insertNewMatchMsg, insertMatchedMsg, insertMatchRecord } = require('../dao/msgDAO');
-const { getItemDataByIdArr, discontinueItem } = require('../dao/item');
-const { pool } = require('../util/mysql')
+const { getItemDataByIdArr } = require('../dao/item');
 
 // item_detail page 建立 want 用
 router.post('/new', async (req, res, next) => {
@@ -36,10 +32,76 @@ router.post('/new', async (req, res, next) => {
   } else {
     res.status(500).send('此token查無用戶');
   }
+
+  async function getInvitationMatchResult(secondItemId, intCurUserItemsIdArr) {
+    const {getWantBetweenItemIds} = require('../dao/wantDAO');
+    const wantOfSecondUserToCurUserItems = await getWantBetweenItemIds([secondItemId], intCurUserItemsIdArr)
+    const wantOfsecondItemToThirdItems = await getWantOfItemsByItemIds(secondItemId)
+    const thirdItemsIds = wantOfsecondItemToThirdItems.map(want => want.required_item_id);
+    const wantOfThirdItemsToCurUserItems = thirdItemsIds.length > 1 ? await getWantBetweenItemIds(thirdItemsIds, intCurUserItemsIdArr) : [];
+    return {
+      wantOfSecondUserToCurUserItems,
+      wantOfThirdItemsToCurUserItems,
+      thirdItemsIds,
+    }
+  }
+  async function getRelatedItemsData(thirdItemsIds, intCurUserItemsIdArr, secondItemId) {
+    let itemsIdOfAll = thirdItemsIds.concat(intCurUserItemsIdArr)
+    itemsIdOfAll.push(secondItemId)
+    const itemsDataOfAll = await getItemDataByIdArr(itemsIdOfAll)
+    const itemsDataOfAllObj = {};
+    itemsDataOfAll.forEach(data => {
+      itemsDataOfAllObj[data.id] = data;
+    })
+    return itemsDataOfAllObj;
+  }
+  async function sendMsgToMatchers(wantOfSecondUserToCurUserItems, wantOfThirdItemsToCurUserItems, itemsDataOfAllObj, secondItemId, checkUserResult) {
+    const {sendMsgToNoMatcher, insertNewMatchMsg} = require('../dao/msgDAO');
+    let msgArr = [];
+    if (wantOfSecondUserToCurUserItems.length === 0 &&
+      wantOfThirdItemsToCurUserItems.length === 0) {
+      const insertCount = await sendMsgToNoMatcher({
+        content: `您的物品"${itemsDataOfAllObj[secondItemId].title}"收到了來自"${checkUserResult[0].nickname}"的新交換邀請，快到"邀請"頁面查看一下吧`,
+        receiver: itemsDataOfAllObj[secondItemId].user_id,
+        sender: 'system',
+        time: Date.now().toString(),
+        type: '/want/invitation'
+      })
+      if (insertCount !== 1) { console.log('insertCount not equal to 1, it is ' + insertCount) }
+    } else {
+      if (wantOfSecondUserToCurUserItems.length > 0) {
+        wantOfSecondUserToCurUserItems.forEach(doubleMatch => {
+          // 通知 second user 配對成立
+          msgArr.push([`已建立您對"${itemsDataOfAllObj[doubleMatch.required_item_id].title}"的一組新兩人配對，快到"配對"頁面確認吧！`, 'system', itemsDataOfAllObj[doubleMatch.want_item_id].user_id, Date.now().toString(), doubleMatch.required_item_id])
+        })
+      }
+      if (wantOfThirdItemsToCurUserItems.length > 0) {
+        wantOfThirdItemsToCurUserItems.forEach(tripleMatch => {
+          // 通知 second & third user 配對成立
+          msgArr.push(
+            [`已建立您對"${itemsDataOfAllObj[tripleMatch.want_item_id].title}"的一組新三人配對，快到"配對"頁面確認吧！`, 'system', itemsDataOfAllObj[secondItemId].user_id, Date.now().toString(), tripleMatch.want_item_id],
+            [`已建立您對"${itemsDataOfAllObj[tripleMatch.required_item_id].title}"的一組新三人配對，快到"配對"頁面確認吧！`, 'system', itemsDataOfAllObj[tripleMatch.want_item_id].user_id, Date.now().toString(), tripleMatch.required_item_id]
+          )
+        })
+      }
+      if (msgArr.length > 0) {
+        const newMatchMsgInsertionCounts = await insertNewMatchMsg(msgArr)
+        if (newMatchMsgInsertionCounts !==
+          (wantOfThirdItemsToCurUserItems.length * 2
+            + wantOfSecondUserToCurUserItems.length)) {
+          console.log(`insertion msg counts is not normal, 
+          insetion counts is ${newMatchMsgInsertionCounts}, 
+          tripleMatchMsgCount is ${wantOfThirdItemsToCurUserItems.length * 2} 
+          and doubleMatchMsgCount is ${wantOfSecondUserToCurUserItems.length}`);
+        }
+      }
+    }
+  }
 });
 
 // want 配對頁面讀取未成立交換資料用
 router.get('/check', async (req, res, next) => {
+  const {getUserWantByToken} = require('../dao/wantDAO');
   let doubleMatchResultArr = [];
   let tripleMatchResultArr = [];
   const token = req.headers.authorization.split(' ')[1]
@@ -60,289 +122,191 @@ router.get('/check', async (req, res, next) => {
       res.send({ doubleMatchResultArr, tripleMatchResultArr, itemsDataArr })
     }
   }
+  function getDoubleMatchArr(curUserWantArr, secondItemWantArr) {
+    let doubleMatchResultArr = [];
+    for (let i = 0; i < curUserWantArr.length; i++) {
+      for (let j = 0; j < secondItemWantArr.length; j++) {
+        if (curUserWantArr[i].required_item_id === secondItemWantArr[j].want_item_id
+          && curUserWantArr[i].want_item_id === secondItemWantArr[j].required_item_id) {
+          doubleMatchResultArr.push({
+            curUserWant: {
+              item_id: curUserWantArr[i].want_item_id,
+              checked: curUserWantArr[i].checked
+            },
+            secondUserWant: {
+              item_id: secondItemWantArr[j].want_item_id,
+              checked: secondItemWantArr[j].checked
+            },
+          }) // 裡面有兩個 item_id, 以及 want 的 check 狀態
+          break;
+        }
+      }
+    }
+    return doubleMatchResultArr;
+  }
+  async function getTripleMatchArr(secondItemWantArr, curUserWantArr) {
+    let combinedWantArr = getCombinedWants(secondItemWantArr, curUserWantArr)
+    let thirdItemWantArr = await getWantOfItemsByItemIds(combinedWantArr.map(curWant => curWant.required_item_id));
+    // 確認有沒有 Triple Match
+    let tripleMatchResultArr = checkTripleMatchOfWants(combinedWantArr, thirdItemWantArr)
+    return tripleMatchResultArr;
+  
+    function getCombinedWants(secondItemWantArr, curUserWantArr) {
+      let combinedWantArr = [];
+      for (let i = 0; i < secondItemWantArr.length; i++) {
+        for (let j = 0; j < curUserWantArr.length; j++) {
+          if (curUserWantArr[j].required_item_id === secondItemWantArr[i].want_item_id) {
+            combinedWantArr.push({
+              want_item_id: curUserWantArr[j].want_item_id, // 把第一個 want 的頭當成新 want 的頭
+              curUserWantStatus: curUserWantArr[j].checked,
+              second_item_id: secondItemWantArr[i].want_item_id, // 紀錄兩個原始的 want 結合點的共同 item_id
+              secondUserWantStatus: secondItemWantArr[i].checked,
+              required_item_id: secondItemWantArr[i].required_item_id, // 把第二個 want 的尾當成新 want 的尾
+            })
+          }
+        }
+      }
+      return combinedWantArr
+    }
+  
+    function checkTripleMatchOfWants(combinedWantArr, thirdItemWantArr) {
+      let tripleMatchResultArr = [];
+      for (let i = 0; i < combinedWantArr.length; i++) {
+        for (let j = 0; j < thirdItemWantArr.length; j++) {
+          if (combinedWantArr[i].required_item_id === thirdItemWantArr[j].want_item_id
+            && combinedWantArr[i].want_item_id === thirdItemWantArr[j].required_item_id) {
+            tripleMatchResultArr.push({
+              curUserWant: {
+                item_id: combinedWantArr[i].want_item_id,
+                checked: combinedWantArr[i].curUserWantStatus,
+              },
+              secondUserWant: {
+                item_id: combinedWantArr[i].second_item_id,
+                checked: combinedWantArr[i].secondUserWantStatus,
+              },
+              thirdUserWant: {
+                item_id: combinedWantArr[i].required_item_id,
+                checked: thirdItemWantArr[j].checked
+              },
+            }) // 裡面有三個item_id, 以及 want 的 check 狀態
+            break;
+          }
+        }
+      }
+      return tripleMatchResultArr;
+    }
+  }
+  async function getItemsData(...args) {
+    let dataIdArr = [];
+    for (let i = 0; i < args.length; i++) {
+      args[i].forEach(match => {
+        for (want in match) {
+          if (dataIdArr.indexOf(match[want].item_id) === -1) {
+            dataIdArr.push(match[want].item_id)
+          }
+        }
+      })
+    }
+    let itemsDataArr = dataIdArr.length > 0 ? getItemDataByIdArr(dataIdArr):[];
+    return itemsDataArr
+  }
 })
 
 // 配對頁面按下確認鍵時用
 router.post('/checked', async (req, res, next) => {
-  let { want_item_id, required_item_id } = req.body
+  const { want_item_id, required_item_id } = req.body
+  const {updateWantToConfirm,} = require('../dao/wantDAO');
   const token = req.headers.authorization.split(' ')[1];
   const item_id = parseInt(req.body.want_item_id);
   const userCheck = await getUserDataByToken(token, item_id)
 
   if (userCheck.length > 0) {
-    let response = await wantConfirmTransaction(want_item_id, required_item_id)
+    const response = await wantConfirmTransaction(want_item_id, required_item_id)
       .catch(err => console.log(err))
     res.send(response)
   } else { res.status(400).send({ errorMsg: '身份驗證失敗' }) }
-})
 
-// want 確認頁取得資料用
-// router.get('/matches/:type', async (req, res, next) => {
-//   const checkMatchResultArr = await wantDAO.get({
-//     action: 'getMatchesByWantItem',
-//     item_id: req.query.id,
-//     // item_type: req.params.type,
-//     token: req.headers.authorization.split(' ')[1],
-//   })
-//   let allMatchesResultArr = [];
-//   checkMatchResultArr.doubleMatchResultArr.forEach(element => {
-//     allMatchesResultArr.push(element)
-//   });
-//   checkMatchResultArr.tripleMatchResultArr.forEach(element => {
-//     allMatchesResultArr.push(element)
-//   })
-//   // console.log(allMatchesResultArr);
-//   res.send(allMatchesResultArr)
-// })
+  async function wantConfirmTransaction(curUserItemId, required_item_id) {
+    const { checkDoubleMatch, checkTripleMatch ,insertMatchRecord, getSendMsgList} = require('../dao/wantDAO');
+    const { insertMatchedMsg } = require('../dao/msgDAO');
+    const { discontinueItem } = require('../dao/item');
+    const { pool } = require('../util/mysql')
+
+    return new Promise((resolve, reject) => {
+      pool.getConnection(async (err, con) => {
+        if (err) { con.release(); }
+        con.beginTransaction(async (err) => {
+          if (err) { con.rollback(() => { con.release() }) }
+          // 更新 want 的 confirm 狀態
+          await updateWantToConfirm(curUserItemId, required_item_id, con).catch(err => {
+            res.status(500).send({ errorMsg: '資料庫錯誤' })
+            reject(err)
+          });
+          // 取得配對結果
+          let matchResult = await checkDoubleMatch(curUserItemId, required_item_id, con)
+          if (!matchResult.msg) {
+            matchResult = await checkTripleMatch(curUserItemId, required_item_id, con)
+          }
+          if (matchResult.msg) {
+            // 整理配對物品ID & 新增成交紀錄
+            let id_Arr = [parseInt(curUserItemId), parseInt(required_item_id)];
+            if (matchResult.msg === 'tripleConfirmedMatch') { id_Arr.push(matchResult.itemC_idArr[0]) }
+            const insertedMatchId = await insertMatchRecord(id_Arr);
+            // 用ID下架配對物品
+            await discontinueItem(id_Arr, insertedMatchId, con).catch((err) => {
+              reject(err)
+            })
+            // 傳送配對訊息
+            await sendMsgToRelatedUser(id_Arr, insertedMatchId, con).catch((err) => {
+              reject(err)
+            })
+            // 回傳訊息給客戶端
+            resolve({ msg: '配對成功！商品已自動為您下架，請至"對話"頁面查詢配對結果～' })
+          } else {
+            resolve({ msg: '目前尚未配對成功，請耐心等候～' })
+          }
+          con.commit((err) => {
+            if (err) { con.rollback(() => { con.release() }) }
+          })
+          con.release()
+        })
+      })
+    })
+    async function sendMsgToRelatedUser(id_Arr, insertedMatchId, con) {
+      // 3.取得製作通知訊息的資訊 (被通知物品id、被通知人暱稱、下架物品id、下架物品 title)
+      let notificationList = await getSendMsgList(id_Arr, con)
+      // 3.1 過濾通知名單，製作 msg 內容
+      // 取得通知配對成功名單 && 配對取消名單
+      let insertMsgQueryDataArr = [];
+      notificationList.forEach(notification => {
+        if (id_Arr.indexOf(notification.notificated_item_id) === -1) {
+          insertMsgQueryDataArr.push([`哭哭！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}"的交換請求，因該物品下架已被取消><`, 'system', notification.notificated_user, notification.gone_item_id, null, Date.now().toString(), ' '])
+        } else {
+          insertMsgQueryDataArr.push([`恭喜！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}"的交換請求已成立～交換編號為${insertedMatchId}，現在就打開"對話"頁面，和對方討論交換細節吧！`, 'system', notification.notificated_user, notification.gone_item_id, insertedMatchId, Date.now().toString(), '/matches/confirmed/'])
+        }
+      })
+      // 3.2 將 msg 插入 message table 
+      let insertedRowsCount = 0;
+      if (insertMsgQueryDataArr.length > 0) {
+        insertedRowsCount = await insertMatchedMsg(insertMsgQueryDataArr)
+      }
+      if (insertedRowsCount !== insertMsgQueryDataArr.length) {
+        console.log('something wrong when inserting gone msg in msgDAO');
+        console.log('insertedRowsCount')
+        console.log(insertedRowsCount)
+        console.log('insertMsgQueryDataArr.length')
+        console.log(insertMsgQueryDataArr.length)
+      }
+    }
+  }
+})
 
 // item_detail page 取得先前已選擇過的物品清單用
 router.get('/last', async (req, res, next) => {
+  const {getUserSelectedItemIdArr} = require('../dao/wantDAO');
   let userSelectedItemIdArr = await getUserSelectedItemIdArr(req.query.required_item_id, req.query.user_nickname)
   let lastSelectionArr = userSelectedItemIdArr.map(obj => obj.id)
   res.send(lastSelectionArr);
 })
-
-
-/**
- * functions
- */
-// route new
-async function getInvitationMatchResult(secondItemId, intCurUserItemsIdArr) {
-  const wantOfSecondUserToCurUserItems = await getWantBetweenItemIds([secondItemId], intCurUserItemsIdArr)
-  const wantOfsecondItemToThirdItems = await getWantOfItemsByItemIds(secondItemId)
-  const thirdItemsIds = wantOfsecondItemToThirdItems.map(want => want.required_item_id);
-  const wantOfThirdItemsToCurUserItems = thirdItemsIds.length > 1 ? await getWantBetweenItemIds(thirdItemsIds, intCurUserItemsIdArr) : [];
-  return {
-    wantOfSecondUserToCurUserItems,
-    wantOfThirdItemsToCurUserItems,
-    thirdItemsIds,
-  }
-}
-async function getRelatedItemsData(thirdItemsIds, intCurUserItemsIdArr, secondItemId) {
-  let itemsIdOfAll = thirdItemsIds.concat(intCurUserItemsIdArr)
-  itemsIdOfAll.push(secondItemId)
-  const itemsDataOfAll = await getItemDataByIdArr(itemsIdOfAll)
-  const itemsDataOfAllObj = {};
-  itemsDataOfAll.forEach(data => {
-    itemsDataOfAllObj[data.id] = data;
-  })
-  return itemsDataOfAllObj;
-}
-async function sendMsgToMatchers(wantOfSecondUserToCurUserItems, wantOfThirdItemsToCurUserItems, itemsDataOfAllObj, secondItemId, checkUserResult) {
-  let msgArr = [];
-  if (wantOfSecondUserToCurUserItems.length === 0 &&
-    wantOfThirdItemsToCurUserItems.length === 0) {
-    const insertCount = await sendMsgToNoMatcher({
-      content: `您的物品"${itemsDataOfAllObj[secondItemId].title}"收到了來自"${checkUserResult[0].nickname}"的新交換邀請，快到"邀請"頁面查看一下吧`,
-      receiver: itemsDataOfAllObj[secondItemId].user_id,
-      sender: 'system',
-      time: Date.now().toString(),
-      type: '/want/invitation'
-    })
-    if (insertCount !== 1) { console.log('insertCount not equal to 1, it is ' + insertCount) }
-  } else {
-    if (wantOfSecondUserToCurUserItems.length > 0) {
-      wantOfSecondUserToCurUserItems.forEach(doubleMatch => {
-        // 通知 second user 配對成立
-        msgArr.push([`已建立您對"${itemsDataOfAllObj[doubleMatch.required_item_id].title}"的一組新兩人配對，快到"配對"頁面確認吧！`, 'system', itemsDataOfAllObj[doubleMatch.want_item_id].user_id, Date.now().toString(), doubleMatch.required_item_id])
-      })
-    }
-    if (wantOfThirdItemsToCurUserItems.length > 0) {
-      wantOfThirdItemsToCurUserItems.forEach(tripleMatch => {
-        // 通知 second & third user 配對成立
-        msgArr.push(
-          [`已建立您對"${itemsDataOfAllObj[tripleMatch.want_item_id].title}"的一組新三人配對，快到"配對"頁面確認吧！`, 'system', itemsDataOfAllObj[secondItemId].user_id, Date.now().toString(), tripleMatch.want_item_id],
-          [`已建立您對"${itemsDataOfAllObj[tripleMatch.required_item_id].title}"的一組新三人配對，快到"配對"頁面確認吧！`, 'system', itemsDataOfAllObj[tripleMatch.want_item_id].user_id, Date.now().toString(), tripleMatch.required_item_id]
-        )
-      })
-    }
-    if (msgArr.length > 0) {
-      const newMatchMsgInsertionCounts = await insertNewMatchMsg(msgArr)
-      if (newMatchMsgInsertionCounts !==
-        (wantOfThirdItemsToCurUserItems.length * 2
-          + wantOfSecondUserToCurUserItems.length)) {
-        console.log(`insertion msg counts is not normal, 
-        insetion counts is ${newMatchMsgInsertionCounts}, 
-        tripleMatchMsgCount is ${wantOfThirdItemsToCurUserItems.length * 2} 
-        and doubleMatchMsgCount is ${wantOfSecondUserToCurUserItems.length}`);
-      }
-    }
-  }
-}
-
-// route check
-function getDoubleMatchArr(curUserWantArr, secondItemWantArr) {
-  let doubleMatchResultArr = [];
-  for (let i = 0; i < curUserWantArr.length; i++) {
-    for (let j = 0; j < secondItemWantArr.length; j++) {
-      if (curUserWantArr[i].required_item_id === secondItemWantArr[j].want_item_id
-        && curUserWantArr[i].want_item_id === secondItemWantArr[j].required_item_id) {
-        doubleMatchResultArr.push({
-          curUserWant: {
-            item_id: curUserWantArr[i].want_item_id,
-            checked: curUserWantArr[i].checked
-          },
-          secondUserWant: {
-            item_id: secondItemWantArr[j].want_item_id,
-            checked: secondItemWantArr[j].checked
-          },
-        }) // 裡面有兩個 item_id, 以及 want 的 check 狀態
-        break;
-      }
-    }
-  }
-  return doubleMatchResultArr;
-}
-async function getTripleMatchArr(secondItemWantArr, curUserWantArr) {
-  let combinedWantArr = getCombinedWants(secondItemWantArr, curUserWantArr)
-  let thirdItemWantArr = await getWantOfItemsByItemIds(combinedWantArr.map(curWant => curWant.required_item_id));
-  // 確認有沒有 Triple Match
-  let tripleMatchResultArr = checkTripleMatchOfWants(combinedWantArr, thirdItemWantArr)
-  return tripleMatchResultArr;
-
-  function getCombinedWants(secondItemWantArr, curUserWantArr) {
-    let combinedWantArr = [];
-    for (let i = 0; i < secondItemWantArr.length; i++) {
-      for (let j = 0; j < curUserWantArr.length; j++) {
-        if (curUserWantArr[j].required_item_id === secondItemWantArr[i].want_item_id) {
-          combinedWantArr.push({
-            want_item_id: curUserWantArr[j].want_item_id, // 把第一個 want 的頭當成新 want 的頭
-            curUserWantStatus: curUserWantArr[j].checked,
-            second_item_id: secondItemWantArr[i].want_item_id, // 紀錄兩個原始的 want 結合點的共同 item_id
-            secondUserWantStatus: secondItemWantArr[i].checked,
-            required_item_id: secondItemWantArr[i].required_item_id, // 把第二個 want 的尾當成新 want 的尾
-          })
-        }
-      }
-    }
-    return combinedWantArr
-  }
-
-  function checkTripleMatchOfWants(combinedWantArr, thirdItemWantArr) {
-    let tripleMatchResultArr = [];
-    for (let i = 0; i < combinedWantArr.length; i++) {
-      for (let j = 0; j < thirdItemWantArr.length; j++) {
-        if (combinedWantArr[i].required_item_id === thirdItemWantArr[j].want_item_id
-          && combinedWantArr[i].want_item_id === thirdItemWantArr[j].required_item_id) {
-          tripleMatchResultArr.push({
-            curUserWant: {
-              item_id: combinedWantArr[i].want_item_id,
-              checked: combinedWantArr[i].curUserWantStatus,
-            },
-            secondUserWant: {
-              item_id: combinedWantArr[i].second_item_id,
-              checked: combinedWantArr[i].secondUserWantStatus,
-            },
-            thirdUserWant: {
-              item_id: combinedWantArr[i].required_item_id,
-              checked: thirdItemWantArr[j].checked
-            },
-          }) // 裡面有三個item_id, 以及 want 的 check 狀態
-          break;
-        }
-      }
-    }
-    return tripleMatchResultArr;
-  }
-}
-async function getItemsData(...args) {
-  let dataIdArr = [];
-  for (let i = 0; i < args.length; i++) {
-    args[i].forEach(match => {
-      for (want in match) {
-        if (dataIdArr.indexOf(match[want].item_id) === -1) {
-          dataIdArr.push(match[want].item_id)
-        }
-      }
-    })
-  }
-
-  let itemsDataArr;
-  if (dataIdArr.length > 0) {
-    // itemsDataArr = await itemDAO.get({
-    //   type: 'all',
-    //   id_Arr: dataIdArr,
-    // })
-    getItemDataByIdArr(dataIdArr)
-  } else {
-    itemsDataArr = [];
-  }
-  return itemsDataArr
-}
-
-// route checked
-async function wantConfirmTransaction(curUserItemId, required_item_id) {
-  return new Promise((resolve, reject) => {
-    pool.getConnection(async (err, con) => {
-      if (err) { con.release(); }
-      con.beginTransaction(async (err) => {
-        if (err) { con.rollback(() => { con.release() }) }
-        // 更新 want 的 confirm 狀態
-        await updateWantToConfirm(curUserItemId, required_item_id, con).catch(err => {
-          res.status(500).send({ errorMsg: '資料庫錯誤' })
-          reject(err)
-        });
-        // 取得配對結果
-        let matchResult = await checkDoubleMatch(curUserItemId, required_item_id, con)
-        if (!matchResult.msg) {
-          matchResult = await checkTripleMatch(curUserItemId, required_item_id, con)
-        }
-        if (matchResult.msg) {
-          // 整理配對物品ID & 新增成交紀錄
-          let id_Arr = [parseInt(curUserItemId), parseInt(required_item_id)];
-          if (matchResult.msg === 'tripleConfirmedMatch') { id_Arr.push(matchResult.itemC_idArr[0]) }
-          const insertedMatchId = await insertMatchRecord(id_Arr);
-          // 用ID下架配對物品
-          await discontinueItem(id_Arr, insertedMatchId).catch((err) => {
-            con.rollback(() => { con.release() })
-            reject(err)
-          })
-          // 傳送配對訊息
-          await sendMsgToRelatedUser(id_Arr, insertedMatchId).catch((err) => {
-            con.rollback(() => { con.release() })
-            reject(err)
-          })
-          // 回傳訊息給客戶端
-          resolve({ msg: '配對成功！商品已自動為您下架，請至"對話"頁面查詢配對結果～' })
-        } else {
-          resolve({ msg: '目前尚未配對成功，請耐心等候～' })
-        }
-        con.commit((err) => {
-          if (err) { con.rollback(() => { con.release() }) }
-        })
-        con.release()
-      })
-    })
-  })
-  async function sendMsgToRelatedUser(id_Arr, insertedMatchId) {
-    // 3.取得製作通知訊息的資訊 (被通知物品id、被通知人暱稱、下架物品id、下架物品 title)
-    let notificationList = await getSendMsgList(id_Arr)
-    // 3.1 過濾通知名單，製作 msg 內容
-    // 取得通知配對成功名單 && 配對取消名單
-    let insertMsgQueryDataArr = [];
-    notificationList.forEach(notification => {
-      if (id_Arr.indexOf(notification.notificated_item_id) === -1) {
-        insertMsgQueryDataArr.push([`哭哭！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}"的交換請求，因該物品下架已被取消><`, 'system', notification.notificated_user, notification.gone_item_id, null, Date.now().toString(), ' '])
-      } else {
-        insertMsgQueryDataArr.push([`恭喜！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}"的交換請求已成立～交換編號為${insertedMatchId}，現在就打開"對話"頁面，和對方討論交換細節吧！`, 'system', notification.notificated_user, notification.gone_item_id, insertedMatchId, Date.now().toString(), '/matches/confirmed/'])
-      }
-    })
-    // 3.2 將 msg 插入 message table 
-    let insertedRowsCount = 0;
-    if (insertMsgQueryDataArr.length > 0) {
-      insertedRowsCount = await insertMatchedMsg(insertMsgQueryDataArr)
-    }
-    if (insertedRowsCount !== insertMsgQueryDataArr.length) {
-      console.log('something wrong when inserting gone msg in msgDAO');
-      console.log('insertedRowsCount')
-      console.log(insertedRowsCount)
-      console.log('insertMsgQueryDataArr.length')
-      console.log(insertMsgQueryDataArr.length)
-    }
-  }
-  // async function discontinueItem(id_Arr, insertedMatchId) {
-  //   await itemDAO.discontinueItem( id_Arr, insertedMatchId )
-  // }
-}
 
 module.exports = router;

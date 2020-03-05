@@ -3,7 +3,7 @@ const router = express.Router();
 
 // Add new item API
 router.post('/new', async (req, res, next) => {
-  await addNewItemProcess(req)
+  await addNewItemProcess(req, res)
     .catch(err=>{
       console.log('err')
       console.log(err)
@@ -19,7 +19,7 @@ router.get('/all', async (req, res, next) => {
     .then(ItemDataArr=>{res.status(200).send(ItemDataArr)})
 })
 
-async function addNewItemProcess(req) {
+async function addNewItemProcess(req, res) {
   let userID;
   let userNickname;
   const aws = require('aws-sdk');
@@ -80,8 +80,8 @@ async function addNewItemProcess(req) {
 
 async function getItemDataProcess(req) {
   const {getItemDataByType } = require('../dao/item');
-  let token = req.headers.authorization ?
-    req.headers.authorization.split(' ')[1] : null;
+  let nickname = req.query.user_nickname ?
+    req.query.user_nickname : null;
   let page = req.query.page ? req.query.page : 0;
   let category = {}
   category.main_category = req.query.main_category ?
@@ -90,7 +90,7 @@ async function getItemDataProcess(req) {
     req.query.sub_category : null;
   category.status = req.query.status ?
     req.query.status : null;
-  let ItemDataArr = await getItemDataByType(page, category, token)
+  let ItemDataArr = await getItemDataByType(page, category, nickname)
     .catch(err=> {throw err})
   return ItemDataArr
 }

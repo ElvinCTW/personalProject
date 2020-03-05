@@ -1,19 +1,22 @@
 const mysql = require('../util/mysql');
-module.exports = {
-  getItemDataByIdArr,
-  getItemDataFromSearchBar,
-  getItemDetail,
-  getHotBoardList,
-  getConfirmedMatches,
-  getConfirmedMatchItemsData,
-  getItemDataByType,
-  discontinueItem,
-  insertNewItem,
-}
 
-function getItemDataByType(page, category, token) {
+function getItemDataByType(page, category, nickname) {
   return new Promise((resolve, reject) => {
-    if (category.main_category) {
+    if (nickname) {
+      let string = mysql.itemJoinString + 'WHERE u.nickname = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
+      let condition = [nickname, page * 20];
+      mysql.pool.query(string, condition, (err, result, fileds) => {
+        if (err) {
+          let functionName = arguments.callee.toString();
+          functionName = functionName.substr('function '.length);
+          functionName = functionName.substr(0, functionName.indexOf('('));
+          mysql.errLog(err, functionName, __filename)
+          reject(err)
+        } else {
+          resolve(result)
+        }
+      });
+    } else if (category.main_category) {
       let string;
       let condition;
       if (!category.sub_category) {
@@ -211,7 +214,7 @@ async function getItemDetail(itemId, gone) {
  * @param {*} id_Arr single ID or ID array
  * @param {*} insertedMatchId optional, only work for matched discontinue
  */
-function discontinueItem(id_Arr, insertedMatchId) {
+function discontinueItem(id_Arr, insertedMatchId, con) {
   // update items // turn item / availability to false
   let updateAvailabilitiesCount = 0;
   return new Promise((resolve, reject) => {
@@ -220,9 +223,10 @@ function discontinueItem(id_Arr, insertedMatchId) {
       'UPDATE items SET availability = "false" WHERE id = ?';
     if (insertedMatchId) {
       for (let i = 0; i < id_Arr.length; i++) {
-        mysql.pool.query(string, [insertedMatchId, id_Arr[(i + 1) % id_Arr.length], id_Arr[i % id_Arr.length]], (err, updateAvailbilityResult, fileds) => {
+        con.query(string, [insertedMatchId, id_Arr[(i + 1) % id_Arr.length], id_Arr[i % id_Arr.length]], (err, updateAvailbilityResult, fileds) => {
           if (err) {
             mysql.errLog(err, 'updateAvailbilityResult', 'itemDAO')
+            con.rollback(() => { con.release() })
             reject(err)
           } else {
             updateAvailabilitiesCount += updateAvailbilityResult.affectedRows
@@ -251,4 +255,16 @@ function discontinueItem(id_Arr, insertedMatchId) {
       });
     }
   })
+}
+
+module.exports = {
+  getItemDataByIdArr,
+  getItemDataFromSearchBar,
+  getItemDetail,
+  getHotBoardList,
+  getConfirmedMatches,
+  getConfirmedMatchItemsData,
+  getItemDataByType,
+  discontinueItem,
+  insertNewItem,
 }

@@ -1,9 +1,7 @@
-// const alphabetArr = ['A', 'B', 'C']
 if (!localStorage.getItem('token')) {
   // 確認使用者有登入，如果沒有，跳alert請user登入
   alert('請登入以進行物品交換確認');
   window.location.assign('/');
-  // 應確認使用者為指定 user_nickname 的使用者
 } else {
   let token = localStorage.getItem('token');
   ((token) => {
@@ -89,14 +87,6 @@ if (!localStorage.getItem('token')) {
               let tagSpan = $('<div />').attr('class', 'tag user-item').html(`${tagsArr[j]} `);
               tagsDiv.append(tagSpan);
             }
-            // let subsItem = $('<div></div>').attr('class','subscribe-item').click(()=>{
-            //   getMatchedResultData(want.id, want.title, 'want')
-            // })
-            // subsItem.insertAfter($('#subs-subtext'));
-            // let subsContent = $('<div></div>').attr('class','subscribe-content')
-            // subsItem.append(subsContent);
-            // let subsSpan = $('<span></span>').html(want.title);
-            // subsContent.append(subsSpan)
           })
         } else {
           let match = $('<div></div>').attr({ 
@@ -104,12 +94,6 @@ if (!localStorage.getItem('token')) {
             'id': 'no-match-text',
            }).html('目前沒有配對');
           $('#items-area-match').append(match);
-          // let subsItem = $('<div></div>').attr('class', 'subscribe-item')
-          // subsItem.insertAfter($('#subs-subtext'));
-          // let subsContent = $('<div></div>').attr('class', 'subscribe-content')
-          // subsItem.append(subsContent);
-          // let subsSpan = $('<span></span>').html('目前沒有配對');
-          // subsContent.append(subsSpan)
         }
         if ($('.item-div.user-item.cur-user').length>0) {
           $('.item-div.user-item.cur-user:first').trigger('click');
@@ -197,18 +181,8 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
         },
       })
     });
-    // let interactors = 0;
     let checkStatusNodeArr = [];
     let ownersArr = Object.keys(matchedItemsDataArr[i]).length === 3 ? ['您', '對方', '他人']:['您', '對方'];
-    // console.log('matchedItemsDataArr[i]')
-    // console.log(matchedItemsDataArr[i])
-    // if (!matchedItemsDataArr[i].B_id) {
-    //   // interactors = 2;
-    //   ownersArr = ['您', '對方'];
-    // } else {
-    //   // interactors = 3;
-    //   ownersArr = ['您', '對方', '他人'];
-    // }
     /**
      * 商品資訊區
      */
@@ -256,12 +230,7 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
         itemContentDiv.append(tagsDiv);
         // add nickname and status span
         let nicknameSpan = $('<span />').attr({ 'class': 'nickname' }).html(`${itemData.user_nickname}`);
-        // let statusSpan = $('<span />').attr({
-        //   'class': 'status',
-        //   'id': 'item-status',
-        // }).html(`${matchedItemsDataArr[i][e].status}`);
         itemInfoDiv.append(nicknameSpan);
-        // itemInfoDiv.append(statusSpan);
         // add tags to tagsDiv
         let tagsArr = itemData.tags.split(' ')
         for (let j = 0; j < tagsArr.length; j++) {
@@ -283,49 +252,16 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
         let ownercheckStatsus = $('<div></div>').attr({ 'class': 'user-check-status' }).html(
           `User : ${ownersArr[divCounter]}, ${checked}`
         );
-        // if (matchedItemsDataArr[i][e].checked === "deny") {
-        //   ownercheckStatsus.attr({
-        //     'class': 'user-check-status',
-        //     'style': 'background: #FAD7AC; color: #000'
-        //   })
-        // }
         checkStatusNodeArr.push(ownercheckStatsus);
         ownercheckStatsus.insertBefore(interactionBtnDiv);
-        // if (matchedItemsDataArr[i][e].checked === "deny") {
-        //   show = false;
-        // }
         divCounter++;
       } else {
-        // console.log(e);
+        console.log(e);
       }
     }
     if (show) {
       interactionBtnDiv.append(confirmBtn);
-      // interactionBtnDiv.append(denyBtn);
     }
   }
 
 }
-
-// function updateCheckStatus(ownersArr, chcek) {
-//   if (check) {
-//     // user click btn "check"
-
-//   } else {
-
-//   }
-//   $.ajax({
-//     url: `/api/1.0/matches/status`,
-//     type: 'update',
-//     data: {
-//       tradeType: tradeType,
-//     },
-//     success: () => {
-//       checkStatusNodeArr[userIndex].html(`User : ${user_nickname}, Check : true`)
-//       interactionBtnDiv.attr({ 'style': 'display:none;' })
-//     },
-//     error: () => {
-
-//     },
-//   })
-// }

@@ -1,63 +1,49 @@
 const mysql = require('../util/mysql');
-module.exports = {
-  insertNewMatchMsg,
-  sendMsgToNoMatcher,
-  insertMatchedMsg,
-  getConfirmedMatchMsg,
-  getLastestMsg,
-  addNewMatchedPageMsg,
-  get: (queryData) => {
-    return new Promise((resolve, reject) => {
-      if (queryData.action === 'getMsgForHeader') {
-        let queryString =
-          `SELECT m.* FROM message m 
-        JOIN users u ON u.id = m.receiver 
-        WHERE u.token = ? 
-        ORDER BY m.time DESC`;
-        mysql.advancedQuery({
-          queryString: queryString,
-          queryCondition: [queryData.token],
-          queryName: 'headerMsg',
-          DAO_name: 'msgDAO',
-          reject: reject,
-        }, (headerMsg) => {
-          resolve(headerMsg)
-        })
+
+function markMsgAsWatched(token,id) {
+  return new Promise((resolve, reject) => {
+    let queryString =
+      `UPDATE message m 
+      JOIN users u ON u.id = m.receiver 
+      SET m.watched = "true" 
+      WHERE u.token = ? 
+      AND m.watched = "false" 
+      AND m.id = ?`;
+    let queryCondition = [token, id]
+    mysql.pool.query(queryString, queryCondition, (err, markedAsWatchedResult, fileds) => {
+      if (err) {
+        console.log('err here');
+        mysql.errLog(err, 'markedAsWatchedResult', 'msgDAO')
+        reject(err)
+      } else {
+        resolve(markedAsWatchedResult.affectedRows)
       }
+    });
+  })
+}
+function getMsgForHeader(token) {
+  return new Promise((resolve, reject) => {
+    let queryString =
+      `SELECT m.* FROM message m 
+      JOIN users u ON u.id = m.receiver 
+      WHERE u.token = ? 
+      ORDER BY m.time DESC`;
+    mysql.advancedQuery({
+      queryString: queryString,
+      queryCondition: [token],
+      queryName: 'headerMsg',
+      DAO_name: 'msgDAO',
+      reject: reject,
+    }, (headerMsg) => {
+      resolve(headerMsg)
     })
-  },
-  update: (queryData) => {
-    return new Promise((resolve, reject) => {
-      let queryString = '';
-      let queryCondition = [];
-      if (queryData.action === 'markedAsWatched') {
-        queryString = 'UPDATE message m JOIN users u ON u.id = m.receiver SET m.watched = "true" WHERE u.token = ? AND m.watched = "false" AND m.id = ?';
-        queryCondition.length = 0;
-        queryCondition.push(queryData.token, queryData.id);
-        mysql.pool.query(queryString, queryCondition, (err, markedAsWatchedResult, fileds) => {
-          if (err) {
-            console.log('err here');
-            mysql.errLog(err, 'markedAsWatchedResult', 'msgDAO')
-            reject(err)
-          } else {
-            resolve(markedAsWatchedResult.affectedRows)
-          }
-        });
-      }
-    })
-  }
+  })
 }
 function addNewMatchedPageMsg(msgObj) {
   return new Promise((resolve, reject) => {
     let queryString = '';
     msgObj.content = msgObj.content.replace(/\n/g, '\r\n')
     queryString = 'INSERT INTO message SET ?';
-    // queryCondition.length = 0;
-    // delete queryData['action'];
-    // console.log('queryData')
-    // console.log(queryData)
-    // let queryCondition=queryData.data
-    // queryCondition.push(Object.values(queryData));
     mysql.pool.query(queryString, msgObj, (err, result, fileds) => {
       if (err) {
         mysql.errLog(err, 'addNewMatchedPageMsg', 'msgDAO')
@@ -68,7 +54,6 @@ function addNewMatchedPageMsg(msgObj) {
     });
   })
 }
-
 function getLastestMsg(matchedIdArr) {
   return new Promise((resolve, reject) => {
     let queryString = '';
@@ -102,7 +87,6 @@ function getLastestMsg(matchedIdArr) {
     }
   })
 }
-
 function getConfirmedMatchMsg(matched_id) {
   return new Promise((resolve, reject) => {
     let queryString =
@@ -126,7 +110,6 @@ function getConfirmedMatchMsg(matched_id) {
     })
   })
 }
-
 function sendMsgToNoMatcher(msg) {
   return new Promise((resolve, reject) => {
     mysql.pool.query(`INSERT INTO message SET ?`, [msg], (err, result, fileds) => {
@@ -142,7 +125,6 @@ function sendMsgToNoMatcher(msg) {
     });
   })
 }
-
 function insertNewMatchMsg(msgArr) {
   return new Promise((resolve, reject) => {
     let string = 'INSERT INTO message (content, sender, receiver, time, mentioned_item_id, type) values ?';
@@ -176,4 +158,15 @@ function insertMatchedMsg(insertMsgQueryDataArr) {
       }
     });
   })
+}
+
+module.exports = {
+  insertNewMatchMsg,
+  sendMsgToNoMatcher,
+  insertMatchedMsg,
+  getConfirmedMatchMsg,
+  getLastestMsg,
+  addNewMatchedPageMsg,
+  getMsgForHeader,
+  markMsgAsWatched,  
 }

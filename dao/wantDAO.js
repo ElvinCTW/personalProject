@@ -1,101 +1,4 @@
-module.exports = {
-  getWantOfItemsByItemIds,
-  getUserWantByToken,
-  insertMatchRecord,
-  getUserSelectedItemIdArr,
-  getSendMsgList,
-  get: (queryData) => {
-    // settings
-    return new Promise((resolve, reject) => {
-      if (queryData.firstIds && queryData.secondIds) {
-        getWantBetweenItemIds(queryData.firstIds, queryData.secondIds, (output) => {
-          if (output.result) {
-            resolve(output.result)
-          } else {
-            reject(output.err)
-          }
-        })
-      } else if (queryData.action === 'checkCurWantMatchable') {
-        // 查詢新增的 want 有沒有兩人或三人配對可供確認
-        // let parseIntArr = [];
-        // queryData.wantArr.forEach((item_id) => {
-        //   parseIntArr.push(parseInt(item_id));
-        // })
-        // A = current user , B = item_deatil page owner, C = other
-        // B_nickname 在裡面
-        // 尋找反向 ( second_user want cur_user) 的 want
-        queryString =
-          `SELECT w.*, u.id B_id, i2.title A_title 
-        FROM want w 
-        JOIN items i ON i.id = w.want_item_id 
-        JOIN users u ON i.user_id = u.id 
-        JOIN items i2 ON i2.id = w.required_item_id 
-        WHERE w.want_item_id = ? 
-        AND w.required_item_id in (?) 
-        AND i.availability = "true"`;
-        queryCondition = [queryData.item_id, parseIntArr];
-        mysql.pool.query(queryString, queryCondition, (err, doubleMatchResultArr, fileds) => {
-          console.log("doubleMatchResultArr");
-          console.log(doubleMatchResultArr);
-          if (err) {
-            console.log('error in doubleMatchResultPromise');
-            console.log(err.sqlMessage);
-            console.log(err.sql);
-            reject(err);
-          } else {
-            // C_nickname, C_title, A_title 缺 B_nickname
-            // getWant
-            queryString =
-              `SELECT w.*, u.id C_id, i.title C_title, i2.title A_title 
-            FROM want w 
-            JOIN items i ON i.id = w.want_item_id 
-            JOIN users u ON i.user_id = u.id 
-            JOIN items i2 ON i2.id = w.required_item_id 
-            WHERE w.want_item_id 
-            IN ( 
-              SELECT w1.required_item_id 
-              FROM want w1 
-              JOIN items i3 ON i3.id = w1.required_item_id 
-              WHERE w1.want_item_id = ? 
-              AND i3.availability = "true" 
-            ) 
-            AND w.required_item_id in (?) 
-            AND i.availability = "true"`;
-            mysql.pool.query(queryString, queryCondition, (err, tripleMatchResultArr, fileds) => {
-              if (err) {
-                console.log('error in tripleMatchResultPromise');
-                console.log(err.sqlMessage);
-                console.log(err.sql);
-                reject(err);
-              } else {
-                resolve({
-                  doubleMatchResultArr: doubleMatchResultArr,
-                  tripleMatchResultArr: tripleMatchResultArr,
-                });
-              }
-            })
-          }
-        })
-      } else {
-        // console.log('search item wish list in wantDAO by item_id');
-        // mysql.advancedQuery({
-        //   queryString: `SELECT * FROM want JOIN items i ON i.id = want.required_item_id WHERE want_item_id = ? AND i.availability = "true"`,
-        //   queryCondition: [queryData.item_id],
-        //   queryName: 'checkPreviousWant',
-        //   DAO_name: 'wantDAo',
-        //   reject: reject,
-        // },(checkPreviousWant)=>{
-        //   resolve(checkPreviousWant)
-        // })
-      }
-    })
-  },
-  insertNewWant,
-  getWantBetweenItemIds,
-  updateWantToConfirm,
-  checkTripleMatch,
-  checkDoubleMatch,
-}
+const mysql = require('../util/mysql');
 
 function getWantBetweenItemIds(firstIds, secondIds) {
   return new Promise((resolve, reject) => {
@@ -124,8 +27,6 @@ function getWantBetweenItemIds(firstIds, secondIds) {
   })
 }
 
-const mysql = require('../util/mysql');
-
 function updateWantToConfirm(want_item_id, required_item_id, con) {
   return new Promise((resolve, reject) => {
     let queryString = `UPDATE want SET checked = "confirm" WHERE want_item_id = ? AND required_item_id = ?`;
@@ -142,7 +43,7 @@ function updateWantToConfirm(want_item_id, required_item_id, con) {
   })
 }
 
-async function checkTripleMatch(required_item_id, curUserItemId, con) {
+async function checkTripleMatch(curUserItemId, required_item_id, con) {
   return new Promise((resolve, reject) => {
     // 取得可能組成 triple match 的 want
     let queryString =
@@ -165,7 +66,7 @@ async function checkTripleMatch(required_item_id, curUserItemId, con) {
             wantC_Arr2.push(want.want_item_id);
           }
         })
-        let itemC_idArr = wantC_Arr.filter(value => wantC_Arr2.includes(value))
+        let itemC_idArr = wantC_Arr.filter(id => wantC_Arr2.includes(id))
         if (itemC_idArr.length > 0) {
           resolve({
             msg: 'tripleConfirmedMatch',
@@ -293,13 +194,15 @@ function getUserSelectedItemIdArr(item_id, user_nickname) {
         mysql.errLog(err, functionName, __filename)
         reject(err)
       } else {
+        console.log('result')
+        console.log(result)
         resolve(result)
       }
     });
   })
 }
 
-function getSendMsgList(idArr, cb) {
+function getSendMsgList(idArr, con) {
   return new Promise((resolve, reject) => {
     let queryString =
       `SELECT w.want_item_id notificated_item_id, 
@@ -314,12 +217,13 @@ function getSendMsgList(idArr, cb) {
       WHERE w.required_item_id in (?) 
       AND w.checked = "confirm"`;
     let queryCondition = [idArr];
-    mysql.pool.query(queryString, queryCondition, (err, result, fileds) => {
+    con.query(queryString, queryCondition, (err, result, fileds) => {
       if (err) {
         let functionName = arguments.callee.toString();
         functionName = functionName.substr('function '.length);
         functionName = functionName.substr(0, functionName.indexOf('('));
         mysql.errLog(err, functionName, __filename)
+        con.rollback(() => { con.release() })
         reject(err)
       } else {
         resolve(result)
@@ -347,4 +251,78 @@ function insertMatchRecord(id_Arr) {
       });
     }
   })
+}
+
+module.exports = {
+  getWantOfItemsByItemIds,
+  getUserWantByToken,
+  insertMatchRecord,
+  getUserSelectedItemIdArr,
+  getSendMsgList,
+  get: (queryData) => {
+    // settings
+    return new Promise((resolve, reject) => {
+        // 查詢新增的 want 有沒有兩人或三人配對可供確認
+        // A = current user , B = item_deatil page owner, C = other
+        // B_nickname 在裡面
+        // 尋找反向 ( second_user want cur_user) 的 want
+        queryString =
+          `SELECT w.*, u.id B_id, i2.title A_title 
+        FROM want w 
+        JOIN items i ON i.id = w.want_item_id 
+        JOIN users u ON i.user_id = u.id 
+        JOIN items i2 ON i2.id = w.required_item_id 
+        WHERE w.want_item_id = ? 
+        AND w.required_item_id in (?) 
+        AND i.availability = "true"`;
+        queryCondition = [queryData.item_id, parseIntArr];
+        mysql.pool.query(queryString, queryCondition, (err, doubleMatchResultArr, fileds) => {
+          console.log("doubleMatchResultArr");
+          console.log(doubleMatchResultArr);
+          if (err) {
+            console.log('error in doubleMatchResultPromise');
+            console.log(err.sqlMessage);
+            console.log(err.sql);
+            reject(err);
+          } else {
+            // C_nickname, C_title, A_title 缺 B_nickname
+            // getWant
+            queryString =
+              `SELECT w.*, u.id C_id, i.title C_title, i2.title A_title 
+            FROM want w 
+            JOIN items i ON i.id = w.want_item_id 
+            JOIN users u ON i.user_id = u.id 
+            JOIN items i2 ON i2.id = w.required_item_id 
+            WHERE w.want_item_id 
+            IN ( 
+              SELECT w1.required_item_id 
+              FROM want w1 
+              JOIN items i3 ON i3.id = w1.required_item_id 
+              WHERE w1.want_item_id = ? 
+              AND i3.availability = "true" 
+            ) 
+            AND w.required_item_id in (?) 
+            AND i.availability = "true"`;
+            mysql.pool.query(queryString, queryCondition, (err, tripleMatchResultArr, fileds) => {
+              if (err) {
+                console.log('error in tripleMatchResultPromise');
+                console.log(err.sqlMessage);
+                console.log(err.sql);
+                reject(err);
+              } else {
+                resolve({
+                  doubleMatchResultArr: doubleMatchResultArr,
+                  tripleMatchResultArr: tripleMatchResultArr,
+                });
+              }
+            })
+          }
+        })
+    })
+  },
+  insertNewWant,
+  getWantBetweenItemIds,
+  updateWantToConfirm,
+  checkTripleMatch,
+  checkDoubleMatch,
 }

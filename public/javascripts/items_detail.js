@@ -80,14 +80,13 @@ function changePic() {
 if (page !== 'end') {
   // $('#subdiv-itemdetail-useritems').attr({ style: '' })
   user_nickname = localStorage.getItem('nickname');
-  // 前端發送 ajax，更新現有頁面為申請者所有物品頁面
   $.ajax({
     url: `/api/1.0/want/last?required_item_id=${parseInt(window.location.search.split('=')[1])}&user_nickname=${user_nickname}`,
     type: 'get',
     success: (result) => {
       console.log(result);
       lastTimeSelectedArr = result;
-      $.ajax({
+      $.ajax({ // 前端發送 ajax，更新現有頁面為申請者所有物品頁面
         url: `/api/1.0/items/all?page=${page}&user_nickname=${user_nickname}`,
         type: 'get',
         success: (itemsListArr) => {

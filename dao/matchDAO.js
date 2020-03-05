@@ -1,10 +1,5 @@
 const mysql = require('../util/mysql');
 
-module.exports = {
-  insertMatchRecord,
-  getConfirmedMatchItemsId,
-}
-
 function getConfirmedMatchItemsId(matched_id) {
   return new Promise((resolve, reject) => {
     let queryString =
@@ -32,7 +27,6 @@ function getConfirmedMatchItemsId(matched_id) {
     })
   })
 }
-
 function insertMatchRecord(id_Arr) {
   return new Promise((resolve, reject) => {
     let queryString = '';
@@ -52,4 +46,9 @@ function insertMatchRecord(id_Arr) {
       });
     }
   })
+}
+
+module.exports = {
+  insertMatchRecord,
+  getConfirmedMatchItemsId,
 }

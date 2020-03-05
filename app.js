@@ -11,7 +11,7 @@ const itemAPI = require('./routes/itemAPI');
 const wantAPI = require('./routes/wantAPI');
 const msgAPI = require('./routes/msgAPI');
 const categoryAPI = require('./routes/categoryAPI');
-const {getItemDetail, getItemDataFromSearchBar} = require('./dao/item');
+const {getItemDetail} = require('./dao/item');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use(logger('dev'));
@@ -27,7 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
  */
 // Index
 app.get('/', async (req, res) => {
-  res.render('index', await getIndexData(req))
+  res.render('index', await getHomePageData(req))
 });
 // sign up
 app.get('/users/signup', (req, res) => { res.render('signup') });
@@ -66,7 +66,7 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
-async function getIndexData(req) {
+async function getHomePageData(req) {
   const { mainBoardsList,statusList } = require('./util/listData');
   const awsConfig = require('./util/awsConfig');
   let resData = { mainBoardsList };
@@ -108,6 +108,7 @@ async function getIndexData(req) {
   }
 
   async function getSearchData(search) {
+    const { getItemDataFromSearchBar} = require('./dao/item');
     let titleArr = [];
     let hashtagArr = [];
     search.split(' ').filter(string => string !== '').forEach(string => {

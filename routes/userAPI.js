@@ -54,9 +54,12 @@ router.put('/watchMsgTime', async (req,res,next)=>{
 
 router.get('/lastMsgWatchedTime', async (req,res,next)=>{
   const token = req.headers.authorization.split(' ')[1]
-  const time = await getLastMsgWatchedTime(token).catch(err=>{
+  const time = await getLastMsgWatchedTime(token)
+    .catch(err=>{
     res.status(403).send()
   })
+  console.log('time')
+  console.log(time)
   if (time) {
     res.send(time)
   }

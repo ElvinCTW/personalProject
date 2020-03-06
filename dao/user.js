@@ -188,8 +188,11 @@ function updateWatchMsgTime(token) {
 
 function getLastMsgWatchedTime(token) {
   return new Promise((resolve, reject)=>{
+    console.log('hi');
+    console.log('token')
+    console.log(token)
     let string = 
-    `SELECT watch_msg_time FROM users u
+    `SELECT u.watch_msg_time FROM users u
     WHERE u.token = ?`;
     let condition = [token];
     mysql.pool.query(string, condition, (err, result, fileds) => {
@@ -197,7 +200,10 @@ function getLastMsgWatchedTime(token) {
         sqlErrLog(err, arguments.callee.toString(), __filename)
         reject(err)
       } else {
-        resolve(result[0].last_watch_time)
+        console.log('bye');
+        console.log('result')
+        console.log(result)
+        resolve(result[0].watch_msg_time)
       }
     });
   })

@@ -116,7 +116,7 @@ function updateMsgWatchedTime(token) {
       Authorization: `Bearer ${token}`,
     },
     success: (res) => {
-      console.log('success');
+      console.log('update msg watched time success');
     },
     error: (err, textStatus, errorThrown) => {
       console.log(err)
@@ -135,7 +135,6 @@ async function getLastMsgWatchedTime(token) {
         Authorization: `Bearer ${token}`,
       },
       success: (time) => {
-        console.log(time)
         resolve(time)
       },
       error: (err) => {

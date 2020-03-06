@@ -1,4 +1,4 @@
-let { getMsgForHeader } = require('../dao/msgDAO');
+let { getMsgForHeader } = require('../../dao/msgDAO');
 let { assert } = require('chai')
 
 describe('getMsgForHeader', () => {

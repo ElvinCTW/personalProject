@@ -1,5 +1,6 @@
 let msgCount = 0;
 if (localStorage.getItem('token')) {
+
   // Sign in status
   const nickname = localStorage.getItem('nickname');
   const token = localStorage.getItem('token');
@@ -7,38 +8,20 @@ if (localStorage.getItem('token')) {
     localStorage.removeItem('token');
     localStorage.removeItem('nickname');
   });
-  // show notification
-  showNotification(token);
+  getNotification(token);
+  // show red dot
   $('#general-notification').click(() => {
     $('#notification-area').toggle()
     $('.guide').toggle()
-    // call msgDAO change watched => true
     if ($('#notification-count')) {
+      // call update user watch_msg_time function**
+      updateMsgWatchedTime(token)
       $('#notification-count').remove();
-      if (msgCount > 0) {
-        // $.ajax({ // 要改成針對每個 notification
-        //   url: `/api/1.0/message/watched`,
-        //   type: 'post',
-        //   headers: {
-        //     Authorization: `Bearer ${token}`,
-        //   },
-        //   success: (affectedRows) => {
-        //     console.log(affectedRows);
-        //     console.log(`已將 ${affectedRows} 則訊息標示為已讀`);
-        //     msgCount=0;
-        //   },
-        //   error: (err) => {
-        //     console.log(err)
-        //     return;
-        //   }
-        // })
-      }
     }
   })
   $('#match-notification').attr('href', `/want/check`);
   $('#match-confirmed').attr('href', `/matches/confirmed`);
   $('#add-item').attr('href', `/items/new`);
-
   // get notification counts
 } else {
   $('#navbar-member-link').click(() => {
@@ -50,20 +33,18 @@ if (localStorage.getItem('token')) {
   })
 }
 
-function showNotification(token) {
-  // get notification msg
+function getNotification(token) {
+  // get notification msg => add page
   $.ajax({
-    // checkoutRequest.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('stylish_token'))
     url: `/api/1.0/message/header`,
     type: 'get',
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    success: (unreadMsgArr) => {
-      console.log(unreadMsgArr);
-      if (unreadMsgArr.length > 0) {
+    success: async (msgArr) => {
+      if (msgArr.length > 0) {
         // insert msg into msg area
-        unreadMsgArr.forEach(msgObj => {
+        msgArr.forEach(msgObj => {
           // show unread dot
           let link = $('<a />').attr({
             href: msgObj.type,
@@ -102,8 +83,15 @@ function showNotification(token) {
             })
           }
         })
-        if (msgCount>0) {
-          // update number of fast btn
+
+        // 顯示新訊息紅點 => 改為比對最新訊息時間與最後觀看時間**
+        // if (lastWatchedTime < msgArr[0].time) { add red dot }
+        let lastWatchTime = await getLastMsgWatchedTime(token)
+        console.log('msgArr[0].time')
+        console.log(msgArr[0].time)
+        console.log('lastWatchTime')
+        console.log(lastWatchTime)
+        if ( msgArr[0].time > lastWatchTime) {
           let notificationCount = $('<div></div>').attr({ 'id': 'notification-count' });
           notificationCount.insertAfter($('#notification-span'))
         }
@@ -117,5 +105,43 @@ function showNotification(token) {
     error: (err) => {
       console.log(err);
     }
+  })
+}
+
+function updateMsgWatchedTime(token) {
+  $.ajax({
+    url: `/api/1.0/users/watchMsgTime`,
+    type: 'put',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    success: (res) => {
+      console.log('success');
+    },
+    error: (err, textStatus, errorThrown) => {
+      console.log(err)
+      console.log(textStatus);
+      console.log(errorThrown);
+    }
+  })
+}
+
+async function getLastMsgWatchedTime(token) {
+  return new Promise((resolve,reject)=>{
+    $.ajax({
+      url: `/api/1.0/users/lastMsgWatchedTime`,
+      type: 'get',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      success: (time) => {
+        console.log(time)
+        resolve(time)
+      },
+      error: (err) => {
+        console.log(err);
+        reject(err)
+      }
+    })
   })
 }

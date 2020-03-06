@@ -1,5 +1,6 @@
 const mysql = require('../util/mysql');
 const crypto = require('crypto');
+const {sqlErrLog} = require('../util/errorHandler')
 
 function checkVaildUserOfChat(token, matched_id) {
   return new Promise((resolve, reject) => {
@@ -38,10 +39,7 @@ function getUserDataByToken(token, item_id) {
     }
     mysql.pool.query(string, condition, (err, result, fileds) => {
       if (err) {
-        let functionName = arguments.callee.toString();
-        functionName = functionName.substr('function '.length);
-        functionName = functionName.substr(0, functionName.indexOf('('));
-        mysql.errLog(err, functionName, __filename)
+        sqlErrLog(err, arguments.callee.toString(), __filename)
         reject(err)
       } else {
         resolve(result)
@@ -169,9 +167,47 @@ function signinProcess(id, password) {
   })
 }
 
+function updateWatchMsgTime(token) {
+  return new Promise((resolve, reject) => {
+    let string = 
+    `UPDATE users u
+    SET watch_msg_time = ?
+    WHERE u.token = ?`;
+    let condition = [Date.now(),token];
+    mysql.pool.query(string, condition, (err, result, fileds) => {
+      if (err) {
+        sqlErrLog(err, arguments.callee.toString(), __filename)
+        reject(err)
+      } else {
+        let success = result.affectedRows===1?true:false;
+        resolve(success)
+      }
+    });
+  })
+}
+
+function getLastMsgWatchedTime(token) {
+  return new Promise((resolve, reject)=>{
+    let string = 
+    `SELECT watch_msg_time FROM users u
+    WHERE u.token = ?`;
+    let condition = [token];
+    mysql.pool.query(string, condition, (err, result, fileds) => {
+      if (err) {
+        sqlErrLog(err, arguments.callee.toString(), __filename)
+        reject(err)
+      } else {
+        resolve(result[0].last_watch_time)
+      }
+    });
+  })
+}
+
 module.exports = {
   getUserDataByToken,
   checkVaildUserOfChat,
   registerTransaction,
   signinProcess,
+  updateWatchMsgTime,
+  getLastMsgWatchedTime,
 }

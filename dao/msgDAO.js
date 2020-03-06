@@ -27,7 +27,8 @@ function getMsgForHeader(token) {
       `SELECT m.* FROM message m 
       JOIN users u ON u.id = m.receiver 
       WHERE u.token = ? 
-      ORDER BY m.time DESC`;
+      ORDER BY m.time DESC
+      LIMIT 0,5`;
     mysql.advancedQuery({
       queryString: queryString,
       queryCondition: [token],

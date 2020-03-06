@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {registerTransaction, signinProcess} = require('../dao/user');
+const {registerTransaction, signinProcess, updateWatchMsgTime, getLastMsgWatchedTime} = require('../dao/user');
 
 router.post('/register', async (req, res, next)=>{
   await registerTransaction(req.body)
@@ -39,5 +39,28 @@ router.post('/signin', async (req, res, next)=>{
   sendbackObj.user.token = (typeof signinResult!=='undefined')?signinResult.token:'';
   res.render('sign_result', sendbackObj);
 })
+
+router.put('/watchMsgTime', async (req,res,next)=>{
+  // call function in userDAO to change watch_msg_time
+  const token = req.headers.authorization.split(' ')[1]
+  const updateSuccess = await updateWatchMsgTime(token)
+    .catch(err=>{})
+  if (updateSuccess) {
+    res.send(updateSuccess)
+  } else {
+    res.status(403)
+  }
+})
+
+router.get('/lastMsgWatchedTime', async (req,res,next)=>{
+  const token = req.headers.authorization.split(' ')[1]
+  const time = await getLastMsgWatchedTime(token).catch(err=>{
+    res.status(403).send()
+  })
+  if (time) {
+    res.send(time)
+  }
+})
+
 
 module.exports = router;

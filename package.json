@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "test": "mocha"
+    "test": "jest"
   },
   "dependencies": {
     "aws-sdk": "^2.610.0",
@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "jest": "^25.1.0",
     "mocha": "^7.1.0"
   }
 }

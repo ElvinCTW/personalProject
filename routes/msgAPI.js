@@ -16,12 +16,16 @@ router.get('/header', async (req, res, next)=>{
   // get new notification from msgDAO
   let token = req.headers.authorization.split(' ')[1]?
     req.headers.authorization.split(' ')[1]:null; 
-  await getMsgForHeader(token)
-    .catch(err=>{
-      console.log(err);
-      res.status(500).send([]);
-    })
-    .then(unreadMsgArr=>{res.send(unreadMsgArr)})
+  if (token) {
+    await getMsgForHeader(token)
+      .catch(err=>{
+        console.log(err);
+        res.status(500).send([]);
+      })
+      .then(unreadMsgArr=>{res.send(unreadMsgArr)})
+  } else {
+    res.status(400).send()
+  }
 })
 
 module.exports = router;

@@ -1,6 +1,7 @@
 node_modules
 # tech
 authur.js
+recursive.js
 
 # Personal Security
 *.pem

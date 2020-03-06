@@ -45,7 +45,7 @@ function updateWantToConfirm(want_item_id, required_item_id, con) {
 
 async function checkTripleMatch(curUserItemId, required_item_id, con) {
   return new Promise((resolve, reject) => {
-    // 取得可能組成 triple match 的 want
+    // 取得可能組成 triple match 的 confirmed want
     let queryString =
       `SELECT * FROM want 
       WHERE ( want_item_id = ? AND checked = "confirm") 
@@ -55,6 +55,8 @@ async function checkTripleMatch(curUserItemId, required_item_id, con) {
       if (err) {
         con.rollback(() => { con.release() })
         mysql.errLog(err, 'getConfirmedwantResult', 'wantDAO')
+        console.log('err')
+        console.log(err)
         reject(err)
       } else {
         wantC_Arr = [];

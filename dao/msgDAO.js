@@ -155,6 +155,8 @@ function insertMatchedMsg(insertMsgQueryDataArr) {
         mysql.errLog(err, 'insertMsgResult', 'msgDAO')
         reject(err)
       } else {
+        console.log('insert')
+        console.log(insert)
         resolve(insertMsgResult.affectedRows)
       }
     });

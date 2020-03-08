@@ -1,4 +1,5 @@
 const mysql = require('../util/mysql');
+const {sqlErrLog} = require('../util/errorHandler')
 
 function getWantBetweenItemIds(firstIds, secondIds) {
   return new Promise((resolve, reject) => {
@@ -156,7 +157,7 @@ function getWantOfItemsByItemIds(itemIds) {
 function getUserWantByToken(token) {
   return new Promise((resolve, reject) => {
     let queryString =
-      `SELECT w.*  
+      `SELECT w.*
       FROM want w 
       JOIN items i ON i.id = w.want_item_id 
       JOIN items i2 ON i2.id = w.required_item_id 
@@ -255,7 +256,55 @@ function insertMatchRecord(id_Arr) {
   })
 }
 
+/**
+ * 取得潛在的 invitation for token owner
+ * @param {*} token 
+ */
+function getReversedWants(token, secondIdArr) {
+  return new Promise((resolve,reject)=>{
+    let string;
+    let condition;
+    if (secondIdArr) {
+      string = 
+      `SELECT w.want_item_id,
+      w.required_item_id
+      FROM want w
+      JOIN items i ON i.id = w.want_item_id
+      JOIN items i2 ON i2.id = w.required_item_id
+      JOIN users u ON u.id = i.user_id 
+      WHERE u.token <> ?
+      AND w.required_item_id in (?)
+      AND w.checked = "pending"
+      AND i.availability = "true"
+      AND i2.availability = "true"`;
+      condition = [token, secondIdArr];
+    } else {
+      string = 
+      `SELECT w.want_item_id,
+      w.required_item_id 
+      FROM want w
+      JOIN items i ON i.id = w.required_item_id
+      JOIN items i2 ON i2.id = w.want_item_id
+      JOIN users u ON u.id = i.user_id
+      WHERE u.token = ?
+      AND w.checked = "pending"
+      AND i.availability = "true"
+      AND i2.availability = "true"`;
+      condition = [token];
+    }
+    mysql.pool.query(string, condition, (err, result, fileds) => {
+      if (err) {
+        sqlErrLog(err, arguments.callee.toString(), __filename)
+        reject(err)
+      } else {
+        resolve(result)
+      }
+    });
+  })
+} 
+
 module.exports = {
+  getReversedWants,
   getWantOfItemsByItemIds,
   getUserWantByToken,
   insertMatchRecord,

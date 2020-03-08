@@ -58,8 +58,6 @@ router.get('/lastMsgWatchedTime', async (req,res,next)=>{
     .catch(err=>{
     res.status(403).send()
   })
-  console.log('time')
-  console.log(time)
   if (time) {
     res.send(time)
   }

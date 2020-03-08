@@ -240,8 +240,6 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
         /**
          * 配對互動區
          */
-        console.log('matchedItemsDataArr[i].curUserWant.checked')
-        console.log(matchedItemsDataArr[i].curUserWant.checked)
         if (matchedItemsDataArr[i].curUserWant.checked === "confirm") {show = false}
         let checked = matchedItemsDataArr[i][e].checked === 'confirm'?'已確認':'未確認'
         // if (itemData.checked === 'confirm') {

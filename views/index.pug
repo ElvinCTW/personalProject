@@ -36,11 +36,6 @@ block content
             .sidebar-div.left(id="main-list-title")
               .sidebar-text.left.separate=boardTitle
             if categories.listData
-              //- 製作主分類清單
-              //- - let k = 0
-              //- - let listLength = categories.listData.length
-              //- if listLength > 0
-                //- while k < mainCategories
               each category in categories.listData
                 if categories.mainCategories
                   a.sidebar-div.left(href=`/?main_category=${category.id}&main=${category.main_category}`)
@@ -55,26 +50,8 @@ block content
                 a.sidebar-div.left(href=`/?main_category=${main_category}&main=${main}&sub_category=${sub_category}&sub=${sub}&status=${status}`)
                   .sidebar-div.left
                     .sidebar-text.left=status
-                      //- - k++
-                //- else if sub_categories
-                  //- 製作子分類清單
-            //- if subscribeBoardsList
-            //-   .sidebar-div.left
-            //-     .sidebar-text.left.separate 訂閱看板清單
-            //-   - let j = 0
-            //-   - let subsLength = subscribeBoardsList.length 
-            //-   if subsLength > 0
-            //-     while j < subsLength
-            //-       a.sidebar-div.left
-            //-         .sidebar-div.left
-            //-           .sidebar-text.left=subscribeBoardsList[j].hot_board
-            //-       - j++
-            //- if hotBoardsList
-            //- .sidebar-div.left(id="hot-list-title")
-            //-   .sidebar-text.left.separate 全部看板清單
       .inside-container.main.middle
         .sub-container.main.middle
-          //- .subtext.news News
           if !searchDataArr
             .sub-title
               .sub-text=beforeSubtitle+"新商品清單"

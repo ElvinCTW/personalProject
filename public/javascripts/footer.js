@@ -20,6 +20,7 @@ if (localStorage.getItem('token')) {
     }
   })
   $('#match-notification').attr('href', `/want/check`);
+  $('#want-invitation').attr('href', `/want/invitation`)
   $('#match-confirmed').attr('href', `/matches/confirmed`);
   $('#add-item').attr('href', `/items/new`);
   // get notification counts

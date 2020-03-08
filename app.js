@@ -11,7 +11,7 @@ const itemAPI = require('./routes/itemAPI');
 const wantAPI = require('./routes/wantAPI');
 const msgAPI = require('./routes/msgAPI');
 const categoryAPI = require('./routes/categoryAPI');
-const {getItemDetail} = require('./dao/item');
+const { getItemDetail } = require('./dao/item');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use(logger('dev'));
@@ -31,9 +31,10 @@ app.get('/', async (req, res) => {
 });
 // sign up
 app.get('/users/signup', (req, res) => { res.render('signup') });
-// Matches
-app.get('/want/check', async (req, res) => { res.render('match_check') });
-app.get('/matches/confirmed', async (req, res) => {res.render('match_confirmed')});
+// want related
+app.get('/want/invitation', (req, res) => { res.render('want_invitation')})
+app.get('/want/check', (req, res) => { res.render('want_check') });
+app.get('/matches/confirmed', (req, res) => { res.render('match_confirmed') });
 // Items
 app.get('/items/new', (req, res) => { res.render('items_add') });
 app.get('/items/gone', async (req, res) => {
@@ -67,11 +68,11 @@ app.use(function (err, req, res, next) {
 });
 
 async function getHomePageData(req) {
-  const { mainBoardsList,statusList } = require('./util/listData');
+  const { mainBoardsList, statusList } = require('./util/listData');
   const awsConfig = require('./util/awsConfig');
   let resData = { mainBoardsList };
   resData.categories = await getSideBarList(req.query)
-  if (!req.query.status&&req.query.main_category&&req.query.sub_category) {
+  if (!req.query.status && req.query.main_category && req.query.sub_category) {
     resData.statusList = statusList
   }
   // 添加 queries
@@ -108,7 +109,7 @@ async function getHomePageData(req) {
   }
 
   async function getSearchData(search) {
-    const { getItemDataFromSearchBar} = require('./dao/item');
+    const { getItemDataFromSearchBar } = require('./dao/item');
     let titleArr = [];
     let hashtagArr = [];
     search.split(' ').filter(string => string !== '').forEach(string => {

@@ -9,7 +9,7 @@ module.exports = {
         let queryCondition = [];
         let categoriesType;
         if (queryData.action === 'getSubCategories') {
-          categoriesType = 'subCategories'
+          categoriesType = 'subCategories';
           queryString = 
           `SELECT s.* FROM sub_main sm 
           JOIN main_category m 
@@ -17,29 +17,29 @@ module.exports = {
           JOIN sub_category s 
           ON s.id = sm.sub_id 
           WHERE m.id = ? 
-          ORDER BY s.id DESC`
-          queryCondition.push(queryData.main_category)
-          console.log('queryCondition')
-          console.log(queryCondition)
+          ORDER BY s.id DESC`;
+          queryCondition.push(queryData.main_category);
+          console.log('queryCondition');
+          console.log(queryCondition);
         } else if (queryData.action === 'getMainCategories') {
-          categoriesType = 'mainCategories'
+          categoriesType = 'mainCategories';
           queryString = 'SELECT * FROM main_category m ORDER BY m.id DESC';
         } else {
-          console.log('no such requrest, categoryDAO')
+          console.log('no such requrest, categoryDAO');
         }
-        mysql.pool.query(queryString, queryCondition, (err, listData, fileds) => {
+        mysql.pool.query(queryString, queryCondition, (err, listData) => {
           if (err) {
-            mysql.errLog(err, 'listData', 'categoryDAO')
-            reject(err)
+            mysql.errLog(err, 'listData', 'categoryDAO');
+            reject(err);
           } else {
             let resObj = {
               listData:listData,
-            }
+            };
             resObj[categoriesType] = categoriesType;
-            resolve(resObj)
+            resolve(resObj);
           }
         });
       }
-    })
+    });
   }
-}
+};

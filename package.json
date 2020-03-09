@@ -26,7 +26,6 @@
     "jest": "^25.1.0"
   },
   "jest": {
-    "globalSetup": "./test/set_up.js",
-    "globalTeardown": "./test/teardown.js"
+    "globalSetup": "./test/set_up.js"
   }
 }

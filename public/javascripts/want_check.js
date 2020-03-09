@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 if (!localStorage.getItem('token')) {
   // 確認使用者有登入，如果沒有，跳alert請user登入
   alert('請登入以進行物品交換確認');
@@ -7,7 +8,7 @@ if (!localStorage.getItem('token')) {
   ((token) => {
     // 取得配對物品清單
     $.ajax({
-      url: `/api/1.0/want/check`, //會拿到所有的資料,不用再 query 了,點選側邊列時隱藏無關資訊即可
+      url: '/api/1.0/want/check', //會拿到所有的資料,不用再 query 了,點選側邊列時隱藏無關資訊即可
       type: 'get',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -19,31 +20,31 @@ if (!localStorage.getItem('token')) {
         // 取得"用自身物品查詢"清單
         let curUserItemArr = [];
         matchResultObj.doubleMatchResultArr.forEach(match => {
-          let userItemId = match.curUserWant.item_id
+          let userItemId = match.curUserWant.item_id;
           if (curUserItemArr.indexOf(userItemId) === -1) {
             curUserItemArr.push(userItemId);
           }
-        })
+        });
         matchResultObj.tripleMatchResultArr.forEach(match => {
-          let userItemId = match.curUserWant.item_id
+          let userItemId = match.curUserWant.item_id;
           if (curUserItemArr.indexOf(userItemId) === -1) {
             curUserItemArr.push(userItemId);
           }
-        })
+        });
         // 取得"用想要物品查詢"清單
         let requiredItemArr = [];
         matchResultObj.doubleMatchResultArr.forEach(match => {
-          let userItemId = match.secondUserWant.item_id
+          let userItemId = match.secondUserWant.item_id;
           if (requiredItemArr.indexOf(userItemId) === -1) {
             requiredItemArr.push(userItemId);
           }
-        })
+        });
         matchResultObj.tripleMatchResultArr.forEach(match => {
-          let userItemId = match.secondUserWant.item_id
+          let userItemId = match.secondUserWant.item_id;
           if (requiredItemArr.indexOf(userItemId) === -1) {
             requiredItemArr.push(userItemId);
           }
-        })
+        });
         // 前端渲染側邊訊息Bar
         if (requiredItemArr.length > 0 || curUserItemArr > 0) {
           let itemIdArr = requiredItemArr.concat(curUserItemArr);
@@ -53,19 +54,19 @@ if (!localStorage.getItem('token')) {
             let link;
             if (itemData.user_nickname === localStorage.getItem('nickname')) { // 當前用戶的物品, 預設顯示
               link = $('<div></div>').attr('class', 'item-div user-item cur-user').click(() => { //點擊變色
-                $('.item-div.user-item.cur-user').attr('style', 'background:none;')
-                link.attr('style', 'background:rgb(235,235,235);')
-                getMatchedResultData(itemData.id, matchResultObj, 'curUser')
-              })
+                $('.item-div.user-item.cur-user').attr('style', 'background:none;');
+                link.attr('style', 'background:rgb(235,235,235);');
+                getMatchedResultData(itemData.id, matchResultObj, 'curUser');
+              });
             } else {
               link = $('<div></div>').attr({ // 非當前用戶物品, 預設不顯示
                 class: 'item-div user-item required-user',
                 style: 'display:none;',
               }).click(() => { //點擊變色
-                $('.item-div.user-item.required-user').attr('style', 'background:none;')
-                link.attr('style', 'background:rgb(235,235,235);')
-                getMatchedResultData(itemData.id, matchResultObj, 'requiredUser')
-              })
+                $('.item-div.user-item.required-user').attr('style', 'background:none;');
+                link.attr('style', 'background:rgb(235,235,235);');
+                getMatchedResultData(itemData.id, matchResultObj, 'requiredUser');
+              });
             }
             $('#items-area-user-item').append(link);
             let itemImgDiv = $('<div></div>').attr({ 'class': 'picture-div user-item' });
@@ -82,17 +83,17 @@ if (!localStorage.getItem('token')) {
             itemContentDiv.append(titleDiv);
             itemContentDiv.append(tagsDiv);
             // add tags to tagsDiv
-            let tagsArr = itemData.tags.split(' ')
+            let tagsArr = itemData.tags.split(' ');
             for (let j = 0; j < tagsArr.length; j++) {
               let tagSpan = $('<div />').attr('class', 'tag user-item').html(`${tagsArr[j]} `);
               tagsDiv.append(tagSpan);
             }
-          })
+          });
         } else {
           let match = $('<div></div>').attr({ 
             'class': 'match-container',
             'id': 'no-match-text',
-           }).html('目前沒有配對');
+          }).html('目前沒有配對');
           $('#items-area-match').append(match);
         }
         if ($('.item-div.user-item.cur-user').length>0) {
@@ -102,40 +103,40 @@ if (!localStorage.getItem('token')) {
       error: (err) => {
         alert(err);
       }
-    })
-  })(token)
+    });
+  })(token);
 }
 
 // 切換查詢物件
 $('#search-by-curuser-item').click(() => {
-  $('#search-by-curuser-item').attr('style', 'background:rgb(235,235,235);')
-  $('#search-by-required-item').attr('style', 'background:none;')
-  $('.item-div.user-item.cur-user').attr('style', 'display:flex;background:none;')
-  $('.item-div.user-item.required-user').attr('style', 'display:none;background:none;')
+  $('#search-by-curuser-item').attr('style', 'background:rgb(235,235,235);');
+  $('#search-by-required-item').attr('style', 'background:none;');
+  $('.item-div.user-item.cur-user').attr('style', 'display:flex;background:none;');
+  $('.item-div.user-item.required-user').attr('style', 'display:none;background:none;');
   if ($('.item-div.user-item.cur-user').length>0) {
     $('.item-div.user-item.cur-user:first').trigger('click');
   }
-})
+});
 $('#search-by-required-item').click(() => {
-  $('#search-by-curuser-item').attr('style', 'background:none;')
-  $('#search-by-required-item').attr('style', 'background:rgb(235,235,235);')
-  $('.item-div.user-item.required-user').attr('style', 'display:flex;background:none;')
-  $('.item-div.user-item.cur-user').attr('style', 'display:none;background:none;')
+  $('#search-by-curuser-item').attr('style', 'background:none;');
+  $('#search-by-required-item').attr('style', 'background:rgb(235,235,235);');
+  $('.item-div.user-item.required-user').attr('style', 'display:flex;background:none;');
+  $('.item-div.user-item.cur-user').attr('style', 'display:none;background:none;');
   if ($('.item-div.user-item.required-user').length>0) {
     $('.item-div.user-item.required-user:first').trigger('click');
   }
-})
+});
 
 function getMatchedResultData(item_id, matchResultObj, item_type) {
-  let matchedItemsDataArr
+  let matchedItemsDataArr;
   // 取得 matches
   if (item_type === 'requiredUser') {
-    let tempDArr = matchResultObj.doubleMatchResultArr.filter(match=>match.secondUserWant.item_id === item_id)
-    let tempTArr = matchResultObj.tripleMatchResultArr.filter(match=>match.secondUserWant.item_id === item_id)
+    let tempDArr = matchResultObj.doubleMatchResultArr.filter(match=>match.secondUserWant.item_id === item_id);
+    let tempTArr = matchResultObj.tripleMatchResultArr.filter(match=>match.secondUserWant.item_id === item_id);
     matchedItemsDataArr = tempDArr.concat(tempTArr);
   } else {
-    let tempDArr = matchResultObj.doubleMatchResultArr.filter(match=>match.curUserWant.item_id === item_id)
-    let tempTArr = matchResultObj.tripleMatchResultArr.filter(match=>match.curUserWant.item_id === item_id)
+    let tempDArr = matchResultObj.doubleMatchResultArr.filter(match=>match.curUserWant.item_id === item_id);
+    let tempTArr = matchResultObj.tripleMatchResultArr.filter(match=>match.curUserWant.item_id === item_id);
     matchedItemsDataArr = tempDArr.concat(tempTArr);
   }
   $('#items-area-match').empty();
@@ -158,28 +159,27 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
       console.log('data is:');
       console.log(data);
       $.ajax({
-        url: `/api/1.0/want/checked`,
+        url: '/api/1.0/want/checked',
         type: 'post',
         data: data,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`, // 等一下要去 wantAPI 添加驗證程序
         },
         success: (checkAllConfirmResultArr) => {
-          checkStatusNodeArr[0].html(`User :  您, 已確認`)
-          interactionBtnDiv.attr({ 'style': 'display:none;' })
+          checkStatusNodeArr[0].html('User :  您, 已確認');
+          interactionBtnDiv.attr({ 'style': 'display:none;' });
           // 若有配對成功，alert 成功訊息
           alert(checkAllConfirmResultArr.msg);
-          if (checkAllConfirmResultArr.msg = '配對成功！商品已自動為您下架，請至配對頁查詢配對結果') {
-            // match.attr({ 'style': 'display:none;' })
-            location.reload()
+          if (checkAllConfirmResultArr.msg === '配對成功！商品已自動為您下架，請至配對頁查詢配對結果') {
+            location.reload();
           }
         },
         error: (error) => {
           console.log(error.errorMsg);
-          alert('金拍謝，暫時無法為您送出交換邀請確認請求，若持續發生請聯繫我們')
+          alert('金拍謝，暫時無法為您送出交換邀請確認請求，若持續發生請聯繫我們');
           return;
         },
-      })
+      });
     });
     let checkStatusNodeArr = [];
     let ownersArr = Object.keys(matchedItemsDataArr[i]).length === 3 ? ['您', '對方', '他人']:['您', '對方'];
@@ -187,12 +187,12 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
      * 商品資訊區
      */
     // 每個配對的 item 一個框框
-    let divCounter = 0
+    let divCounter = 0;
     let show = true;
-    for (e in matchedItemsDataArr[i]) {
+    for (let e in matchedItemsDataArr[i]) {
       // console.log(typeof matchedItemsDataArr[i][e]);
       if (typeof matchedItemsDataArr[i][e] === 'object') {
-        let itemData = matchResultObj.itemsDataArr.filter(item=>item.id === matchedItemsDataArr[i][e].item_id)[0]
+        let itemData = matchResultObj.itemsDataArr.filter(item=>item.id === matchedItemsDataArr[i][e].item_id)[0];
         let link = $('<a></a>').attr({ 'href': `/items/detail?item_id=${itemData.id}` });
         link.insertBefore(interaction);
         // Create new Item outside container
@@ -209,7 +209,7 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
         newItemContainer_Inside.append(itemImgDiv);
         newItemContainer_Inside.append(itemContentDiv);
         // basedonDiv text spans
-        let basedonSpan = $('<span />')
+        let basedonSpan = $('<span />');
         if (e === 'curUserWant') {
           basedonSpan.html('您提供的物品');
         } else if (e === 'secondUserWant') {
@@ -232,7 +232,7 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
         let nicknameSpan = $('<span />').attr({ 'class': 'nickname' }).html(`${itemData.user_nickname}`);
         itemInfoDiv.append(nicknameSpan);
         // add tags to tagsDiv
-        let tagsArr = itemData.tags.split(' ')
+        let tagsArr = itemData.tags.split(' ');
         for (let j = 0; j < tagsArr.length; j++) {
           let tagSpan = $('<span />').html(`${tagsArr[j]} `);
           tagsDiv.append(tagSpan);
@@ -240,8 +240,8 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
         /**
          * 配對互動區
          */
-        if (matchedItemsDataArr[i].curUserWant.checked === "confirm") {show = false}
-        let checked = matchedItemsDataArr[i][e].checked === 'confirm'?'已確認':'未確認'
+        if (matchedItemsDataArr[i].curUserWant.checked === 'confirm') {show = false;}
+        let checked = matchedItemsDataArr[i][e].checked === 'confirm'?'已確認':'未確認';
         // if (itemData.checked === 'confirm') {
         //   itemData.checked = '已確認'
         // } else {

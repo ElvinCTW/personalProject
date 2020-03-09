@@ -1,5 +1,5 @@
 const mysql = require('mysql');
-require('dotenv').config()
+require('dotenv').config();
 
 const host = process.env.NODE_ENV==='test' ? process.env.TEST_DB_HOST:process.env.DB_HOST;
 const user = process.env.NODE_ENV==='test' ? process.env.TEST_DB_USER:process.env.DB_USER;
@@ -7,14 +7,14 @@ const password = process.env.NODE_ENV==='test' ? process.env.TEST_DB_PASS:proces
 const port = process.env.NODE_ENV==='test' ? process.env.TEST_DB_PORT:process.env.DB_PORT;
 const database = process.env.NODE_ENV==='test' ? process.env.TEST_DB_DATABASE:process.env.DB_DATABASE;
 
-pool = mysql.createPool({
+const pool = mysql.createPool({
   connectionLimit: 10,
   host,
   user,
   password,
   port,
   database,
-})
+});
 const itemJoinString = 
   `SELECT i.*, 
   u.nickname user_nickname,
@@ -24,20 +24,20 @@ const itemJoinString =
   FROM triangle_trade.items i 
   JOIN main_category m on m.id = i.main_category 
   JOIN sub_category s on s.id = i.sub_category
-  JOIN users u on u.id = i.user_id `
+  JOIN users u on u.id = i.user_id `;
 
 function errLog(err, functionName, fileName) {
-  console.log(`-------------ERROR START-------------`)
+  console.log('-------------ERROR START-------------');
   console.log(`error in ${functionName}, ${fileName}`);
   console.log(err.sqlMessage);
   console.log(err.sql);
-  console.log(`--------------ERROR END--------------`)
+  console.log('--------------ERROR END--------------');
 }
 
 function advancedQuery(obj, cb) {
-  pool.query(obj.queryString, obj.queryCondition, (err, result, fileds) => {
+  pool.query(obj.queryString, obj.queryCondition, (err, result) => {
     if (err) {
-      obj.reject(err)
+      obj.reject(err);
     } else {
       cb(result);
     }
@@ -49,4 +49,4 @@ module.exports = {
   errLog,
   itemJoinString,
   advancedQuery,
-}
+};

@@ -1,11 +1,12 @@
+/* eslint-disable no-undef */
 let page = 0;
 let nomoreUpdate = false;
 let user_nickname = null;
 let selectItemIDArr = [];
 let lastTimeSelectedArr;
-let time = $('#item-detail-time')
+let time = $('#item-detail-time');
 
-time.html(new Date(parseInt(time.html())).toString().slice(4, 21))
+time.html(new Date(parseInt(time.html())).toString().slice(4, 21));
 
 /**
  * 申請用戶選擇完畢後，點選按鈕送出申請資料
@@ -29,8 +30,8 @@ $('#exchange-request-btn').click(() => {
     // 送出請求 Aajx
     let wantItemArr = selectItemIDArr.filter(id => lastTimeSelectedArr.indexOf(id) === -1);
     if (wantItemArr.length > 0) {
-      console.log('token, itemDetail')
-      console.log(localStorage.getItem('token'))
+      console.log('token, itemDetail');
+      console.log(localStorage.getItem('token'));
       $.ajax({
         method: 'post',
         url: '/api/1.0/want/new',
@@ -48,32 +49,32 @@ $('#exchange-request-btn').click(() => {
         error: (failResponse) => {
           console.log(failResponse);
           // alert(failResponse);
-          alert('金拍謝，暫時無法為您添加交換邀請，若持續發生請聯繫我們')
+          alert('金拍謝，暫時無法為您添加交換邀請，若持續發生請聯繫我們');
           return;
         }
-      })
+      });
     } else {
-      alert('您本次選擇的物品已在以前選擇過了，請選擇其他物品')
+      alert('您本次選擇的物品已在以前選擇過了，請選擇其他物品');
     }
   } else {
-    alert('請確認您有選擇新物品後再點選按鈕')
+    alert('請確認您有選擇新物品後再點選按鈕');
   }
-})
+});
 
 
 let picCount = 0;
-let imgLength = $('img').length
-$('#img0').attr('style', 'display:``')
+let imgLength = $('img').length;
+$('#img0').attr('style', 'display:``');
 
 // 點擊換照
-$('#item-detail-pic-div').click(() => { changePic() })
+$('#item-detail-pic-div').click(() => { changePic(); });
 // 輪播照片
-window.setInterval(() => { changePic() }, 3000);
+window.setInterval(() => { changePic(); }, 3000);
 // 換照function
 function changePic() {
-  $(`#img${picCount % imgLength}`).attr('style', 'display:none;')
-  picCount++
-  $(`#img${picCount % imgLength}`).attr('style', 'display:``')
+  $(`#img${picCount % imgLength}`).attr('style', 'display:none;');
+  picCount++;
+  $(`#img${picCount % imgLength}`).attr('style', 'display:``');
 }
 
 // 讀取 user items 
@@ -90,12 +91,12 @@ if (page !== 'end') {
         url: `/api/1.0/items/all?page=${page}&user_nickname=${user_nickname}`,
         type: 'get',
         success: (itemsListArr) => {
-          console.log('itemsListArr')
-          console.log(itemsListArr)
+          console.log('itemsListArr');
+          console.log(itemsListArr);
           // 記得要順便 query wish table，如果 table 有記錄需寫進 lastOfferItems
           for (let i = 20 * page; i < (20 * page + itemsListArr.length); i++) {
             // Create link to item detail page
-            let link
+            let link;
             if (lastTimeSelectedArr.indexOf(itemsListArr[i - 20 * page].id) !== -1) {
               link = $('<div></div>').attr({
                 'class': 'item-div user-item',
@@ -116,7 +117,7 @@ if (page !== 'end') {
                   if (itemID === parseInt(link.attr('item_id'))) {
                     selectItemIDArr.splice(selectItemIDArr.indexOf(itemID), 1);
                   }
-                })
+                });
               } else {
                 // 點選時將 itemID 加入 selectorListArr
                 link.attr({ 'style': 'background:rgb(235,235,235)' });
@@ -138,7 +139,7 @@ if (page !== 'end') {
             itemContentDiv.append(titleDiv);
             itemContentDiv.append(tagsDiv);
             // add tags to tagsDiv
-            let tagsArr = itemsListArr[i - 20 * page].tags.split(' ')
+            let tagsArr = itemsListArr[i - 20 * page].tags.split(' ');
             for (let j = 0; j < tagsArr.length; j++) {
               let tagSpan = $('<div />').attr('class', 'tag user-item').html(`${tagsArr[j]} `);
               tagsDiv.append(tagSpan);
@@ -147,21 +148,21 @@ if (page !== 'end') {
           if (itemsListArr.length === 20) {
             page += 1;
           } else {
-            page = 'end'
+            page = 'end';
           }
         },
         error: (err) => {
-          alert('金拍謝，暫時找不到你的物品資訊QQ，若持續發生請聯繫我們')
+          alert('金拍謝，暫時找不到你的物品資訊QQ，若持續發生請聯繫我們');
           return;
         }
-      })
+      });
     },
     error: (err) => {
       // alert(err);
-      alert('暫時無法找到您上次的交換邀請紀錄')
+      alert('暫時無法找到您上次的交換邀請紀錄');
       return;
     }
-  })
+  });
 } else {
   if (!nomoreUpdate) {
     nomoreUpdate = true;

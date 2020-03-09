@@ -23,7 +23,7 @@ const users = [
     time:'1583401085543',
     watch_msg_time:'1583668448697',
   },
-]
+];
 
 const items = [
   // items 1-3 for available want logic test
@@ -34,7 +34,7 @@ const items = [
     tags:'#item1',
     title:'item1',
     status:'觀賞用',
-    introduction:`item1`,
+    introduction:'item1',
     pictures:'userUpload/aaa/aaa-1582601355302,',
     time:'1582601355567',
     availability:'true',
@@ -48,7 +48,7 @@ const items = [
     tags:'#item2',
     title:'item2',
     status:'觀賞用',
-    introduction:`item2`,
+    introduction:'item2',
     pictures:'userUpload/zzz/zzz-1583303100343,',
     time:'1583331295751',
     availability:'true',
@@ -62,7 +62,7 @@ const items = [
     tags:'#item3',
     title:'item3',
     status:'觀賞用',
-    introduction:`item3`,
+    introduction:'item3',
     pictures:'userUpload/zzz/zzz-1583303100343,',
     time:'1583331295751',
     availability:'true',
@@ -77,7 +77,7 @@ const items = [
     tags:'#item4',
     title:'item4',
     status:'觀賞用',
-    introduction:`item4`,
+    introduction:'item4',
     pictures:'userUpload/zzz/zzz-1583055020042,',
     time:'1583331295751',
     availability:'false',
@@ -91,7 +91,7 @@ const items = [
     tags:'#item5',
     title:'item5',
     status:'觀賞用',
-    introduction:`item5`,
+    introduction:'item5',
     pictures:'userUpload/我不是彭彭/我不是彭彭-1582369750203,',
     time:'1583331295751',
     availability:'false',
@@ -106,7 +106,7 @@ const items = [
     tags:'#item6',
     title:'item6',
     status:'觀賞用',
-    introduction:`item6`,
+    introduction:'item6',
     pictures:'userUpload/我不是彭彭/我不是彭彭-1582368916410,userUpload/我不是彭彭/我不是彭彭-1582368916442,userUpload/我不是彭彭/我不是彭彭-1582368916568,userUpload/我不是彭彭/我不是彭彭-1582368916576,',
     time:'1583331295751',
     availability:'false',
@@ -120,7 +120,7 @@ const items = [
     tags:'#item7',
     title:'item7',
     status:'觀賞用',
-    introduction:`item7`,
+    introduction:'item7',
     pictures:'userUpload/C2H5OH/C2H5OH-1582601426642,',
     time:'1583331295751',
     availability:'false',
@@ -134,14 +134,14 @@ const items = [
     tags:'#item8',
     title:'item8',
     status:'觀賞用',
-    introduction:`item8`,
+    introduction:'item8',
     pictures:'userUpload/C2H5OH/C2H5OH-1582601214771,',
     time:'1583331295751',
     availability:'false',
     matched_id:2,
     matched_item_id:6,
   },
-]
+];
 const want = [
   // for non-matched want test
   {
@@ -200,10 +200,10 @@ const want = [
     matched:'true', 
     checked:'confirm',
   },
-]
+];
 
 module.exports = {
   items,
   users,
   want
-}
+};

@@ -8,9 +8,9 @@ const setup = async ()=>{
     throw 'Not in test env';
   }
   return truncateFakeData()
-    .then(()=>{ return _createFakeData()})
-    .catch((err)=>{console.log(err);})
-}
+    .then(()=>{ return _createFakeData();})
+    .catch((err)=>{console.log(err);});
+};
 
 async function checkFakeData() {
   await getAllUsers();
@@ -21,54 +21,51 @@ async function checkFakeData() {
 
 function getAllWant() {
   return new Promise((resolve,reject)=>{
-    let string = `SELECT * FROM want`;
+    let string = 'SELECT * FROM want';
     let condition = [];
-    pool.query(string, condition, (err, result, fileds) => {
+    pool.query(string, condition, (err, result) => {
       if (err) {
-        sqlErrLog(err, arguments.callee.toString(), __filename)
-        reject(err)
+        reject(err);
       } else {
-        console.log(` Count of want : ${result.length}`)
-        resolve()
+        console.log(` Count of want : ${result.length}`);
+        resolve();
       }
     });
-  })
+  });
 }
 
 function getAllItems() {
   return new Promise((resolve,reject)=>{
-    let string = `SELECT * FROM items`;
+    let string = 'SELECT * FROM items';
     let condition = [];
-    pool.query(string, condition, (err, result, fileds) => {
+    pool.query(string, condition, (err, result) => {
       if (err) {
-        sqlErrLog(err, arguments.callee.toString(), __filename)
-        reject(err)
+        reject(err);
       } else {
-        console.log(` Count of items : ${result.length}`)
-        resolve()
+        console.log(` Count of items : ${result.length}`);
+        resolve();
       }
     });
-  })
+  });
 }
 
 function getAllUsers() {
   return new Promise((resolve,reject)=>{
-    let string = `SELECT * FROM users`;
+    let string = 'SELECT * FROM users';
     let condition = [];
-    pool.query(string, condition, (err, result, fileds) => {
+    pool.query(string, condition, (err, result) => {
       if (err) {
-        sqlErrLog(err, arguments.callee.toString(), __filename)
-        reject(err)
+        reject(err);
       } else {
-        console.log(` Count of users : ${result.length}`)
-        resolve()
+        console.log(` Count of users : ${result.length}`);
+        resolve();
       }
     });
-  })
+  });
 }
 
 module.exports = async ()=>{
-  await setup() 
-  await checkFakeData()
+  await setup(); 
+  await checkFakeData();
   return null;
-}
+};

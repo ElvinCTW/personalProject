@@ -20,12 +20,12 @@ function getConfirmedMatchItemsId(matched_id) {
         resolve({
           start_item_id: confirmedMatchItemsData[0].start_item_id,
           end_item_id: confirmedMatchItemsData[0].end_item_id,
-        })
+        });
       } else {
-        resolve(confirmedMatchItemsData[0])
+        resolve(confirmedMatchItemsData[0]);
       }
-    })
-  })
+    });
+  });
 }
 function insertMatchRecord(id_Arr) {
   return new Promise((resolve, reject) => {
@@ -36,19 +36,15 @@ function insertMatchRecord(id_Arr) {
       } else if (id_Arr.length === 2) {
         queryString = 'INSERT INTO matched(start_item_id, end_item_id) VALUES(?)';
       }
-      mysql.pool.query(queryString, [id_Arr], (err, insertMatchTableResult, fileds) => {
-        if (err) {
-          mysql.errLog(err, 'insertMatchTableResult', 'matchDAO')
-          reject(err)
-        } else {
-          resolve(insertMatchTableResult.insertId);
-        }
+      mysql.pool.query(queryString, [id_Arr], (err, insertMatchTableResult) => {
+        if (err) { reject(err); return; }
+        resolve(insertMatchTableResult.insertId);
       });
     }
-  })
+  });
 }
 
 module.exports = {
   insertMatchRecord,
   getConfirmedMatchItemsId,
-}
+};

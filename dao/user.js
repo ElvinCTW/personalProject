@@ -1,6 +1,5 @@
 const mysql = require('../util/mysql');
 const crypto = require('crypto');
-const { sqlErrLog } = require('../util/errorHandler')
 
 function checkVaildUserOfChat(token, matched_id) {
   return new Promise((resolve, reject) => {
@@ -19,8 +18,8 @@ function checkVaildUserOfChat(token, matched_id) {
     }, (result) => {
       let response = result.length > 0 ? result[0] : null;
       resolve(response);
-    })
-  })
+    });
+  });
 }
 
 /**
@@ -42,11 +41,11 @@ function getUserDataByToken(token, item_id) {
       string = 'SELECT * FROM users WHERE token = ?';
       condition = [token];
     }
-    mysql.pool.query(string, condition, (err, result, fileds) => {
-      if (err) { reject(err); return };
-      resolve(result)
+    mysql.pool.query(string, condition, (err, result) => {
+      if (err) { reject(err); return; }
+      resolve(result);
     });
-  })
+  });
 }
 
 async function registerTransaction(reqBody) {
@@ -54,21 +53,21 @@ async function registerTransaction(reqBody) {
     mysql.pool.getConnection((err, con) => {
       if (err) {
         con.release();
-        reject(err)
+        reject(err);
       }
       con.beginTransaction(async (err) => {
         if (err) {
-          con.rollback(() => { con.release() })
-          reject(err)
+          con.rollback(() => { con.release(); });
+          reject(err);
         }
         const duplicateUser = await findDuplicatedUser(reqBody.id, reqBody.name, con)
           .catch(err => {
-            con.rollback(() => con.release())
-            reject(err)
-          })
+            con.rollback(() => con.release());
+            reject(err);
+          });
         if (duplicateUser) {
-          con.rollback(() => { con.release() })
-          resolve(duplicateUser)
+          con.rollback(() => { con.release(); });
+          resolve(duplicateUser);
         } else {
           await insertUserData({
             sign_id: reqBody.id,
@@ -76,54 +75,50 @@ async function registerTransaction(reqBody) {
             nickname: reqBody.name,
           }, con)
             .catch(err => {
-              con.rollback(() => { con.release() })
-              reject(err)
+              con.rollback(() => { con.release(); });
+              reject(err);
             })
             .then(insertUserResult => {
               con.commit((err) => {
                 if (err) {
-                  con.rollback(() => { con.release() })
-                  reject(err)
-                } else { con.release() }
-              })
-              resolve(insertUserResult)
-            })
+                  con.rollback(() => { con.release(); });
+                  reject(err);
+                } else { con.release(); }
+              });
+              resolve(insertUserResult);
+            });
         }
-      })
-    })
-  })
+      });
+    });
+  });
 
   function findDuplicatedUser(sign_id, nickname, con) {
     return new Promise((resolve, reject) => {
       let queryString = 'SELECT * FROM users WHERE sign_id = ? OR nickname = ?';
       let queryCondition = [sign_id, nickname];
-      con.query(queryString, queryCondition, (err, result, fileds) => {
+      con.query(queryString, queryCondition, (err, result) => {
         if (err) {
-          mysql.errLog(err, 'checkdoubleUserInfo', 'userDAO')
-          reject(err)
+          mysql.errLog(err, 'checkdoubleUserInfo', 'userDAO');
+          reject(err);
         } else {
           let sendbackObj = {};
           if (result.length > 0) {
             let doubleIdCount = result.filter(userInfo => userInfo.sign_id === sign_id).length;
-            let doubleNicknameCount = result.length - doubleIdCount
+            let doubleNicknameCount = result.length - doubleIdCount;
             if (doubleIdCount === 0) {
-              sendbackObj.errorMsg = '暱稱重複，請修改後再試一次'
+              sendbackObj.errorMsg = '暱稱重複，請修改後再試一次';
             } else if (doubleNicknameCount === 0) {
-              sendbackObj.errorMsg = 'ID重複，請修改後再試一次'
+              sendbackObj.errorMsg = 'ID重複，請修改後再試一次';
             } else {
-              sendbackObj.errorMsg = 'ID與暱稱均重複，請修改後再試一次'
+              sendbackObj.errorMsg = 'ID與暱稱均重複，請修改後再試一次';
             }
           } else {
-            sendbackObj = null
+            sendbackObj = null;
           }
-          console.log('queryCondition')
-          console.log(queryCondition)
-          console.log('sendbackObj')
-          console.log(sendbackObj)
-          resolve(sendbackObj)
+          resolve(sendbackObj);
         }
       });
-    })
+    });
   }
   function insertUserData(userObj, con) {
     return new Promise((resolve, reject) => {
@@ -135,18 +130,17 @@ async function registerTransaction(reqBody) {
       userObj.time = Date.now().toString();
       let queryString = 'INSERT INTO users SET ?';
       let queryCondition = [userObj];
-      con.query(queryString, queryCondition, (err, insertUser, fileds) => {
+      con.query(queryString, queryCondition, (err) => {
         if (err) {
-          mysql.errLog(err, 'insertUser', 'userDAO')
-          reject(err)
+          reject(err);
         } else {
           resolve({
             token: token,
             nickname: userObj.nickname,
-          })
+          });
         }
       });
-    })
+    });
   }
 
 
@@ -157,34 +151,26 @@ function signinProcess(id, password) {
     password = crypto.createHash('sha256').update(password).digest('hex');
     let queryString = 'SELECT * FROM users WHERE sign_id = ? AND password = ?';
     let queryCondition = [id, password];
-    mysql.pool.query(queryString, queryCondition, (err, signinResult, fileds) => {
-      if (err) {
-        mysql.errLog(err, 'signinResult', 'userDAO')
-        reject(err)
-      } else {
-        resolve(signinResult[0])
-      }
+    mysql.pool.query(queryString, queryCondition, (err, signinResult) => {
+      if (err) { reject(err); return; }
+      resolve(signinResult[0]);
     });
-  })
+  });
 }
 
 function updateWatchMsgTime(token) {
   return new Promise((resolve, reject) => {
-    let string =
+    const string =
       `UPDATE users u
-    SET watch_msg_time = ?
-    WHERE u.token = ?`;
-    let condition = [Date.now(), token];
-    mysql.pool.query(string, condition, (err, result, fileds) => {
-      if (err) {
-        sqlErrLog(err, arguments.callee.toString(), __filename)
-        reject(err)
-      } else {
-        let success = result.affectedRows === 1 ? true : false;
-        resolve(success)
-      }
+      SET watch_msg_time = ?
+      WHERE u.token = ?`;
+    const condition = [Date.now(), token];
+    mysql.pool.query(string, condition, (err, result) => {
+      if (err) { reject(err); return; }
+      const success = result.affectedRows === 1 ? true : false;
+      resolve(success);
     });
-  })
+  });
 }
 
 function getLastMsgWatchedTime(token) {
@@ -193,15 +179,11 @@ function getLastMsgWatchedTime(token) {
       `SELECT u.watch_msg_time FROM users u
     WHERE u.token = ?`;
     let condition = [token];
-    mysql.pool.query(string, condition, (err, result, fileds) => {
-      if (err) {
-        sqlErrLog(err, arguments.callee.toString(), __filename)
-        reject(err)
-      } else {
-        resolve(result[0].watch_msg_time)
-      }
+    mysql.pool.query(string, condition, (err, result) => {
+      if (err) { reject(err); return; }
+      resolve(result[0].watch_msg_time);
     });
-  })
+  });
 }
 
 module.exports = {
@@ -211,4 +193,4 @@ module.exports = {
   signinProcess,
   updateWatchMsgTime,
   getLastMsgWatchedTime,
-}
+};

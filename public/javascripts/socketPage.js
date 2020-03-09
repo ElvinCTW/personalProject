@@ -1,4 +1,4 @@
-let currentMatchedId;
+/* eslint-disable no-undef */
 socket = io.connect();
 /**
  * socket.emit => 送訊息給後端
@@ -12,7 +12,7 @@ socket = io.connect();
 // 為 socket 加入房間並讀取歷史訊息
 socket.emit('join', {
   token: localStorage.getItem('token'),
-})
+});
 
 /**
  * .on
@@ -26,9 +26,9 @@ socket.on('join', (obj) => {
       let link = $('<div></div>').attr({
         'class': 'item-div user-item',
       }).click(() => {
-        $('.item-div.user-item').attr('style', 'background:none;')
-        link.attr('style', 'background:rgb(235,235,235);')
-        getMatchedResultData(match.matched_id, match.required_item_title);
+        $('.item-div.user-item').attr('style', 'background:none;');
+        link.attr('style', 'background:rgb(235,235,235);');
+        getMatchedResultData(match.matched_id);
         $('#gone-item-area').empty();
       });
       $('#items-area-user-item').append(link);
@@ -49,9 +49,9 @@ socket.on('join', (obj) => {
       let tagSpan = $('<div />').attr({
         class:'tag user-item',
         id:`side-bar-msg-${match.matched_id}`,
-      })
+      });
       let msg;
-      let msgArr = obj.lastestMsgArr.filter(msgObj => msgObj.matched_id === match.matched_id)
+      let msgArr = obj.lastestMsgArr.filter(msgObj => msgObj.matched_id === match.matched_id);
       msg = msgArr.length > 0 ? msgArr[0].content : '目前沒有對話喔～';
       tagSpan.html(msg);
       tagsDiv.append(tagSpan);
@@ -61,17 +61,17 @@ socket.on('join', (obj) => {
       //   let tagSpan = $('<div />').attr('class', 'tag user-item').html(`${tagsArr[j]} `);
       //   tagsDiv.append(tagSpan);
       // }
-    })
+    });
     $('.item-div.user-item:first').trigger('click');
   }
-})
+});
 // 收到歷史訊息
 socket.on('history', (confirmedMatchObj) => {
   // history = array of msg obj
   curMatch = confirmedMatchObj.curMatch;
   console.log('收到歷史訊息囉');
-  console.log('confirmedMatchObj')
-  console.log(confirmedMatchObj)
+  console.log('confirmedMatchObj');
+  console.log(confirmedMatchObj);
   if (confirmedMatchObj) {
     // currentMatchedId = matched_id;
     // 清空物品資訊區
@@ -95,7 +95,7 @@ socket.on('history', (confirmedMatchObj) => {
       itemContentDiv.append(titleDiv);
       itemContentDiv.append(tagsDiv);
     }
-    $('#msg-area').empty()
+    $('#msg-area').empty();
     if (confirmedMatchObj.msgArr.length === 0) {
       let msgLine = $('<div></div>').attr({ 'class': 'msg-line' });
       $('#msg-area').append(msgLine);
@@ -105,11 +105,11 @@ socket.on('history', (confirmedMatchObj) => {
       msgDiv.append(msgContent);
     }
     confirmedMatchObj.msgArr.forEach(msg => {
-      let msgLineClass = 'msg-line'
-      let msgDivClass = 'msg-div'
+      let msgLineClass = 'msg-line';
+      let msgDivClass = 'msg-div';
       if (msg.sender === localStorage.getItem('nickname')) {
-        msgDivClass += ' current-user'
-        msgLineClass += ' current-user'
+        msgDivClass += ' current-user';
+        msgLineClass += ' current-user';
       }
       let msgLine = $('<div></div>').attr({ 'class': msgLineClass });
       $('#msg-area').append(msgLine);
@@ -117,8 +117,8 @@ socket.on('history', (confirmedMatchObj) => {
       let msgDiv = $('<div></div>').attr({ 'class': msgDivClass });
       msgLine.append(msgDiv);
       let msgTopbar = $('<div></div>').attr({ 'class': 'msg-topbar' });
-      console.log('msg.content')
-      console.log(msg.content)
+      console.log('msg.content');
+      console.log(msg.content);
       let msgContent = $('<div></div>').attr({ 'class': 'msg-content' }).text(msg.content);
       msgDiv.append(msgTopbar);
       msgDiv.append(msgContent);
@@ -128,19 +128,19 @@ socket.on('history', (confirmedMatchObj) => {
       let msgTime = $('<div></div>').attr({ 'class': 'msg-time' }).html(new Date(parseInt(msg.time)).toString().slice(4, 24));
       msgTopbar.append(msgName);
       msgTopbar.append(msgTime);
-    })
-    let msgArea = document.getElementById("msg-scroll");
+    });
+    let msgArea = document.getElementById('msg-scroll');
     msgArea.scrollTop = msgArea.scrollHeight;
   }
-})
+});
 // 收到訊息
 socket.on('message', (obj) => {
   if (obj.matched_id === curMatch) { // 送來的訊息是當前對話框，更新大框和側邊小框
-    let msgLineClass = 'msg-line'
-    let msgDivClass = 'msg-div'
+    let msgLineClass = 'msg-line';
+    let msgDivClass = 'msg-div';
     if (obj.sender === localStorage.getItem('nickname')) {
-      msgDivClass += ' current-user'
-      msgLineClass += ' current-user'
+      msgDivClass += ' current-user';
+      msgLineClass += ' current-user';
     }
     // make msg line and append to msg-area
     let msgLine = $('<div></div>').attr({ 'class': msgLineClass });
@@ -157,23 +157,23 @@ socket.on('message', (obj) => {
     msgTopbar.append(msgName);
     msgTopbar.append(msgTime);
     // clean msg after send msg
-    $('#user-type-content').val('')
+    $('#user-type-content').val('');
     // auto scroll to bottom
-    let msgArea = document.getElementById("msg-scroll");
+    let msgArea = document.getElementById('msg-scroll');
     msgArea.scrollTop = msgArea.scrollHeight;
   } 
   // 更新側邊小框
   $(`#side-bar-msg-${obj.matched_id}`).html(obj.content);
-})
+});
 
-function getMatchedResultData(matched_id, required_item_title) {
+function getMatchedResultData(matched_id) {
   currentMatchedId=matched_id;
   socket.emit('history', {
     matched_id:matched_id,
     token:localStorage.getItem('token'),
-  })
+  });
 }
 
 socket.on('message-fail', (obj)=>{
   alert(obj.errorMsg);
-})
+});

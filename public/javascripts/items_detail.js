@@ -30,8 +30,6 @@ $('#exchange-request-btn').click(() => {
     // 送出請求 Aajx
     let wantItemArr = selectItemIDArr.filter(id => lastTimeSelectedArr.indexOf(id) === -1);
     if (wantItemArr.length > 0) {
-      console.log('token, itemDetail');
-      console.log(localStorage.getItem('token'));
       $.ajax({
         method: 'post',
         url: '/api/1.0/want/new',
@@ -48,7 +46,6 @@ $('#exchange-request-btn').click(() => {
         },
         error: (failResponse) => {
           console.log(failResponse);
-          // alert(failResponse);
           alert('金拍謝，暫時無法為您添加交換邀請，若持續發生請聯繫我們');
           return;
         }
@@ -85,15 +82,11 @@ if (page !== 'end') {
     url: `/api/1.0/want/last?required_item_id=${parseInt(window.location.search.split('=')[1])}&user_nickname=${user_nickname}`,
     type: 'get',
     success: (result) => {
-      console.log(result);
       lastTimeSelectedArr = result;
       $.ajax({ // 前端發送 ajax，更新現有頁面為申請者所有物品頁面
         url: `/api/1.0/items/all?page=${page}&user_nickname=${user_nickname}`,
         type: 'get',
         success: (itemsListArr) => {
-          console.log('itemsListArr');
-          console.log(itemsListArr);
-          // 記得要順便 query wish table，如果 table 有記錄需寫進 lastOfferItems
           for (let i = 20 * page; i < (20 * page + itemsListArr.length); i++) {
             // Create link to item detail page
             let link;

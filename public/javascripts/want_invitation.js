@@ -49,7 +49,6 @@ function getWantInvitation(token) {
           itemImgDiv.append(itemImg);
           // add title, item-info and tags Divs
           let titleDiv = $('<span></span>').attr({ 'class': 'title user-item' }).html(itemData.title);
-          // let itemInfoDiv = $('<div></div>').attr({ 'class': 'item-info' });
           let tagsDiv = $('<div></div>').attr({ 'class': 'introduction-div tags user-item' });
           itemContentDiv.append(titleDiv);
           itemContentDiv.append(tagsDiv);
@@ -79,14 +78,8 @@ function getWantInvitation(token) {
 }
 
 function getMatchedResultData(item_id, data, item_type) {
-  console.log('item_id');
-  console.log(item_id);
-  console.log('item_type');
-  console.log(item_type);
   // 取得 matches
   const matchedItemsDataArr = item_type === 'requiredUser' ? data.hashedPosibleInvitationArrToCurUser[item_id] : data.hashedInvitationArrFromCurUser[item_id];
-  console.log('matchedItemsDataArr');
-  console.log(matchedItemsDataArr);
   // if (item_type === 'requiredUser') {
   //   let tempDArr = data.doubleMatchResultArr.filter(match=>match.secondUserWant.item_id === item_id)
   //   let tempTArr = data.tripleMatchResultArr.filter(match=>match.secondUserWant.item_id === item_id)

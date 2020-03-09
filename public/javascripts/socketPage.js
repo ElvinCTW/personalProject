@@ -41,7 +41,6 @@ socket.on('join', (obj) => {
       itemImgDiv.append(itemImg);
       // add title, item-info and tags Divs
       let titleDiv = $('<span></span>').attr({ 'class': 'title user-item' }).html(`${match.required_item_title}`);
-      // let itemInfoDiv = $('<div></div>').attr({ 'class': 'item-info' });
       let tagsDiv = $('<div></div>').attr({ 'class': 'introduction-div tags user-item' });
       itemContentDiv.append(titleDiv);
       itemContentDiv.append(tagsDiv);
@@ -55,12 +54,6 @@ socket.on('join', (obj) => {
       msg = msgArr.length > 0 ? msgArr[0].content : '目前沒有對話喔～';
       tagSpan.html(msg);
       tagsDiv.append(tagSpan);
-      // add tags to tagsDiv
-      // let tagsArr = match.required_item_tags.split(' ');
-      // for (let j = 0; j < tagsArr.length; j++) {
-      //   let tagSpan = $('<div />').attr('class', 'tag user-item').html(`${tagsArr[j]} `);
-      //   tagsDiv.append(tagSpan);
-      // }
     });
     $('.item-div.user-item:first').trigger('click');
   }
@@ -69,9 +62,6 @@ socket.on('join', (obj) => {
 socket.on('history', (confirmedMatchObj) => {
   // history = array of msg obj
   curMatch = confirmedMatchObj.curMatch;
-  console.log('收到歷史訊息囉');
-  console.log('confirmedMatchObj');
-  console.log(confirmedMatchObj);
   if (confirmedMatchObj) {
     // currentMatchedId = matched_id;
     // 清空物品資訊區
@@ -83,7 +73,6 @@ socket.on('history', (confirmedMatchObj) => {
       $('#gone-item-area').append(link);
       let itemInfoDiv = $('<div></div>').attr({ 'class': 'item-div user-item item-info' });
       link.append(itemInfoDiv);
-      // link.append(itemInfoDiv)
       let itemImgDiv = $('<div></div>').attr({ 'class': 'picture-div user-item' });
       let itemContentDiv = $('<div></div>').attr({ 'class': 'content-div user-item item-info' });
       itemInfoDiv.append(itemImgDiv);
@@ -122,8 +111,6 @@ socket.on('history', (confirmedMatchObj) => {
       let msgContent = $('<div></div>').attr({ 'class': 'msg-content' }).text(msg.content);
       msgDiv.append(msgTopbar);
       msgDiv.append(msgContent);
-      // let msgSpan = $('<span />').html(msg.content);
-      // msgContent.append(msgSpan)
       let msgName = $('<div></div>').attr({ 'class': 'msg-name' }).html(msg.sender);
       let msgTime = $('<div></div>').attr({ 'class': 'msg-time' }).html(new Date(parseInt(msg.time)).toString().slice(4, 24));
       msgTopbar.append(msgName);

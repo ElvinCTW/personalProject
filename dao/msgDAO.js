@@ -56,7 +56,7 @@ function getLastestMsg(matchedIdArr) {
       }
       queryString +=
         `(SELECT * FROM message m
-        WHERE m.matched_id = ? s
+        WHERE m.matched_id = ?
         AND sender <> "system" 
         ORDER BY time DESC 
         LIMIT 0,1 ) `;

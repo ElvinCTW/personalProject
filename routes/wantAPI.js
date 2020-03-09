@@ -6,7 +6,7 @@ const { getItemDataByIdArr } = require('../dao/item');
 
 // item_detail page 建立 want 用
 router.post('/new', async (req, res) => {
-  if (!req.body.token || !req.body.required_item_id || !req.body.want_items_Arr) {
+  if (!req.body.token || !req.body.required_item || !req.body.want_items_Arr) {
     res.status(400).send('lack of required information');
   } else {
     // 用 token 辨識使用者
@@ -27,7 +27,7 @@ router.post('/new', async (req, res) => {
       await sendMsgToMatchers(wantOfSecondUserToCurUserItems, wantOfThirdItemsToCurUserItems, itemsDataOfAllObj, secondItemId, checkUserResult).catch(err => { console.log(err); }); // 對 user 影響不大，不停止 response
       // Send back success or fail msg
       res.send({
-        msg: ` 配對結果: \n 已新增 ${newWantInsertResult.affectedRows} 個交換請求, \n 為您找到 ${wantOfSecondUserToCurUserItems.length} 個雙人交換, \n 找到 ${wantOfThirdItemsToCurUserItems.length} 三人交換`
+        msg: ` 配對結果: \n 已新增 ${newWantInsertResult.affectedRows} 個交換請求, \n 為您找到 ${wantOfSecondUserToCurUserItems.length} 組雙人交換, \n 找到 ${wantOfThirdItemsToCurUserItems.length} 組三人交換`
       });
     } else {
       res.status(403).send('cannot find user with this token');
@@ -122,6 +122,11 @@ router.get('/check', async (req, res) => {
         .then(() => { return getItemsData(doubleMatchResultArr, tripleMatchResultArr); })
         .then((itemsDataArr) => { res.send({ doubleMatchResultArr, tripleMatchResultArr, itemsDataArr }); })
         .catch(err => { console.log(err); res.status(500).send(); return; });
+
+      console.log('doubleMatchResultArr')
+      console.log(doubleMatchResultArr)
+      console.log('tripleMatchResultArr')
+      console.log(tripleMatchResultArr)
     }
   }
   function getDoubleMatchArr(curUserWantArr, secondItemWantArr) {

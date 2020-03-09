@@ -15,8 +15,8 @@ router.post('/new', async (req, res, next) => {
 router.get('/all', async (req, res, next) => {
   // Lastest items for someone not member
   await getItemDataProcess(req)
-    .catch(err=>{res.status(500).send(err)})
-    .then(ItemDataArr=>{res.status(200).send(ItemDataArr)})
+  .then(ItemDataArr=>{res.status(200).send(ItemDataArr)})
+  .catch(err=>{res.status(500).send(err); return})
 })
 
 async function addNewItemProcess(req, res) {
@@ -80,9 +80,9 @@ async function addNewItemProcess(req, res) {
 
 async function getItemDataProcess(req) {
   const {getItemDataByType } = require('../dao/item');
-  let nickname = req.query.user_nickname ?
+  const nickname = req.query.user_nickname ?
     req.query.user_nickname : null;
-  let page = req.query.page ? req.query.page : 0;
+  const page = req.query.page ? req.query.page : 0;
   let category = {}
   category.main_category = req.query.main_category ?
     req.query.main_category : null;

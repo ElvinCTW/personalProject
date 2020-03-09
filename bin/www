@@ -3,7 +3,8 @@
 /**
  * Module dependencies.
  */
-
+require('dotenv').config();
+const {NODE_ENV} = process.env;
 var app = require('../app');
 var debug = require('debug')('personalproject:server');
 var http = require('http');
@@ -12,8 +13,7 @@ const socketInit = require('../util/socketServer')
 /**
  * Get port from environment and store in Express.
  */
-
-var port = normalizePort(process.env.PORT || '3000');
+const port = NODE_ENV === 'test' ? 3001 : 3000;
 app.set('port', port);
 
 /**

@@ -19,7 +19,7 @@ function init(server) {
     // Get matchedId & matchedItemData & lastest msg
     socket.on('join', async (obj) => {
       let confirmedMatchArr = await getConfirmedMatches(obj.token)
-        .catch(err => { res.status(500).send({ errorMsg: '資料庫錯誤' }) });
+        .catch(err => {  }); // 403
       let matchedIdArr = confirmedMatchArr.map(match => `${match.matched_id}`)
       socket.join(matchedIdArr); // 把 socket 加入所屬交易的對話房間(s)
       // 取得每個 match 的最新一筆訊息
@@ -44,13 +44,11 @@ function init(server) {
         let msgArr = await getConfirmedMatchMsg(obj.matched_id)
           .catch((err) => {
             console.log(err.errorMsg);
-            res.status(500).send(err);
           });
         if (msgArr) {
           // 取得 matched_items_id
           let matchedItemsIdObj = await getConfirmedMatchItemsId(obj.matched_id).catch((err) => {
             console.log(err.errorMsg);
-            res.status(500).send(err);
           });
           if (matchedItemsIdObj) {
             // 整理取得 item Data
@@ -58,7 +56,6 @@ function init(server) {
             let itemDataArr = await getConfirmedMatchItemsData(idArr)
               .catch((err) => {
                 console.log(err.errorMsg);
-                res.status(500).send(err);
               });
             if (itemDataArr) {
               io.to(socket.id).emit('history', {
@@ -70,7 +67,7 @@ function init(server) {
           }
         }
       } else {
-        res.status(403).send({ msg: 'forbidden' })
+        // 403
       }
     })
     // 處理訊息

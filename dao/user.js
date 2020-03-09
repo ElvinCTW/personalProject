@@ -1,6 +1,6 @@
 const mysql = require('../util/mysql');
 const crypto = require('crypto');
-const {sqlErrLog} = require('../util/errorHandler')
+const { sqlErrLog } = require('../util/errorHandler')
 
 function checkVaildUserOfChat(token, matched_id) {
   return new Promise((resolve, reject) => {
@@ -23,6 +23,11 @@ function checkVaildUserOfChat(token, matched_id) {
   })
 }
 
+/**
+ * 
+ * @param {*} token 
+ * @param {*} item_id optional, add this param when case need to check users with item
+ */
 function getUserDataByToken(token, item_id) {
   return new Promise((resolve, reject) => {
     let string;
@@ -38,12 +43,8 @@ function getUserDataByToken(token, item_id) {
       condition = [token];
     }
     mysql.pool.query(string, condition, (err, result, fileds) => {
-      if (err) {
-        sqlErrLog(err, arguments.callee.toString(), __filename)
-        reject(err)
-      } else {
-        resolve(result)
-      }
+      if (err) { reject(err); return };
+      resolve(result)
     });
   })
 }
@@ -169,17 +170,17 @@ function signinProcess(id, password) {
 
 function updateWatchMsgTime(token) {
   return new Promise((resolve, reject) => {
-    let string = 
-    `UPDATE users u
+    let string =
+      `UPDATE users u
     SET watch_msg_time = ?
     WHERE u.token = ?`;
-    let condition = [Date.now(),token];
+    let condition = [Date.now(), token];
     mysql.pool.query(string, condition, (err, result, fileds) => {
       if (err) {
         sqlErrLog(err, arguments.callee.toString(), __filename)
         reject(err)
       } else {
-        let success = result.affectedRows===1?true:false;
+        let success = result.affectedRows === 1 ? true : false;
         resolve(success)
       }
     });
@@ -187,9 +188,9 @@ function updateWatchMsgTime(token) {
 }
 
 function getLastMsgWatchedTime(token) {
-  return new Promise((resolve, reject)=>{
-    let string = 
-    `SELECT u.watch_msg_time FROM users u
+  return new Promise((resolve, reject) => {
+    let string =
+      `SELECT u.watch_msg_time FROM users u
     WHERE u.token = ?`;
     let condition = [token];
     mysql.pool.query(string, condition, (err, result, fileds) => {

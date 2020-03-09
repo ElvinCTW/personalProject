@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "test": "jest"
+    "test": "NODE_ENV=test jest --forceExit"
   },
   "dependencies": {
     "aws-sdk": "^2.610.0",
@@ -24,5 +24,9 @@
   },
   "devDependencies": {
     "jest": "^25.1.0"
+  },
+  "jest": {
+    "globalSetup": "./test/set_up.js",
+    "globalTeardown": "./test/teardown.js"
   }
 }

@@ -6,33 +6,35 @@ const { getItemDataByIdArr } = require('../dao/item');
 
 // item_detail page 建立 want 用
 router.post('/new', async (req, res, next) => {
-  // 用 token 辨識使用者
-  const checkUserResult = await getUserDataByToken(req.body.token);
-  if (checkUserResult.length === 1) {
-    // 轉換資料為數字
-    console.log('req.body')
-    console.log(req.body)
-    const secondItemId = parseInt(req.body.required_item);
-    const intCurUserItemsIdArr = req.body.want_items_Arr.split(',').map(item_id => parseInt(item_id))
-    // 取得邀請結果與第三人物品ID
-    const { wantOfSecondUserToCurUserItems, wantOfThirdItemsToCurUserItems, thirdItemsIds }
-      = await getInvitationMatchResult(secondItemId, intCurUserItemsIdArr)
-    // 建立當前 user's want
-    const newWantInsertResult = await insertNewWant(intCurUserItemsIdArr, secondItemId)
-    if (newWantInsertResult.affectedRows < 1) {
-      res.status(500).send(newWantInsertResult.errorMsg)
-    } else {
+  if (!req.body.token || !req.body.required_item_id || !req.body.want_items_Arr) {
+    res.status(400).send('lack of required information')
+  } else {
+    // 用 token 辨識使用者
+    const checkUserResult = await getUserDataByToken(req.body.token)
+      .catch(err => { console.log(err); res.status(500).send(); return; })
+    if (checkUserResult.length === 1) {
+      // 轉換資料為數字
+      const secondItemId = parseInt(req.body.required_item);
+      const intCurUserItemsIdArr = req.body.want_items_Arr.split(',').map(item_id => parseInt(item_id))
+      // 取得邀請查詢結果與第三人物品ID
+      const { wantOfSecondUserToCurUserItems, wantOfThirdItemsToCurUserItems, thirdItemsIds }
+        = await getInvitationMatchResult(secondItemId, intCurUserItemsIdArr)
+      // 建立當前 user's want
+      const newWantInsertResult = await insertNewWant(intCurUserItemsIdArr, secondItemId)
+        .catch(err => { console.log(err); res.status(500).send(); return; })
       // 取得物品資料
       const itemsDataOfAllObj = await getRelatedItemsData(thirdItemsIds, intCurUserItemsIdArr, secondItemId)
+        .catch(err => { console.log(err); res.status(500).send(); return; })
       // 傳送通知訊息
       await sendMsgToMatchers(wantOfSecondUserToCurUserItems, wantOfThirdItemsToCurUserItems, itemsDataOfAllObj, secondItemId, checkUserResult)
+        .catch(err => { console.log(err); }) // 對 user 影響不大，不停止 response
       // Send back success or fail msg
       res.send({
         msg: ` 配對結果: \n 已新增 ${newWantInsertResult.affectedRows} 個交換請求, \n 為您找到 ${wantOfSecondUserToCurUserItems.length} 個雙人交換, \n 找到 ${wantOfThirdItemsToCurUserItems.length} 三人交換`
       })
+    } else {
+      res.status(403).send('cannot find user with this token');
     }
-  } else {
-    res.status(500).send('此token查無用戶');
   }
 
   async function getInvitationMatchResult(secondItemId, intCurUserItemsIdArr) {
@@ -104,24 +106,25 @@ router.post('/new', async (req, res, next) => {
 // want 配對頁面讀取未成立交換資料用
 router.get('/check', async (req, res, next) => {
   const { getUserWantByToken } = require('../dao/wantDAO');
+  const token = req.headers.authorization.split(' ')[1]
+  const curUserWantArr = await getUserWantByToken(token)
+    .catch(err => { console.log(err); res.status(500).send(); return; })
   let doubleMatchResultArr = [];
   let tripleMatchResultArr = [];
-  const token = req.headers.authorization.split(' ')[1]
-  const curUserWantArr = await getUserWantByToken(token);
-
   if (curUserWantArr.length === 0) {
     res.send({ doubleMatchResultArr, tripleMatchResultArr })
   } else {
-    // let secondItemIdArr = curUserWantArr.map(curWant => curWant.required_item_id);
-    let secondItemWantArr = await getWantOfItemsByItemIds(curUserWantArr.map(curWant => curWant.required_item_id))
+    const secondItemWantArr = await getWantOfItemsByItemIds(curUserWantArr.map(curWant => curWant.required_item_id))
+      .catch(err => { console.log(err); res.status(500).send(); return; })
     if (secondItemWantArr.length === 0) {
       res.send({ doubleMatchResultArr, tripleMatchResultArr })
     } else {
       // 排除空查詢後處理資料
       doubleMatchResultArr = getDoubleMatchArr(curUserWantArr, secondItemWantArr)
-      tripleMatchResultArr = await getTripleMatchArr(secondItemWantArr, curUserWantArr)
-      const itemsDataArr = await getItemsData(doubleMatchResultArr, tripleMatchResultArr)
-      res.send({ doubleMatchResultArr, tripleMatchResultArr, itemsDataArr })
+        .then(() => { tripleMatchResultArr = getTripleMatchArr(secondItemWantArr, curUserWantArr) })
+        .then(() => { return getItemsData(doubleMatchResultArr, tripleMatchResultArr) })
+        .then((itemsDataArr) => { res.send({ doubleMatchResultArr, tripleMatchResultArr, itemsDataArr }) })
+        .catch(err => { console.log(err); res.status(500).send(); return; })
     }
   }
   function getDoubleMatchArr(curUserWantArr, secondItemWantArr) {
@@ -221,10 +224,10 @@ router.post('/checked', async (req, res, next) => {
   const token = req.headers.authorization.split(' ')[1];
   const item_id = parseInt(req.body.want_item_id);
   const userCheck = await getUserDataByToken(token, item_id)
+    .catch(err => { console.log(err); res.status(500).send(); return; })
 
   if (userCheck.length > 0) {
     const response = await wantConfirmTransaction(want_item_id, required_item_id)
-      .catch(err => console.log(err))
     res.send(response)
   } else { res.status(400).send({ errorMsg: '身份驗證失敗' }) }
 
@@ -236,32 +239,31 @@ router.post('/checked', async (req, res, next) => {
 
     return new Promise((resolve, reject) => {
       pool.getConnection(async (err, con) => {
-        if (err) { con.release(); }
+        if (err) { con.release(); return}
         con.beginTransaction(async (err) => {
-          if (err) { con.rollback(() => { con.release() }) }
+          if (err) { con.rollback(() => { con.release() }); return }
           // 更新 want 的 confirm 狀態
-          await updateWantToConfirm(curUserItemId, required_item_id, con).catch(err => {
-            res.status(500).send({ errorMsg: '資料庫錯誤' })
-            reject(err)
-          });
+          await updateWantToConfirm(curUserItemId, required_item_id, con)
+            .catch(err => { console.log(err); res.status(500).send(); return })
           // 取得配對結果
           let matchResult = await checkDoubleMatch(curUserItemId, required_item_id, con)
+            .catch(err => { console.log(err); res.status(500).send(); return })
           if (!matchResult.msg) {
             matchResult = await checkTripleMatch(curUserItemId, required_item_id, con)
+              .catch(err => { console.log(err); res.status(500).send(); return })
           }
           if (matchResult.msg) {
             // 整理配對物品ID & 新增成交紀錄
-            let id_Arr = [parseInt(curUserItemId), parseInt(required_item_id)];
+            const id_Arr = [parseInt(curUserItemId), parseInt(required_item_id)];
             if (matchResult.msg === 'tripleConfirmedMatch') { id_Arr.push(matchResult.itemC_idArr[0]) }
-            const insertedMatchId = await insertMatchRecord(id_Arr);
+            const insertedMatchId = await insertMatchRecord(id_Arr)
+              .catch(err => { console.log(err); res.status(500).send(); return })
             // 用ID下架配對物品
-            await discontinueItem(id_Arr, insertedMatchId, con).catch((err) => {
-              reject(err)
-            })
+            await discontinueItem(id_Arr, insertedMatchId, con)
+              .catch(err => { console.log(err); res.status(500).send(); return })
             // 傳送配對訊息
-            await sendMsgToRelatedUser(id_Arr, insertedMatchId, con).catch((err) => {
-              reject(err)
-            })
+            await sendMsgToRelatedUser(id_Arr, insertedMatchId, con)
+              .catch(err => { console.log(err)})
             // 回傳訊息給客戶端
             resolve({ msg: '配對成功！商品已自動為您下架，請至"對話"頁面查詢配對結果～' })
           } else {
@@ -276,7 +278,8 @@ router.post('/checked', async (req, res, next) => {
     })
     async function sendMsgToRelatedUser(id_Arr, insertedMatchId, con) {
       // 3.取得製作通知訊息的資訊 (被通知物品id、被通知人暱稱、下架物品id、下架物品 title)
-      let notificationList = await getSendMsgList(id_Arr, con)
+      const notificationList = await getSendMsgList(id_Arr, con)
+
       // 3.1 過濾通知名單，製作 msg 內容
       // 取得通知配對成功名單 && 配對取消名單
       let insertMsgQueryDataArr = [];
@@ -307,6 +310,7 @@ router.post('/checked', async (req, res, next) => {
 router.get('/last', async (req, res, next) => {
   const { getUserSelectedItemIdArr } = require('../dao/wantDAO');
   let userSelectedItemIdArr = await getUserSelectedItemIdArr(req.query.required_item_id, req.query.user_nickname)
+    .catch(err => { console.log(err); res.status(500).send(); return; })
   let lastSelectionArr = userSelectedItemIdArr.map(obj => obj.id)
   res.send(lastSelectionArr);
 })
@@ -316,18 +320,19 @@ router.get('/invitation', async (req, res, next) => {
   const token = req.headers.authorization.split(' ')[1]
   // get data
   const response = await getWantsArrAndHashWantsObj(token)
+    .catch(err => { console.log(err); res.status(500).send(); return; })
   res.send(response)
 
   async function getWantsArrAndHashWantsObj(token) {
     // get wants from db
     const wantArrToCurUser = await getReversedWants(token)
     // want_item_id 已排除 curUser item
-    const wantArrToReversedSecondUser = await getReversedWants(token, wantArrToCurUser.map(obj=>obj.want_item_id))
+    const wantArrToReversedSecondUser = await getReversedWants(token, wantArrToCurUser.map(obj => obj.want_item_id))
     let wantArrFromCurUser = await getUserWantByToken(token)
-    wantArrFromCurUser = wantArrFromCurUser.map((obj)=>{
+    wantArrFromCurUser = wantArrFromCurUser.map((obj) => {
       return {
-        want_item_id:obj.want_item_id,
-        required_item_id:obj.required_item_id,
+        want_item_id: obj.want_item_id,
+        required_item_id: obj.required_item_id,
       }
     })
     // hash wantArr data
@@ -338,35 +343,35 @@ router.get('/invitation', async (req, res, next) => {
     let joinedWantFromReversedThirdToCurUser = [];
     // 組合相乘得到所有的 reversed third item to cur user item wants 
     for (let [wantItemId, requiredItemIdArr] of Object.entries(hashedWantsObjToReversedSecondUser)) {
-      requiredItemIdArr.forEach(requiredItemId=>
-        hashedWantsObjToCurUser[requiredItemId].forEach(curUserItemId=>
-        joinedWantFromReversedThirdToCurUser.push({
-          want_item_id:parseInt(wantItemId),
-          middle_item_id:requiredItemId,
-          required_item_id:curUserItemId,
-        })
-      ))
+      requiredItemIdArr.forEach(requiredItemId =>
+        hashedWantsObjToCurUser[requiredItemId].forEach(curUserItemId =>
+          joinedWantFromReversedThirdToCurUser.push({
+            want_item_id: parseInt(wantItemId),
+            middle_item_id: requiredItemId,
+            required_item_id: curUserItemId,
+          })
+        ))
     }
     // 整理 Id 以取得資料集
-    const doubleNoMatchedWantToCurUserArr = filterOutMatchedWants(hashedWantsObjFromCurUser,wantArrToCurUser)
-    const tripleNoMatchedWantToCurUserArr = filterOutMatchedWants(hashedWantsObjFromCurUser,joinedWantFromReversedThirdToCurUser)
+    const doubleNoMatchedWantToCurUserArr = filterOutMatchedWants(hashedWantsObjFromCurUser, wantArrToCurUser)
+    const tripleNoMatchedWantToCurUserArr = filterOutMatchedWants(hashedWantsObjFromCurUser, joinedWantFromReversedThirdToCurUser)
     // 把每個 want value 變成 array 並回傳 [[]]，之後合併 arraies 並打平成為純數字 array
     const allItemsIdArr = doubleNoMatchedWantToCurUserArr
-    .map(want=>Object.values(want))
-    .concat(tripleNoMatchedWantToCurUserArr
-      .map(want=>Object.values(want)))
+      .map(want => Object.values(want))
+      .concat(tripleNoMatchedWantToCurUserArr
+        .map(want => Object.values(want)))
       .concat(wantArrFromCurUser
-        .map(want=>Object.values(want)))
+        .map(want => Object.values(want)))
       .flat()
     const uniqueAllItemsIdArr = [... new Set(allItemsIdArr)] //去除重複
     let dataCollection = await getItemDataByIdArr(uniqueAllItemsIdArr) // 取得資料
     // 整理 curUser 的潛在配對
     const hashedPosibleInvitationArrToCurUser = hashWantArrObjMaker(doubleNoMatchedWantToCurUserArr.concat(tripleNoMatchedWantToCurUserArr), true)
     const hashedInvitationArrFromCurUser = hashWantArrObjMaker(wantArrFromCurUser, true)
-    const hashedDataCollection = dataCollection.reduce((acu, data)=>{
+    const hashedDataCollection = dataCollection.reduce((acu, data) => {
       acu[data.id] = data
       return acu
-    },{})
+    }, {})
     return ({
       hashedInvitationArrFromCurUser,
       hashedPosibleInvitationArrToCurUser,
@@ -379,9 +384,9 @@ router.get('/invitation', async (req, res, next) => {
      * @param {*} arrOfWantObjToCurUser required_item_id = cur user items id
      */
     function filterOutMatchedWants(hashedWantsObjFromCurUser, arrOfWantObjToCurUser) {
-      return arrOfWantObjToCurUser.filter(wantObj=>
+      return arrOfWantObjToCurUser.filter(wantObj =>
         !hashedWantsObjFromCurUser[wantObj.required_item_id] ||  // 如果 curUser 的某商品還沒有送出過 want invitation
-        hashedWantsObjFromCurUser[wantObj.required_item_id].indexOf(wantObj.want_item_id)===-1) // 確認 curUser 的某商品的 required items 中不包含在要回傳的 want 之中
+        hashedWantsObjFromCurUser[wantObj.required_item_id].indexOf(wantObj.want_item_id) === -1) // 確認 curUser 的某商品的 required items 中不包含在要回傳的 want 之中
     }
 
     /**
@@ -391,23 +396,23 @@ router.get('/invitation', async (req, res, next) => {
      */
     function hashWantArrObjMaker(wantArr, result) {
       if (result) {
-        return wantArr.reduce((acu, want)=>{
+        return wantArr.reduce((acu, want) => {
           if (acu[want.want_item_id]) {
             acu[want.want_item_id].push(want)
           } else {
             acu[want.want_item_id] = [want]
           }
           return acu
-        },{})
+        }, {})
       } else {
-        return wantArr.reduce((acu, want)=>{
+        return wantArr.reduce((acu, want) => {
           if (acu[want.want_item_id]) {
             acu[want.want_item_id].push(want.required_item_id)
           } else {
             acu[want.want_item_id] = [want.required_item_id]
           }
           return acu
-        },{})
+        }, {})
       }
     }
   }

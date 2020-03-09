@@ -1,5 +1,4 @@
-const mysql = require('../util/mysql');
-const {sqlErrLog} = require('../util/errorHandler')
+const { pool } = require('../util/mysql');
 
 function getWantBetweenItemIds(firstIds, secondIds) {
   return new Promise((resolve, reject) => {
@@ -14,16 +13,9 @@ function getWantBetweenItemIds(firstIds, secondIds) {
     AND i.availability = "true"
     AND i2.availability = "true"`;
     let condition = [firstIds, secondIds];
-    mysql.pool.query(string, condition, (err, result, fileds) => {
-      if (err) {
-        let functionName = arguments.callee.toString();
-        functionName = functionName.substr('function '.length);
-        functionName = functionName.substr(0, functionName.indexOf('('));
-        mysql.errLog(err, functionName, __filename)
-        reject(error)
-      } else {
-        resolve(result)
-      }
+    pool.query(string, condition, (err, result, fileds) => {
+      if (err) { reject(err); return };
+      resolve(result)
     });
   })
 }
@@ -33,13 +25,8 @@ function updateWantToConfirm(want_item_id, required_item_id, con) {
     let queryString = `UPDATE want SET checked = "confirm" WHERE want_item_id = ? AND required_item_id = ?`;
     let queryCondition = [want_item_id, required_item_id]
     con.query(queryString, queryCondition, async (err, result, fileds) => {
-      if (err) {
-        con.rollback(() => { con.release() })
-        mysql.errLog(err, 'updateCheckedPromise', 'wantDAO')
-        reject(err);
-      } else {
-        resolve()
-      }
+      if (err) { reject(err); con.rollback(() => { con.release() }); return };
+      resolve()
     })
   })
 }
@@ -47,38 +34,29 @@ function updateWantToConfirm(want_item_id, required_item_id, con) {
 async function checkTripleMatch(curUserItemId, required_item_id, con) {
   return new Promise((resolve, reject) => {
     // 取得可能組成 triple match 的 confirmed want
-    let queryString =
+    const queryString =
       `SELECT * FROM want 
       WHERE ( want_item_id = ? AND checked = "confirm") 
       OR (required_item_id = ? AND checked = "confirm")`;
-    let queryCondition = [required_item_id, curUserItemId]
-    con.query(queryString, queryCondition, (err, getConfirmedwantResult, fileds) => {
-      if (err) {
-        con.rollback(() => { con.release() })
-        mysql.errLog(err, 'getConfirmedwantResult', 'wantDAO')
-        console.log('err')
-        console.log(err)
-        reject(err)
-      } else {
-        wantC_Arr = [];
-        wantC_Arr2 = [];
-        getConfirmedwantResult.forEach(want => {
-          if (want.want_item_id === parseInt(required_item_id)) {
-            wantC_Arr.push(want.required_item_id);
-          } else {
-            wantC_Arr2.push(want.want_item_id);
-          }
-        })
-        let itemC_idArr = wantC_Arr.filter(id => wantC_Arr2.includes(id))
-        if (itemC_idArr.length > 0) {
-          resolve({
-            msg: 'tripleConfirmedMatch',
-            itemC_idArr: itemC_idArr,
-          })
+    const queryCondition = [required_item_id, curUserItemId]
+    con.query(queryString, queryCondition, (err, result, fileds) => {
+      if (err) { reject(err); con.rollback(() => { con.release() }); return };
+      wantC_Arr = [];
+      wantC_Arr2 = [];
+      result.forEach(want => {
+        if (want.want_item_id === parseInt(required_item_id)) {
+          wantC_Arr.push(want.required_item_id);
         } else {
-          resolve({});
+          wantC_Arr2.push(want.want_item_id);
         }
-      }
+      })
+      const itemC_idArr = wantC_Arr.filter(id => wantC_Arr2.includes(id))
+      if (itemC_idArr.length > 0) {
+        resolve({
+          msg: 'tripleConfirmedMatch',
+          itemC_idArr: itemC_idArr,
+        })
+      } else { resolve({}) }
     })
   })
 }
@@ -94,16 +72,9 @@ function insertNewWant(wantItemsIdArr, requiredItemId) {
     });
     let string = `INSERT INTO want(want_item_id, required_item_id) VALUES ?`;
     let condition = insertWantsArr;
-    mysql.pool.query(string, [condition], (err, result, fileds) => {
-      if (err) {
-        let functionName = arguments.callee.toString();
-        functionName = functionName.substr('function '.length);
-        functionName = functionName.substr(0, functionName.indexOf('('));
-        mysql.errLog(err, functionName, __filename)
-        reject(err)
-      } else {
-        resolve(result)
-      }
+    pool.query(string, [condition], (err, result, fileds) => {
+      if (err) { reject(err); return };
+      resolve(result)
     });
   });
 }
@@ -113,18 +84,10 @@ async function checkDoubleMatch(curUserItemId, required_item_id, con) {
   return new Promise((resolve, reject) => {
     let queryString = `SELECT w.required_item_id, w.want_item_id FROM want w WHERE w.want_item_id = ? AND w.required_item_id = ? AND w.checked = "confirm"`;
     let queryCondition = [required_item_id, curUserItemId]
-    con.query(queryString, queryCondition, async (err, doubleSelectMatchResult, fileds) => {
-      if (err) {
-        con.rollback(() => { con.release() })
-        mysql.errLog(err, 'doubleSelectMatchResult', 'wantDAO')
-        reject(err);
-      } else {
-        if (doubleSelectMatchResult.length > 0) {
-          resolve({ msg: 'doubleConfirmedMatch' })
-        } else {
-          resolve({})
-        }
-      }
+    con.query(queryString, queryCondition, async (err, result, fileds) => {
+      if (err) { reject(err); con.rollback(() => { con.release() }); return };
+      let response = result.length > 0 ? { msg: 'doubleConfirmedMatch' } : {};
+      resolve(response);
     })
   })
 }
@@ -140,23 +103,19 @@ function getWantOfItemsByItemIds(itemIds) {
     AND i.availability = "true" 
     AND i2.availability = "true"`;
     let queryCondition = [itemIds];
-    mysql.pool.query(queryString, queryCondition, (err, result, fileds) => {
+    pool.query(queryString, queryCondition, (err, result, fileds) => {
       let functionName = arguments.callee.toString();
       functionName = functionName.substr('function '.length);
       functionName = functionName.substr(0, functionName.indexOf('('));
-      if (err) {
-        mysql.errLog(err, functionName, __filename)
-        reject(err)
-      } else {
-        resolve(result)
-      }
+      if (err) { reject(err); return };
+      resolve(result)
     });
   })
 }
 
 function getUserWantByToken(token) {
   return new Promise((resolve, reject) => {
-    let queryString =
+    const queryString =
       `SELECT w.*
       FROM want w 
       JOIN items i ON i.id = w.want_item_id 
@@ -165,17 +124,10 @@ function getUserWantByToken(token) {
       WHERE u.token = ? 
       AND i.availability = "true" 
       AND i2.availability = "true"`;
-    let queryCondition = [token];
-    mysql.pool.query(queryString, queryCondition, (err, result, fileds) => {
-      if (err) {
-        let functionName = arguments.callee.toString();
-        functionName = functionName.substr('function '.length);
-        functionName = functionName.substr(0, functionName.indexOf('('));
-        mysql.errLog(err, functionName, __filename)
-        reject(err)
-      } else {
-        resolve(result)
-      }
+    const queryCondition = [token];
+    pool.query(queryString, queryCondition, (err, result, fileds) => {
+      if (err) { reject(err); return };
+      resolve(result)
     });
   })
 }
@@ -189,25 +141,16 @@ function getUserSelectedItemIdArr(item_id, user_nickname) {
       WHERE w.required_item_id = ? 
       AND u.nickname = ?`
     let queryCondition = [item_id, user_nickname];
-    mysql.pool.query(queryString, queryCondition, (err, result, fileds) => {
-      if (err) {
-        let functionName = arguments.callee.toString();
-        functionName = functionName.substr('function '.length);
-        functionName = functionName.substr(0, functionName.indexOf('('));
-        mysql.errLog(err, functionName, __filename)
-        reject(err)
-      } else {
-        console.log('result')
-        console.log(result)
-        resolve(result)
-      }
+    pool.query(queryString, queryCondition, (err, result, fileds) => {
+      if (err) { reject(err); return };
+      resolve(result)
     });
   })
 }
 
 function getSendMsgList(idArr, con) {
   return new Promise((resolve, reject) => {
-    let queryString =
+    const queryString =
       `SELECT w.want_item_id notificated_item_id, 
       i.title notificated_item_title, 
       u.id notificated_user, 
@@ -219,18 +162,10 @@ function getSendMsgList(idArr, con) {
       JOIN users u ON i.user_id = u.id
       WHERE w.required_item_id in (?) 
       AND w.checked = "confirm"`;
-    let queryCondition = [idArr];
+    const queryCondition = [idArr];
     con.query(queryString, queryCondition, (err, result, fileds) => {
-      if (err) {
-        let functionName = arguments.callee.toString();
-        functionName = functionName.substr('function '.length);
-        functionName = functionName.substr(0, functionName.indexOf('('));
-        mysql.errLog(err, functionName, __filename)
-        con.rollback(() => { con.release() })
-        reject(err)
-      } else {
-        resolve(result)
-      }
+      if (err) { reject(err); return };
+      resolve(result)
     });
   })
 }
@@ -244,13 +179,9 @@ function insertMatchRecord(id_Arr) {
       } else if (id_Arr.length === 2) {
         queryString = 'INSERT INTO matched(start_item_id, end_item_id) VALUES(?)';
       }
-      mysql.pool.query(queryString, [id_Arr], (err, insertMatchTableResult, fileds) => {
-        if (err) {
-          mysql.errLog(err, 'insertMatchTableResult', 'matchDAO')
-          reject(err)
-        } else {
-          resolve(insertMatchTableResult.insertId);
-        }
+      pool.query(queryString, [id_Arr], (err, result, fileds) => {
+        if (err) { reject(err); return };
+        resolve(result.insertId);
       });
     }
   })
@@ -261,12 +192,12 @@ function insertMatchRecord(id_Arr) {
  * @param {*} token 
  */
 function getReversedWants(token, secondIdArr) {
-  return new Promise((resolve,reject)=>{
+  return new Promise((resolve, reject) => {
     let string;
     let condition;
     if (secondIdArr) {
-      string = 
-      `SELECT w.want_item_id,
+      string =
+        `SELECT w.want_item_id,
       w.required_item_id
       FROM want w
       JOIN items i ON i.id = w.want_item_id
@@ -279,8 +210,8 @@ function getReversedWants(token, secondIdArr) {
       AND i2.availability = "true"`;
       condition = [token, secondIdArr];
     } else {
-      string = 
-      `SELECT w.want_item_id,
+      string =
+        `SELECT w.want_item_id,
       w.required_item_id 
       FROM want w
       JOIN items i ON i.id = w.required_item_id
@@ -292,16 +223,12 @@ function getReversedWants(token, secondIdArr) {
       AND i2.availability = "true"`;
       condition = [token];
     }
-    mysql.pool.query(string, condition, (err, result, fileds) => {
-      if (err) {
-        sqlErrLog(err, arguments.callee.toString(), __filename)
-        reject(err)
-      } else {
-        resolve(result)
-      }
+    pool.query(string, condition, (err, result, fileds) => {
+      if (err) { reject(err); return };
+      resolve(result)
     });
   })
-} 
+}
 
 module.exports = {
   getReversedWants,
@@ -313,12 +240,12 @@ module.exports = {
   get: (queryData) => {
     // settings
     return new Promise((resolve, reject) => {
-        // 查詢新增的 want 有沒有兩人或三人配對可供確認
-        // A = current user , B = item_deatil page owner, C = other
-        // B_nickname 在裡面
-        // 尋找反向 ( second_user want cur_user) 的 want
-        queryString =
-          `SELECT w.*, u.id B_id, i2.title A_title 
+      // 查詢新增的 want 有沒有兩人或三人配對可供確認
+      // A = current user , B = item_deatil page owner, C = other
+      // B_nickname 在裡面
+      // 尋找反向 ( second_user want cur_user) 的 want
+      queryString =
+        `SELECT w.*, u.id B_id, i2.title A_title 
         FROM want w 
         JOIN items i ON i.id = w.want_item_id 
         JOIN users u ON i.user_id = u.id 
@@ -326,20 +253,20 @@ module.exports = {
         WHERE w.want_item_id = ? 
         AND w.required_item_id in (?) 
         AND i.availability = "true"`;
-        queryCondition = [queryData.item_id, parseIntArr];
-        mysql.pool.query(queryString, queryCondition, (err, doubleMatchResultArr, fileds) => {
-          console.log("doubleMatchResultArr");
-          console.log(doubleMatchResultArr);
-          if (err) {
-            console.log('error in doubleMatchResultPromise');
-            console.log(err.sqlMessage);
-            console.log(err.sql);
-            reject(err);
-          } else {
-            // C_nickname, C_title, A_title 缺 B_nickname
-            // getWant
-            queryString =
-              `SELECT w.*, u.id C_id, i.title C_title, i2.title A_title 
+      queryCondition = [queryData.item_id, parseIntArr];
+      pool.query(queryString, queryCondition, (err, doubleMatchResultArr, fileds) => {
+        console.log("doubleMatchResultArr");
+        console.log(doubleMatchResultArr);
+        if (err) {
+          console.log('error in doubleMatchResultPromise');
+          console.log(err.sqlMessage);
+          console.log(err.sql);
+          reject(err);
+        } else {
+          // C_nickname, C_title, A_title 缺 B_nickname
+          // getWant
+          queryString =
+            `SELECT w.*, u.id C_id, i.title C_title, i2.title A_title 
             FROM want w 
             JOIN items i ON i.id = w.want_item_id 
             JOIN users u ON i.user_id = u.id 
@@ -354,21 +281,21 @@ module.exports = {
             ) 
             AND w.required_item_id in (?) 
             AND i.availability = "true"`;
-            mysql.pool.query(queryString, queryCondition, (err, tripleMatchResultArr, fileds) => {
-              if (err) {
-                console.log('error in tripleMatchResultPromise');
-                console.log(err.sqlMessage);
-                console.log(err.sql);
-                reject(err);
-              } else {
-                resolve({
-                  doubleMatchResultArr: doubleMatchResultArr,
-                  tripleMatchResultArr: tripleMatchResultArr,
-                });
-              }
-            })
-          }
-        })
+          pool.query(queryString, queryCondition, (err, tripleMatchResultArr, fileds) => {
+            if (err) {
+              console.log('error in tripleMatchResultPromise');
+              console.log(err.sqlMessage);
+              console.log(err.sql);
+              reject(err);
+            } else {
+              resolve({
+                doubleMatchResultArr: doubleMatchResultArr,
+                tripleMatchResultArr: tripleMatchResultArr,
+              });
+            }
+          })
+        }
+      })
     })
   },
   insertNewWant,

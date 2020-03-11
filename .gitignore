@@ -11,4 +11,3 @@ recursive.js
 .env
 
 # SSL file
-public/.well-known

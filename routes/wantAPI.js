@@ -12,8 +12,7 @@ router.post('/new', async (req, res) => {
     // 用 token 辨識使用者
     const checkUserResult = await getUserDataByToken(req.body.token)
       .catch(err => { console.log(err); res.status(500).send(); return; });
-    if (checkUserResult.length === 1) {
-      // 轉換資料為數字
+    if (checkUserResult.length === 1) {      // 轉換資料為數字
       const secondItemId = parseInt(req.body.required_item);
       const intCurUserItemsIdArr = req.body.want_items_Arr.split(',').map(item_id => parseInt(item_id));
       // 取得邀請查詢結果與第三人物品ID
@@ -27,7 +26,7 @@ router.post('/new', async (req, res) => {
       await sendMsgToMatchers(wantOfSecondUserToCurUserItems, wantOfThirdItemsToCurUserItems, itemsDataOfAllObj, secondItemId, checkUserResult).catch(err => { console.log(err); }); // 對 user 影響不大，不停止 response
       // Send back success or fail msg
       res.send({
-        msg: ` 配對結果: \n 已新增 ${newWantInsertResult.affectedRows} 個交換請求, \n 為您找到 ${wantOfSecondUserToCurUserItems.length} 組雙人交換, \n 找到 ${wantOfThirdItemsToCurUserItems.length} 組三人交換`
+        msg: ` 配對結果: \n 已新增 ${newWantInsertResult.affectedRows} 筆交換邀請, \n 為您找到 ${wantOfSecondUserToCurUserItems.length} 組雙人配對, \n 找到 ${wantOfThirdItemsToCurUserItems.length} 組三人配對`
       });
     } else {
       res.status(403).send('cannot find user with this token');
@@ -39,7 +38,7 @@ router.post('/new', async (req, res) => {
     const wantOfSecondUserToCurUserItems = await getWantBetweenItemIds([secondItemId], intCurUserItemsIdArr);
     const wantOfsecondItemToThirdItems = await getWantOfItemsByItemIds(secondItemId);
     const thirdItemsIds = wantOfsecondItemToThirdItems.map(want => want.required_item_id);
-    const wantOfThirdItemsToCurUserItems = thirdItemsIds.length > 1 ? await getWantBetweenItemIds(thirdItemsIds, intCurUserItemsIdArr) : [];
+    const wantOfThirdItemsToCurUserItems = thirdItemsIds.length > 0 ? await getWantBetweenItemIds(thirdItemsIds, intCurUserItemsIdArr) : [];
     return {
       wantOfSecondUserToCurUserItems,
       wantOfThirdItemsToCurUserItems,
@@ -62,7 +61,7 @@ router.post('/new', async (req, res) => {
     if (wantOfSecondUserToCurUserItems.length === 0 &&
       wantOfThirdItemsToCurUserItems.length === 0) {
       const insertCount = await sendMsgToNoMatcher({
-        content: `您的物品"${itemsDataOfAllObj[secondItemId].title}"收到了來自"${checkUserResult[0].nickname}"的新交換邀請，快到"邀請"頁面查看一下吧`,
+        content: `您的物品"${itemsDataOfAllObj[secondItemId].title}"收到了來自"${checkUserResult[0].nickname}"的新交換邀請，快到"邀請查詢"頁面查看一下吧`,
         receiver: itemsDataOfAllObj[secondItemId].user_id,
         sender: 'system',
         time: Date.now().toString(),
@@ -73,15 +72,15 @@ router.post('/new', async (req, res) => {
       if (wantOfSecondUserToCurUserItems.length > 0) {
         wantOfSecondUserToCurUserItems.forEach(doubleMatch => {
           // 通知 second user 配對成立
-          msgArr.push([`已建立您對"${itemsDataOfAllObj[doubleMatch.required_item_id].title}"的一組新兩人配對，快到"配對"頁面確認吧！`, 'system', itemsDataOfAllObj[doubleMatch.want_item_id].user_id, Date.now().toString(), doubleMatch.required_item_id]);
+          msgArr.push([`已建立您對"${itemsDataOfAllObj[doubleMatch.required_item_id].title}"的一組新兩人配對，快到"配對查詢"頁面確認吧！`, 'system', itemsDataOfAllObj[doubleMatch.want_item_id].user_id, Date.now().toString(), doubleMatch.required_item_id]);
         });
       }
       if (wantOfThirdItemsToCurUserItems.length > 0) {
         wantOfThirdItemsToCurUserItems.forEach(tripleMatch => {
           // 通知 second & third user 配對成立
           msgArr.push(
-            [`已建立您對"${itemsDataOfAllObj[tripleMatch.want_item_id].title}"的一組新三人配對，快到"配對"頁面確認吧！`, 'system', itemsDataOfAllObj[secondItemId].user_id, Date.now().toString(), tripleMatch.want_item_id],
-            [`已建立您對"${itemsDataOfAllObj[tripleMatch.required_item_id].title}"的一組新三人配對，快到"配對"頁面確認吧！`, 'system', itemsDataOfAllObj[tripleMatch.want_item_id].user_id, Date.now().toString(), tripleMatch.required_item_id]
+            [`已建立您對"${itemsDataOfAllObj[tripleMatch.want_item_id].title}"的一組新三人配對，快到"配對查詢"頁面確認吧！`, 'system', itemsDataOfAllObj[secondItemId].user_id, Date.now().toString(), tripleMatch.want_item_id],
+            [`已建立您對"${itemsDataOfAllObj[tripleMatch.required_item_id].title}"的一組新三人配對，快到"配對查詢"頁面確認吧！`, 'system', itemsDataOfAllObj[tripleMatch.want_item_id].user_id, Date.now().toString(), tripleMatch.required_item_id]
           );
         });
       }
@@ -117,16 +116,16 @@ router.get('/check', async (req, res) => {
       res.send({ doubleMatchResultArr, tripleMatchResultArr });
     } else {
       // 排除空查詢後處理資料
+      let itemsDataArr;
       doubleMatchResultArr = getDoubleMatchArr(curUserWantArr, secondItemWantArr);
-      tripleMatchResultArr = await getTripleMatchArr(secondItemWantArr, curUserWantArr)
-        .then(() => { return getItemsData(doubleMatchResultArr, tripleMatchResultArr); })
-        .then((itemsDataArr) => { res.send({ doubleMatchResultArr, tripleMatchResultArr, itemsDataArr }); })
+      await getTripleMatchArr(secondItemWantArr, curUserWantArr)
+        .then((result) => {
+          tripleMatchResultArr = result;
+          return getItemsData(doubleMatchResultArr, result);
+        })
+        .then((result) => { itemsDataArr = result; })
         .catch(err => { console.log(err); res.status(500).send(); return; });
-
-      console.log('doubleMatchResultArr')
-      console.log(doubleMatchResultArr)
-      console.log('tripleMatchResultArr')
-      console.log(tripleMatchResultArr)
+      res.send({ doubleMatchResultArr, tripleMatchResultArr, itemsDataArr });
     }
   }
   function getDoubleMatchArr(curUserWantArr, secondItemWantArr) {
@@ -241,7 +240,7 @@ router.post('/checked', async (req, res) => {
 
     return new Promise((resolve) => {
       pool.getConnection(async (err, con) => {
-        if (err) { con.release(); return;}
+        if (err) { con.release(); return; }
         con.beginTransaction(async (err) => {
           if (err) { con.rollback(() => { con.release(); }); return; }
           // 更新 want 的 confirm 狀態
@@ -265,11 +264,11 @@ router.post('/checked', async (req, res) => {
               .catch(err => { console.log(err); res.status(500).send(); return; });
             // 傳送配對訊息
             await sendMsgToRelatedUser(id_Arr, insertedMatchId, con)
-              .catch(err => { console.log(err);});
+              .catch(err => { console.log(err); });
             // 回傳訊息給客戶端
-            resolve({ msg: '配對成功！商品已自動為您下架，請至"對話"頁面查詢配對結果～' });
+            resolve({ msg: '成交！商品已自動為您下架，請至"成交紀錄"頁面查詢觀看成交紀錄～' });
           } else {
-            resolve({ msg: '目前尚未配對成功，請耐心等候～' });
+            resolve({ msg: '已為您送出確認，請等候其他用戶確認～' });
           }
           con.commit((err) => {
             if (err) { con.rollback(() => { con.release(); }); }
@@ -287,9 +286,9 @@ router.post('/checked', async (req, res) => {
       let insertMsgQueryDataArr = [];
       notificationList.forEach(notification => {
         if (id_Arr.indexOf(notification.notificated_item_id) === -1) {
-          insertMsgQueryDataArr.push([`哭哭！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}"的交換請求，因該物品下架已被取消><`, 'system', notification.notificated_user, notification.gone_item_id, null, Date.now().toString(), ' ']);
+          insertMsgQueryDataArr.push([`哭哭！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}"的交換配對，因該物品下架已被取消><`, 'system', notification.notificated_user, notification.gone_item_id, null, Date.now().toString(), ' ']);
         } else {
-          insertMsgQueryDataArr.push([`恭喜！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}"的交換請求已成立～交換編號為${insertedMatchId}，現在就打開"對話"頁面，和對方討論交換細節吧！`, 'system', notification.notificated_user, notification.gone_item_id, insertedMatchId, Date.now().toString(), '/matches/confirmed/']);
+          insertMsgQueryDataArr.push([`恭喜！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}"的交換已成交～交換編號為${insertedMatchId}，現在就打開"成交紀錄"頁面，和對方討論交換細節吧！`, 'system', notification.notificated_user, notification.gone_item_id, insertedMatchId, Date.now().toString(), '/matches/confirmed/']);
         }
       });
       // 3.2 將 msg 插入 message table 

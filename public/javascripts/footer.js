@@ -59,8 +59,10 @@ function getNotification(token) {
             outerNotificationDiv = $('<div></div>').attr({ 'class': 'notification-div outer notification' });
           }
           link.append(outerNotificationDiv);
+          let indentDot = $('<div></div>').attr({ 'id': 'indent-dot' });
           let notificationDiv = $('<div></div>').attr({ 'class': 'notification-div new' }).html(`${msgObj.content}`);
-          $(outerNotificationDiv).append(notificationDiv);
+          outerNotificationDiv.append(indentDot);
+          outerNotificationDiv.append(notificationDiv);
           if (msgObj.watched === 'false') {
             // 標示為已讀
             link.click(() => {
@@ -70,9 +72,7 @@ function getNotification(token) {
                 headers: {
                   Authorization: `Bearer ${token}`,
                 },
-                success: (affectedRows) => {
-                  console.log(affectedRows);
-                  console.log(`已將 ${msgObj.id} 之訊息標示為已讀`);
+                success: () => {
                   outerNotificationDiv.attr({ 'class': 'notification-div outer notification' });
                 },
                 error: (err) => {
@@ -83,9 +83,7 @@ function getNotification(token) {
             });
           }
         });
-
         // 顯示新訊息紅點 => 改為比對最新訊息時間與最後觀看時間**
-        // if (lastWatchedTime < msgArr[0].time) { add red dot }
         let lastWatchTime = await getLastMsgWatchedTime(token);
         if ( msgArr[0].time > lastWatchTime) {
           let notificationCount = $('<div></div>').attr({ 'id': 'notification-count' });
@@ -111,9 +109,7 @@ function updateMsgWatchedTime(token) {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    success: () => {
-      console.log('update msg watched time success');
-    },
+    success: () => {},
     error: (err, textStatus, errorThrown) => {
       console.log(err);
       console.log(textStatus);

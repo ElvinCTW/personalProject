@@ -1,15 +1,7 @@
 /* eslint-disable no-undef */
 socket = io.connect();
-/**
- * socket.emit => 送訊息給後端
- * socket.on => 建立監聽事件
- */
-// socket.emit('message', 'yo')
 
-/**
- * .emit
- */
-// 為 socket 加入房間並讀取歷史訊息
+// 將 socket 加入指定房間並讀取歷史訊息
 socket.emit('join', {
   token: localStorage.getItem('token'),
 });
@@ -17,9 +9,8 @@ socket.emit('join', {
 /**
  * .on
  */
-// 收到配對物品清單與資料
+// 接收配對物品清單與資料
 socket.on('join', (obj) => {
-  console.log(obj.confirmedMatchArr);
   if (obj.confirmedMatchArr.length > 0) {
     // 根據配對數量創造側邊小框
     obj.confirmedMatchArr.forEach(match => {
@@ -67,6 +58,7 @@ socket.on('history', (confirmedMatchObj) => {
     // 清空物品資訊區
     $('#gone-item-area').empty();
     // 根據物品數創造商品資訊框
+    let matchers = '';
     for (let i = 0; i < confirmedMatchObj.itemDataArr.length; i++) {
       // Create link to item detail page
       let link = $('<a></a>').attr('href',`/items/gone?item_id=${confirmedMatchObj.itemDataArr[i].id}`);
@@ -83,14 +75,17 @@ socket.on('history', (confirmedMatchObj) => {
       let tagsDiv = $('<div></div>').attr({ 'class': 'introduction-div tags user-item item-info' }).html(`${confirmedMatchObj.itemDataArr[i].user_nickname}`);
       itemContentDiv.append(titleDiv);
       itemContentDiv.append(tagsDiv);
+      const matcher = i === confirmedMatchObj.itemDataArr.length-1 ? `${confirmedMatchObj.itemDataArr[i].user_nickname} `:`${confirmedMatchObj.itemDataArr[i].user_nickname}, `;
+      matchers+=matcher;
     }
+    $('#matchers').html(matchers);
     $('#msg-area').empty();
     if (confirmedMatchObj.msgArr.length === 0) {
       let msgLine = $('<div></div>').attr({ 'class': 'msg-line' });
       $('#msg-area').append(msgLine);
       let msgDiv = $('<div></div>').attr({ 'class': 'msg-div' });
       msgLine.append(msgDiv);
-      let msgContent = $('<div></div>').attr({ 'class': 'msg-content' }).html('目前沒有對話喔，快和對方商量交換細節吧！');
+      let msgContent = $('<div></div>').attr({ 'class': 'msg-content' }).html('目前沒有對話喔，快和其他人商量交換細節吧！');
       msgDiv.append(msgContent);
     }
     confirmedMatchObj.msgArr.forEach(msg => {
@@ -106,8 +101,6 @@ socket.on('history', (confirmedMatchObj) => {
       let msgDiv = $('<div></div>').attr({ 'class': msgDivClass });
       msgLine.append(msgDiv);
       let msgTopbar = $('<div></div>').attr({ 'class': 'msg-topbar' });
-      console.log('msg.content');
-      console.log(msg.content);
       let msgContent = $('<div></div>').attr({ 'class': 'msg-content' }).text(msg.content);
       msgDiv.append(msgTopbar);
       msgDiv.append(msgContent);

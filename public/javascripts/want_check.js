@@ -166,7 +166,7 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
           Authorization: `Bearer ${localStorage.getItem('token')}`, // 等一下要去 wantAPI 添加驗證程序
         },
         success: (checkAllConfirmResultArr) => {
-          checkStatusNodeArr[0].html('User :  您, 已確認');
+          checkStatusNodeArr[0].html(`User :  ${localStorage.getItem('nickname')}, 已確認`);
           interactionBtnDiv.attr({ 'style': 'display:none;' });
           // 若有配對成功，alert 成功訊息
           alert(checkAllConfirmResultArr.msg);
@@ -182,15 +182,14 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
       });
     });
     let checkStatusNodeArr = [];
-    let ownersArr = Object.keys(matchedItemsDataArr[i]).length === 3 ? ['您', '對方', '他人']:['您', '對方'];
+    // let ownersArr = Object.keys(matchedItemsDataArr[i]).length === 3 ? ['您', '對方', '他人']:['您', '對方'];
     /**
      * 商品資訊區
      */
     // 每個配對的 item 一個框框
-    let divCounter = 0;
+    // let divCounter = 0;
     let show = true;
     for (let e in matchedItemsDataArr[i]) {
-      // console.log(typeof matchedItemsDataArr[i][e]);
       if (typeof matchedItemsDataArr[i][e] === 'object') {
         let itemData = matchResultObj.itemsDataArr.filter(item=>item.id === matchedItemsDataArr[i][e].item_id)[0];
         let link = $('<a></a>').attr({ 'href': `/items/detail?item_id=${itemData.id}` });
@@ -213,7 +212,7 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
         if (e === 'curUserWant') {
           basedonSpan.html('您提供的物品');
         } else if (e === 'secondUserWant') {
-          basedonSpan.html('您想要的物品');
+          basedonSpan.html('您配對的物品');
         } else if (e === 'thirdUserWant') {
           basedonSpan.html('第三人的物品');
         }
@@ -242,17 +241,12 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
          */
         if (matchedItemsDataArr[i].curUserWant.checked === 'confirm') {show = false;}
         let checked = matchedItemsDataArr[i][e].checked === 'confirm'?'已確認':'未確認';
-        // if (itemData.checked === 'confirm') {
-        //   itemData.checked = '已確認'
-        // } else {
-        //   itemData.checked = '未確認'
-        // }
         let ownercheckStatsus = $('<div></div>').attr({ 'class': 'user-check-status' }).html(
-          `User : ${ownersArr[divCounter]}, ${checked}`
+          `User : ${itemData.user_nickname}, ${checked}`
         );
         checkStatusNodeArr.push(ownercheckStatsus);
         ownercheckStatsus.insertBefore(interactionBtnDiv);
-        divCounter++;
+        // divCounter++;
       } else {
         console.log(e);
       }

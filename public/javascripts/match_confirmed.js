@@ -7,7 +7,6 @@ if (!localStorage.getItem('token')) {
 } 
 
 $('#send-msg-btn').click(()=>{
-  console.log('btn-click');
   sendMsg();
 });
 
@@ -17,7 +16,6 @@ function sendMsg() {
   // let currentTime = Date.now();
   // send msg to front end page
   if (userInputContent.length > 0 && currentMatchedId) {
-    console.log('send emit from page');
     socket.emit('message', {
       token:localStorage.getItem('token'),
       matched_id:currentMatchedId,
@@ -35,9 +33,9 @@ let infoBtn = $('#items-info-btn');
 infoBtn.click(()=>{
   if ($('.item-info').length > 0) {
     if (infoBtn.attr('style')==='background:rgb(235,235,235)') {
-      infoBtn.attr('style','background:none').html('點擊顯示物品清單');
+      infoBtn.attr('style','background:none').html('顯示成交物品');
     } else {
-      infoBtn.attr('style','background:rgb(235,235,235)').html('點擊隱藏物品清單');
+      infoBtn.attr('style','background:rgb(235,235,235)').html('隱藏成交物品');
     }
     // 點擊後變色
     // 點擊後開關 items-info-div

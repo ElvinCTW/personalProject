@@ -5,44 +5,29 @@ block content
       .inside-container.main.left
         .sub-container.main.left
           .sidebar.left(id="gone-item-area" style="display:none;")
-          //- - console.log(getConfirmedMatchesResultArr.length)
-          //- if getConfirmedMatchesResultArr.length > 0
-          //-   each match in getConfirmedMatchesResultArr
-          //-     .subscribe-item(onclick=`getMatchedResultData(${match.matched_id}, '${match.required_item_title}')`)
-          //-       .subscribe-content 
-          //-         span=match.required_item_title
-          //- else
-          //-   .subscribe-item
-          //-     .subscribe-content 
-          //-       span 目前沒有配對
       .inside-container.main.middle.detail
         .sub-container.main.middle.detail
           .items-area.detail.msg(id="items-area-recommand")
             .msg-top-area
-              .msg-top 對話清單
-              .msg-top(id="items-info-btn") 點擊顯示物品清單  
+              .msg-top(id="matchers")
+              .msg-top(id="items-info-btn") 顯示成交物品  
               .items-info-div(id="items-info-div" style="display:none;")
-              //-   .item-info
-              //-   .item-info
-              //-   .item-info
             .items-area.talk(id="msg-scroll")
               .msg-area(id="msg-area")
                 .msg-line
                   .msg-div 
                     .msg-topbar
                       .msg-name System
-                      .msg-time 2020/02/16
+                      .msg-time 
                     .msg-content 請點選右邊配對結果，開啟對話視窗～
             .horizental-line
             .user-interact-area
-              textarea.user-type-div(type="text" placeholder="請在此輸入訊息，最多250字元" name="user-type-content" id="user-type-content" maxlength="250")
+              textarea.user-type-div(type="text" placeholder="請在此輸入訊息，最長250字元" name="user-type-content" id="user-type-content" maxlength="250")
               button.msg-send-btn(type="button" id="send-msg-btn") 傳送訊息
       .inside-container.main.right
         .sub-container.main.right.user-item
           .items-area.top
-            h1.sub-title.user-item(id="item-add-subtitle") 戰利品清單
-            //- .button-div
-            //-   button(type="button" id="exchange-request-btn") 交換
+            h1.sub-title.user-item(id="item-add-subtitle") 成交物品清單
           .items-area.user-items
             .sub-main-container.user-items(id="items-area-user-item")
   script(src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js")

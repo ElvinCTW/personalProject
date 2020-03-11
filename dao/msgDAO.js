@@ -87,7 +87,7 @@ function sendMsgToNoMatcher(msg) {
   return new Promise((resolve, reject) => {
     pool.query('INSERT INTO message SET ?', [msg], (err, result) => {
       if (err) { reject(err); return; }
-      resolve(result);
+      resolve(result.affectedRows);
     });
   });
 }
@@ -101,7 +101,7 @@ function insertNewMatchMsg(msgArr) {
     });
     pool.query(string, [condition], (err, result) => {
       if (err) { reject(err); return; }
-      resolve(result);
+      resolve(result.affectedRows);
     });
   });
 }

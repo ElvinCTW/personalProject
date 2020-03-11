@@ -5,28 +5,15 @@ block content
       .inside-container.main.left
         .sub-container.main.left
           .subtext.subscribe(id="subs-subtext") 
-          //- - console.log(b_itemObjectArr.length)
-          //- if b_itemObjectArr.length > 0
-          //-   each want in b_itemObjectArr
-          //-     .subscribe-item(onclick=`getMatchedResultData(${want.id}, '${want.title}', 'want')`)
-          //-       .subscribe-content 
-          //-         span=want.title
-          //- else
-          //-   .subscribe-item
-          //-     .subscribe-content 
-          //-       span 目前沒有配對
       .inside-container.main.middle.match-check
         .sub-container.main.middle
-          h1.sub-title 與您相關的邀請紀錄
+          h1.sub-title 邀請紀錄
           .items-area.recommands(id="items-area-match")
-          //- .nomore-text-div(id="nomore-text-div") 請點選左方商品列查看更多配對
       .inside-container.main.right
         .sub-container.main.right.want-match
           .items-area.top.match-check
-            h1.sub-title.user-item(id="search-by-curuser-item" style="background:rgb(235,235,235)") 查詢您送出的邀請
-            h1.sub-title.user-item(id="search-by-required-item") 查詢向您送出的邀請
-            //- .button-div
-              //- button(type="button" id="exchange-request-btn") 交換
+            h1.sub-title.user-item(id="search-by-curuser-item" style="background:rgb(235,235,235)") 您送出的邀請
+            h1.sub-title.user-item(id="search-by-required-item") 向您送出的邀請
           .items-area.user-items
             .sub-main-container.user-items(id="items-area-user-item")
   script(src="/javascripts/want_invitation.js")

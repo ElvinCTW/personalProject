@@ -61,9 +61,18 @@ nav a {
   margin: 0;
 }
 
+img.t3t-icon {
+  width: 28px;
+  height: 28px;
+}
+
 span.navbar-brand {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 400;
+}
+
+#navbar-homepage-link {
+  display: flex;
 }
 
 .search,
@@ -498,8 +507,8 @@ main {
 }
 
 .inside-container.main.left.signup {
-  width: 570px;
-  justify-content: flex-end;
+  width: 700px;
+  justify-content: center;
   align-items: center;
   margin: 20px 0;
 }
@@ -554,8 +563,9 @@ main {
 
 .sub-container.main.left.signup {
   display: flex;
-  width: 370px;
   height: 510px;
+  border-radius: 250px;
+  background: #e9ebee;
 }
 
 .new-item,

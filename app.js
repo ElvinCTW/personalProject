@@ -112,6 +112,7 @@ async function getHomePageData(req) {
     const { getItemDataFromSearchBar } = require('./dao/item');
     let titleArr = [];
     let hashtagArr = [];
+    // uniform search content
     search.split(' ').filter(string => string !== '').forEach(string => {
       let array = string.slice(0, 1) === '#' ? hashtagArr : titleArr;
       array.push(string);

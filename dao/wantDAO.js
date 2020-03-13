@@ -172,9 +172,9 @@ function insertMatchRecord(id_Arr) {
     let queryString = '';
     if (id_Arr) {
       if (id_Arr.length === 3) {
-        queryString = 'INSERT INTO matched(start_item_id, middle_item_id, end_item_id) VALUES(?)';
+        queryString = 'INSERT INTO matches(start_item_id, middle_item_id, end_item_id) VALUES(?)';
       } else if (id_Arr.length === 2) {
-        queryString = 'INSERT INTO matched(start_item_id, end_item_id) VALUES(?)';
+        queryString = 'INSERT INTO matches(start_item_id, end_item_id) VALUES(?)';
       }
       pool.query(queryString, [id_Arr], (err, result) => {
         if (err) { reject(err); return; }

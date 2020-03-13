@@ -6,8 +6,8 @@ function getConfirmedMatchItemsId(matched_id) {
       `SELECT start_item_id, 
     middle_item_id, 
     end_item_id 
-    FROM matched 
-    WHERE matched.id = ?`;
+    FROM matches 
+    WHERE matches.id = ?`;
     mysql.advancedQuery({
       queryString: queryString,
       queryCondition: [matched_id],
@@ -32,9 +32,9 @@ function insertMatchRecord(id_Arr) {
     let queryString = '';
     if (id_Arr) {
       if (id_Arr.length === 3) {
-        queryString = 'INSERT INTO matched(start_item_id, middle_item_id, end_item_id) VALUES(?)';
+        queryString = 'INSERT INTO matches(start_item_id, middle_item_id, end_item_id) VALUES(?)';
       } else if (id_Arr.length === 2) {
-        queryString = 'INSERT INTO matched(start_item_id, end_item_id) VALUES(?)';
+        queryString = 'INSERT INTO matches(start_item_id, end_item_id) VALUES(?)';
       }
       mysql.pool.query(queryString, [id_Arr], (err, insertMatchTableResult) => {
         if (err) { reject(err); return; }

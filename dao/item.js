@@ -14,16 +14,16 @@ function getItemDataByType(page, category, nickname) {
       let condition;
       if (!category.sub_category) {
         // select all by main category only
-        string = itemJoinString + 'WHERE i.main_category = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
+        string = itemJoinString + 'WHERE ic.main_category_id = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
         condition = [category.main_category, page * 20];
       } else {
         if (!category.status) {
           // select all by main and sub category
-          string = itemJoinString + 'WHERE i.main_category = ? AND i.sub_category = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
+          string = itemJoinString + 'WHERE ic.main_category_id = ? AND ic.sub_category_id = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
           condition = [category.main_category, category.sub_category, page * 20];
         } else {
           // select all by main and sub category and status
-          string = itemJoinString + 'WHERE i.main_category = ? AND i.sub_category = ? AND i.status = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
+          string = itemJoinString + 'WHERE ic.main_category_id = ? AND ic.sub_category_id = ? AND i.status = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
           condition = [category.main_category, category.sub_category, category.status, page * 20];
         }
       }
@@ -38,6 +38,8 @@ function getItemDataByType(page, category, nickname) {
       pool.query(string, condition, (err, result) => {
         if (err) { reject(err); console.log(err); return; }
         if (result.length === 20) { result.next_paging = page + 1; }
+        console.log('result')
+        console.log(result)
         resolve(result);
       });
     }

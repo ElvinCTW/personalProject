@@ -6,7 +6,7 @@ function checkVaildUserOfChat(token, matched_id) {
     let queryString =
       `SELECT u.* FROM items i
       JOIN users u ON i.user_id = u.id
-      JOIN matched m ON m.id = i.matched_id
+      JOIN matches m ON m.id = i.matched_id
       WHERE u.token = ?
       AND i.matched_id = ?`;
     mysql.advancedQuery({

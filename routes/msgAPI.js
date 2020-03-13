@@ -9,7 +9,6 @@ router.post('/watched', async (req, res)=>{
   await markMsgAsWatched(token,id)
     .catch(err=>console.log(err))
     .then(affectedRows=>res.send(`${affectedRows}`));
-  
 });
 
 router.get('/header', async (req, res)=>{

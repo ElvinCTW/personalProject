@@ -19,11 +19,10 @@ const itemJoinString =
   `SELECT i.*, 
   u.nickname user_nickname,
   u.id user_id,
-  m.main_category main_category_text,
-  s.sub_category sub_category_text
-  FROM triangle_trade.items i 
-  JOIN main_category m on m.id = i.main_category 
-  JOIN sub_category s on s.id = i.sub_category
+  ic.main_category_id main_category_text,
+  ic.sub_category_id sub_category_text
+  FROM items i 
+  JOIN item_categories ic ON i.id = ic.item_id
   JOIN users u on u.id = i.user_id `;
 
 function errLog(err, functionName, fileName) {

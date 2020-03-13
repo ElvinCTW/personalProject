@@ -1,4 +1,4 @@
-const mysql = require('../util/mysql');
+const {pool} = require('../util/mysql');
 module.exports = {
   get: (queryData) => {
     return new Promise((resolve, reject) => {
@@ -12,9 +12,9 @@ module.exports = {
           categoriesType = 'subCategories';
           queryString = 
           `SELECT s.* FROM sub_main sm 
-          JOIN main_category m 
+          JOIN main_categories m 
           ON m.id = sm.main_id 
-          JOIN sub_category s 
+          JOIN sub_categories s 
           ON s.id = sm.sub_id 
           WHERE m.id = ? 
           ORDER BY s.id DESC`;
@@ -23,23 +23,33 @@ module.exports = {
           console.log(queryCondition);
         } else if (queryData.action === 'getMainCategories') {
           categoriesType = 'mainCategories';
-          queryString = 'SELECT * FROM main_category m ORDER BY m.id DESC';
+          queryString = 'SELECT * FROM main_categories m ORDER BY m.id DESC';
         } else {
           console.log('no such requrest, categoryDAO');
         }
-        mysql.pool.query(queryString, queryCondition, (err, listData) => {
+        pool.query(queryString, queryCondition, (err, listData) => {
           if (err) {
-            mysql.errLog(err, 'listData', 'categoryDAO');
             reject(err);
           } else {
-            let resObj = {
-              listData:listData,
-            };
+            let resObj = {listData};
             resObj[categoriesType] = categoriesType;
             resolve(resObj);
           }
         });
       }
     });
-  }
+  },
+  insertItemCategory,
 };
+
+function insertItemCategory(data) {
+  return new Promise((resolve,reject)=>{
+    const string = 
+    'INSERT INTO item_categories SET ?';
+    const condition = [data];
+    pool.query(string, condition, (err, result) => {
+      if (err) { reject(err); return; }
+      resolve(result.affectedRows);
+    });
+  });
+}

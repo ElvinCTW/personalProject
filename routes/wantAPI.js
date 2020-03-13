@@ -65,7 +65,7 @@ router.post('/new', async (req, res) => {
         receiver: itemsDataOfAllObj[secondItemId].user_id,
         sender: 'system',
         time: Date.now().toString(),
-        type: '/want/invitation'
+        link: '/want/invitation'
       });
       if (insertCount !== 1) { console.log('insertCount not equal to 1, it is ' + insertCount); }
     } else {
@@ -221,7 +221,7 @@ router.get('/check', async (req, res) => {
 // 配對頁面按下確認鍵時用
 router.post('/checked', async (req, res) => {
   const { want_item_id, required_item_id } = req.body;
-  const { updateWantToConfirm, } = require('../dao/wantDAO');
+  const { updateWantToConfirm } = require('../dao/wantDAO');
   const token = req.headers.authorization.split(' ')[1];
   const item_id = parseInt(req.body.want_item_id);
   const userCheck = await getUserDataByToken(token, item_id)

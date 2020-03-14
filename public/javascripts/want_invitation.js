@@ -71,7 +71,7 @@ function getWantInvitation(token) {
       }
 
     },
-    error: (err) => {
+    error: () => {
       alert('暫時無法為您顯示邀請><若持續發生請通知我們，謝謝！');
     }
   });
@@ -104,7 +104,7 @@ function getMatchedResultData(item_id, data, item_type) {
       let want_items_Arr = matchedItemsDataArr[i].required_item_id.toString(); // cur user item id
       let confirmBtn = $('<button></button>').attr({
         'class': 'interaction-btn',
-      }).html('確認').click(() => { // 送出確認請求
+      }).html('接受邀請').click(() => { // 送出確認請求
         interactionBtnDiv.attr({ 'style': 'display:none;' });
         $.ajax({
           url: '/api/1.0/want/new',

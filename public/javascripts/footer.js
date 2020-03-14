@@ -2,9 +2,10 @@
 if (localStorage.getItem('token')) {
 
   // Sign in status
-  const nickname = localStorage.getItem('nickname');
   const token = localStorage.getItem('token');
-  $('#navbar-member-link').text(`${nickname}`).attr('href', '/').click(() => {
+  const nickname = $('<div />').attr('style','margin-right:14px;').html(localStorage.getItem('nickname'));
+  nickname.insertBefore($('.userbar'));
+  $('#navbar-member-link').text('登出').attr('href', '/').click(() => {
     localStorage.removeItem('token');
     localStorage.removeItem('nickname');
   });
@@ -48,7 +49,7 @@ function getNotification(token) {
         msgArr.forEach(msgObj => {
           // show unread dot
           let link = $('<a />').attr({
-            href: msgObj.type,
+            href: msgObj.link,
             class: 'header-msg',
           });
           $('#notification-area').append(link);

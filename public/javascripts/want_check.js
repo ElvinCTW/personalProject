@@ -154,7 +154,7 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
     data.want_item_id = matchedItemsDataArr[i].curUserWant.item_id; // user_item_id
     let confirmBtn = $('<button></button>').attr({
       'class': 'interaction-btn',
-    }).html('確認').click(() => { // 送出確認請求
+    }).html('確認交換').click(() => { // 送出確認請求
       data.type = 'confirm';
       console.log('data is:');
       console.log(data);
@@ -166,7 +166,7 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
           Authorization: `Bearer ${localStorage.getItem('token')}`, // 等一下要去 wantAPI 添加驗證程序
         },
         success: (checkAllConfirmResultArr) => {
-          checkStatusNodeArr[0].html(`User :  ${localStorage.getItem('nickname')}, 已確認`);
+          checkStatusNodeArr[0].html(`${localStorage.getItem('nickname')} : 已確認`);
           interactionBtnDiv.attr({ 'style': 'display:none;' });
           // 若有配對成功，alert 成功訊息
           alert(checkAllConfirmResultArr.msg);
@@ -242,7 +242,7 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
         if (matchedItemsDataArr[i].curUserWant.checked === 'confirm') {show = false;}
         let checked = matchedItemsDataArr[i][e].checked === 'confirm'?'已確認':'未確認';
         let ownercheckStatsus = $('<div></div>').attr({ 'class': 'user-check-status' }).html(
-          `User : ${itemData.user_nickname}, ${checked}`
+          `${itemData.user_nickname}: ${checked}`
         );
         checkStatusNodeArr.push(ownercheckStatsus);
         ownercheckStatsus.insertBefore(interactionBtnDiv);

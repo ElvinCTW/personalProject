@@ -1,5 +1,6 @@
 const users = [
   {
+    id:1,
     sign_id: 'test',
     password: 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',
     nickname: '測試用戶',
@@ -8,18 +9,20 @@ const users = [
     watch_msg_time: '1583646727989',
   },
   {
-    sign_id: 'testz',
+    id:2,
+    sign_id: 'test2',
     password: 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',
     nickname: '測試用戶2',
-    token: 'testz',
+    token: 'test2',
     time: '1582631682264',
     watch_msg_time: '1583646755773',
   },
   {
-    sign_id: 'ppp',
+    id:3,
+    sign_id: 'test3',
     password: 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',
     nickname: '測試用戶3',
-    token: 'ppp',
+    token: 'test3',
     time: '1583401085543',
     watch_msg_time: '1583668448697',
   },
@@ -28,6 +31,7 @@ const users = [
 const items = [
   // items 1-3 for available want logic test
   { // item 1
+    id:1,
     user_id: 1,
     tags: '#item1',
     title: 'item1',
@@ -40,10 +44,11 @@ const items = [
     matched_item_id: null,
   },
   { // item 2
+    id:2,
     user_id: 2,
     tags: '#item2',
     title: 'item2',
-    status: '全新',
+    status: '二手',
     introduction: 'item2',
     pictures: 'userUpload/zzz/zzz-1583303100343,',
     time: '1583331295751',
@@ -52,10 +57,11 @@ const items = [
     matched_item_id: null,
   },
   { // item 3
+    id:3,
     user_id: 3,
     tags: '#item3',
     title: 'item3',
-    status: '全新',
+    status: '觀賞用',
     introduction: 'item3',
     pictures: 'userUpload/zzz/zzz-1583303100343,',
     time: '1583331295751',
@@ -65,10 +71,11 @@ const items = [
   },
   // items 4-5 for double matched logic test
   { // item 4
+    id:4,
     user_id: 1,
     tags: '#item4',
     title: 'item4',
-    status: '全新',
+    status: '觀賞用',
     introduction: 'item4',
     pictures: 'userUpload/zzz/zzz-1583055020042,',
     time: '1583331295751',
@@ -77,10 +84,11 @@ const items = [
     matched_item_id: 5,
   },
   { // item 5
+    id:5,
     user_id: 2,
     tags: '#item5',
     title: 'item5',
-    status: '全新',
+    status: '二手',
     introduction: 'item5',
     pictures: 'userUpload/我不是彭彭/我不是彭彭-1582369750203,',
     time: '1583331295751',
@@ -90,6 +98,7 @@ const items = [
   },
   // items 6-8 for triple matched logic test
   { // item 6
+    id:6,
     user_id: 1,
     tags: '#item6',
     title: 'item6',
@@ -102,10 +111,11 @@ const items = [
     matched_item_id: 7,
   },
   { // item 7
+    id:7,
     user_id: 2,
     tags: '#item7',
     title: 'item7',
-    status: '全新',
+    status: '觀賞用',
     introduction: 'item7',
     pictures: 'userUpload/C2H5OH/C2H5OH-1582601426642,',
     time: '1583331295751',
@@ -114,6 +124,7 @@ const items = [
     matched_item_id: 8,
   },
   { // item 8
+    id:8,
     user_id: 3,
     tags: '#item8',
     title: 'item8',
@@ -129,48 +140,57 @@ const items = [
 const want = [
   // for non-matched want test
   {
+    id:1,
     want_item_id: 1,
     required_item_id: 2,
-    checked: 'false',
+    checked: 'pending',
   },
   {
+    id:2,
     want_item_id: 2,
     required_item_id: 1,
-    checked: 'false',
+    checked: 'pending',
   },
   {
+    id:3,
     want_item_id: 2,
     required_item_id: 3,
-    checked: 'false',
+    checked: 'pending',
   },
   {
+    id:4,
     want_item_id: 3,
     required_item_id: 1,
-    checked: 'false',
+    checked: 'pending',
   },
   // for double match test
   {
+    id:5,
     want_item_id: 4,
     required_item_id: 5,
     checked: 'confirm',
   },
   {
+    id:6,
     want_item_id: 5,
     required_item_id: 4,
     checked: 'confirm',
   },
   // for triple match test
   {
+    id:7,
     want_item_id: 6,
     required_item_id: 7,
     checked: 'confirm',
   },
   {
+    id:8,
     want_item_id: 7,
     required_item_id: 8,
     checked: 'confirm',
   },
   {
+    id:9,
     want_item_id: 8,
     required_item_id: 6,
     checked: 'confirm',
@@ -289,105 +309,126 @@ const sub_categories = [
 
 const main_sub_categories = [
   {
-    main_category_id:1,
-    sub_category_id:1,
+    main_category_id: 1,
+    sub_category_id: 1,
   },
   {
-    main_category_id:2,
-    sub_category_id:2,
+    main_category_id: 2,
+    sub_category_id: 1,
   },
   {
-    main_category_id:2,
-    sub_category_id:3,
+    main_category_id: 2,
+    sub_category_id: 2,
   },
   {
-    main_category_id:2,
-    sub_category_id:4,
+    main_category_id: 2,
+    sub_category_id: 3,
   },
   {
-    main_category_id:2,
-    sub_category_id:5,
+    main_category_id: 2,
+    sub_category_id: 4,
   },
   {
-    main_category_id:3,
-    sub_category_id:6,
+    main_category_id: 2,
+    sub_category_id: 5,
   },
   {
-    main_category_id:4,
-    sub_category_id:7,
+    main_category_id: 3,
+    sub_category_id: 1,
   },
   {
-    main_category_id:4,
-    sub_category_id:8,
+    main_category_id: 3,
+    sub_category_id: 6,
   },
   {
-    main_category_id:4,
-    sub_category_id:9,
+    main_category_id: 4,
+    sub_category_id: 1,
   },
   {
-    main_category_id:4,
-    sub_category_id:10,
+    main_category_id: 4,
+    sub_category_id: 7,
   },
   {
-    main_category_id:5,
-    sub_category_id:11,
+    main_category_id: 4,
+    sub_category_id: 8,
   },
   {
-    main_category_id:5,
-    sub_category_id:12,
+    main_category_id: 4,
+    sub_category_id: 9,
   },
   {
-    main_category_id:5,
-    sub_category_id:13,
+    main_category_id: 4,
+    sub_category_id: 10,
   },
   {
-    main_category_id:5,
-    sub_category_id:14,
+    main_category_id: 5,
+    sub_category_id: 1,
   },
   {
-    main_category_id:5,
-    sub_category_id:15,
+    main_category_id: 5,
+    sub_category_id: 11,
   },
   {
-    main_category_id:5,
-    sub_category_id:16,
+    main_category_id: 5,
+    sub_category_id: 12,
   },
   {
-    main_category_id:3,
-    sub_category_id:17,
+    main_category_id: 5,
+    sub_category_id: 13,
   },
   {
-    main_category_id:3,
-    sub_category_id:18,
+    main_category_id: 5,
+    sub_category_id: 14,
   },
   {
-    main_category_id:3,
-    sub_category_id:19,
+    main_category_id: 5,
+    sub_category_id: 15,
   },
   {
-    main_category_id:3,
-    sub_category_id:20,
+    main_category_id: 5,
+    sub_category_id: 16,
   },
   {
-    main_category_id:6,
-    sub_category_id:17,
+    main_category_id: 3,
+    sub_category_id: 17,
   },
   {
-    main_category_id:6,
-    sub_category_id:18,
+    main_category_id: 3,
+    sub_category_id: 18,
   },
   {
-    main_category_id:6,
-    sub_category_id:19,
+    main_category_id: 3,
+    sub_category_id: 19,
   },
   {
-    main_category_id:6,
-    sub_category_id:20,
+    main_category_id: 3,
+    sub_category_id: 20,
+  },
+  {
+    main_category_id: 6,
+    sub_category_id: 1,
+  },
+  {
+    main_category_id: 6,
+    sub_category_id: 17,
+  },
+  {
+    main_category_id: 6,
+    sub_category_id: 18,
+  },
+  {
+    main_category_id: 6,
+    sub_category_id: 19,
+  },
+  {
+    main_category_id: 6,
+    sub_category_id: 20,
   },
 ];
 
 const messages = [
   {
+    id:1,
     content: 'test1',
     sender: 'system',
     time: '1582601355567',
@@ -397,52 +438,61 @@ const messages = [
   },
 ];
 
-const matches = [{
-  start_item_id:6,
-  middle_item_id:7,
-  end_item_id:8,
-}];
+const matches = [
+  {
+    id:1,
+    start_item_id: 4,
+    middle_item_id: null,
+    end_item_id: 5,
+  },
+  {
+    id:2,
+    start_item_id: 6,
+    middle_item_id: 7,
+    end_item_id: 8,
+  }
+];
 
 const items_category = [
   {
-    main_category_id:1,
-    sub_category:1,
-    item_id:1,
+    main_category_id: 1,
+    sub_category: 1,
+    item_id: 1,
   },
   {
-    main_category_id:2,
-    sub_category:2,
-    item_id:2,
+    main_category_id: 2,
+    sub_category: 2,
+    item_id: 2,
   },
   {
-    main_category_id:2,
-    sub_category:3,
-    item_id:3,
+    main_category_id: 2,
+    sub_category: 3,
+    item_id: 3,
   },
   {
-    main_category_id:1,
-    sub_category:1,
-    item_id:4,
+    main_category_id: 6,
+    sub_category: 20,
+    item_id: 4,
   },
   {
-    main_category_id:1,
-    sub_category:1,
-    item_id:5,
+    main_category_id: 6,
+    sub_category: 17,
+    item_id: 5,
   },
   {
-    main_category_id:1,
-    sub_category:1,
-    item_id:6,
+    main_category_id: 6,
+    sub_category: 18,
+    item_id: 6,
   },
   {
-    main_category_id:1,
-    sub_category:1,
-    item_id:7,
+    main_category_id: 6,
+    sub_category: 19,
+    item_id: 7,
   },
   {
-    main_category_id:1,
-    sub_category:1,
-    item_id:8,
+    main_category_id: 6,
+    sub_category: 20,
+    item_id: 8,
   },
 ];
 

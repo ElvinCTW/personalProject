@@ -3,13 +3,12 @@ block content
   - let boardTitle;
   - let beforeSubtitle='';
   //- '/'
-  if categories
-    if categories.mainCategories
-      - boardTitle = '物品分類清單'
-    //- '/?main_category=?'
-    else if categories.subCategories
-      - boardTitle = '子分類清單'
-      - beforeSubtitle = main+' > '
+  if categories.mainCategories
+    - boardTitle = '物品分類清單'
+  //- '/?main_category=?'
+  else if categories.subCategories
+    - boardTitle = '子分類清單'
+    - beforeSubtitle = main+' > '
   //- '/main_category=?&sub_category=?'
   else if statusList
     - boardTitle = '物品狀態選單'

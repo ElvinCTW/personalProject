@@ -1,6 +1,6 @@
 require('dotenv').config();
 const { NODE_ENV } = process.env;
-const { main_sub_categories, users, want, items, main_categories, sub_categories, messages, matches, items_category } = require('./fake_data');
+const { tags, items_tags, main_sub_categories, users, want, items, main_categories, sub_categories, messages, matches, items_category } = require('./fake_data');
 const { pool } = require('../util/mysql');
 
 /**
@@ -61,15 +61,43 @@ async function _createFakeData() {
   }
   console.log('create fake data');
   return _createFakeUser()
+    .then(() => { return _createFakeTags(); })
     .then(() => { return _createFakeMainCategories(); })
     .then(() => { return _createFakeSubCategories(); })
     .then(() => { return _createFakeMessages(); }) 
     .then(() => { return _createFakeItems(); })
     .then(() => { return _createFakeMatches(); })
     .then(() => { return _createFakeWant(); })
+    .then(() => { return _createFakeItemsTags(); })
     .then(() => { return _createFakeItemCategories(); })
     .then(() => { return _createFakeMainSubCategories(); })
     .catch(err => console.log(err));
+
+
+
+  function _createFakeItemsTags() {
+    return new Promise((resolve, reject) => {
+      pool.query('INSERT INTO items_tags(item_id, tag_id) values ?', [items_tags.map(obj => Object.values(obj))], (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    }).catch(err => console.log(err));
+  }
+
+  function _createFakeTags() {
+    return new Promise((resolve, reject) => {
+      pool.query('INSERT INTO tags(id, tag) values ?', [tags.map(obj => Object.values(obj))], (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    }).catch(err => console.log(err));
+  }
 
   function _createFakeMainSubCategories() {
     return new Promise((resolve, reject) => {

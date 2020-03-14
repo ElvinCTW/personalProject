@@ -496,6 +496,36 @@ const items_category = [
   },
 ];
 
+const tags = [
+  {
+    id:1,
+    tag:'item1',
+  },
+  {
+    id:2,
+    tag:'item2',
+  },
+  {
+    id:3,
+    tag:'item3',
+  }
+];
+
+const items_tags = [
+  {
+    item_id:1,
+    tag_id:1,
+  },
+  {
+    item_id:2,
+    tag_id:2,
+  },
+  {
+    item_id:3,
+    tag_id:3,
+  }
+];
+
 module.exports = {
   items,
   users,
@@ -506,4 +536,6 @@ module.exports = {
   matches,
   items_category,
   main_sub_categories,
+  tags,
+  items_tags,
 };

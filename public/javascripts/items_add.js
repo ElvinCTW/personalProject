@@ -21,12 +21,18 @@ if (localStorage.getItem('newItem')) {
 (()=>{
   $('#main_category').click(() => {
     $('#main_category_box').toggle();
+    $('#sub_category_box').hide();
+    $('#status_box').hide();
   });
   $('#sub_category').click(() => {
     $('#sub_category_box').toggle();
+    $('#main_category_box').hide();
+    $('#status_box').hide();
   });
   $('#status').click(() => {
     $('#status_box').toggle();
+    $('#sub_category_box').hide();
+    $('#main_category_box').hide();
   });
 })();
 // 進入頁面自動點擊主分類
@@ -50,8 +56,6 @@ $.ajax({
 });
 // 更新主分類 & 主分類選擇
 $('#main_category_list').click((e) => {
-  // console.log('e')
-  // console.log(e)
   $('#main_category_text').text(`${e.toElement.innerText}`);
   $('#main_category_input').val(`${e.originalEvent.toElement.attributes.main_id.value}`);
   // 取得次分類資料
@@ -69,7 +73,6 @@ $('#main_category_list').click((e) => {
         }).html(sub.sub_category);
         $('#sub_category_list').append(option);
       });
-      $('#sub_category').trigger('click');
     },
     error: (err) => {
       alert(err);
@@ -89,7 +92,6 @@ $('#sub_category_list').click((e) => {
     if ($('#status_input').val() !== '' && $('#main_category_input').val() !== '') {
       $('#add-items-btn').attr({ type: 'submit' });
     }
-    $('#status').trigger('click');
   }
 });
 // 狀態選擇

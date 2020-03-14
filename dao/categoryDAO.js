@@ -41,7 +41,7 @@ module.exports = {
 function insertItemCategory(data) {
   return new Promise((resolve,reject)=>{
     const string = 
-    'INSERT INTO item_categories SET ?';
+    'INSERT INTO items_category SET ?';
     const condition = [data];
     pool.query(string, condition, (err, result) => {
       if (err) { reject(err); return; }

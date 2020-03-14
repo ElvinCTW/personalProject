@@ -3,23 +3,6 @@ const router = express.Router();
 
 // Add new item API
 router.post('/new', async (req, res) => {
-  await addNewItemProcess(req, res)
-    .catch(err => {
-      console.log('err');
-      console.log(err);
-      res.status(500).render('item_result', { errorMsg: '資料庫有誤，請稍候再試QQ' });
-    })
-    .then(() => { res.status(200).render('item_result', { successMsg: '新增物品成功!' }); });
-});
-// get recommmand items
-router.get('/all', async (req, res) => {
-  // Lastest items for someone not member
-  await getItemDataProcess(req)
-    .then(ItemDataArr => { res.status(200).send(ItemDataArr); })
-    .catch(err => { res.status(500).send(err); return; });
-});
-
-async function addNewItemProcess(req, res) {
   let userID;
   let userNickname;
   const aws = require('aws-sdk');
@@ -64,7 +47,7 @@ async function addNewItemProcess(req, res) {
       picturesString += `${pictures[i].key},`;
     }
     // insert item
-    await insertNewItem({
+    const insertItemResult = await insertNewItem({
       user_id: userID,
       tags: req.body.tags,
       title: req.body.title,
@@ -72,18 +55,29 @@ async function addNewItemProcess(req, res) {
       introduction: req.body.introduction,
       pictures: picturesString,
       time: Date.now().toString(),
-    })
-      .then((insertItemResult) => {
-        insertItemCategory({
-          main_category_id: req.body.main_category,
-          sub_category_id: req.body.sub_category,
-          item_id: insertItemResult[0].insertId,
-        });
-      })
-      .then((insertCategoryResult)=> {return insertCategoryResult.affectedRows;})
-      .catch((err) => { throw err; });
+    });
+
+    const insertCount = await insertItemCategory({
+      main_category_id: req.body.main_category,
+      sub_category_id: req.body.sub_category,
+      item_id: insertItemResult.insertId,
+    });
+
+    if (insertCount === 1) {
+      res.status(200).render('item_result', { successMsg: '新增物品成功!' });
+    } else {
+      res.status(500).render('item_result', { errorMsg: '抱歉，新增物品失敗><若持續發生請聯繫我們' });
+    }
+    
   });
-}
+});
+// get recommmand items
+router.get('/all', async (req, res) => {
+  // Lastest items for someone not member
+  await getItemDataProcess(req)
+    .then(ItemDataArr => { res.status(200).send(ItemDataArr); })
+    .catch(err => { res.status(500).send(err); return; });
+});
 
 async function getItemDataProcess(req) {
   const { getItemDataByType } = require('../dao/item');

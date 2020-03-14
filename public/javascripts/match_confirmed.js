@@ -27,6 +27,7 @@ function sendMsg() {
     });
   } else {
     alert('請確認已點選左方配對物，並填入對話內容');
+    $('#user-type-content').val('');
   }
 }
 let infoBtn = $('#items-info-btn');

@@ -154,6 +154,6 @@ function getMatchedResultData(matched_id) {
   });
 }
 
-socket.on('message-fail', (obj)=>{
+socket.on('error', (obj)=>{
   alert(obj.errorMsg);
 });

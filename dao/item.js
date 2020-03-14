@@ -46,9 +46,9 @@ function getItemDataByType(page, category, nickname) {
 
 function insertNewItem(data) {
   return new Promise((resolve, reject) => {
-    pool.query('INSERT INTO items SET ?', data, (err, insertItem) => {
+    pool.query('INSERT INTO items SET ?', data, (err, result) => {
       if (err) { reject(err); return; }
-      resolve(insertItem);
+      resolve(result);
     });
   });
 }
@@ -118,6 +118,7 @@ async function getItemDataFromSearchBar(titleArr, hashtagArr) {
         FROM items i${i}
         WHERE i${i}.title
         LIKE ? 
+        AND i${i}.availability = "true"
         UNION ALL `;
         count++;
       }
@@ -130,6 +131,7 @@ async function getItemDataFromSearchBar(titleArr, hashtagArr) {
         FROM items i${j}
         WHERE i${j}.tags
         LIKE ?
+        AND i${j}.availability = "true"
         UNION ALL `;
       }
     }

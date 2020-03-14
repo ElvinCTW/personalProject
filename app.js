@@ -27,7 +27,12 @@ app.use(express.static(path.join(__dirname, 'public')));
  */
 // Index
 app.get('/', async (req, res) => {
-  res.render('index', await getHomePageData(req));
+  const homePageData =  await getHomePageData(req)
+    .catch(err=>{console.log(err); res.render('index', {}); });
+  if (!homePageData) return;
+  console.log('homePageData');
+  console.log(homePageData);
+  res.render('index', homePageData);
 });
 // sign up
 app.get('/users/signup', (req, res) => { res.render('signup'); });
@@ -68,9 +73,9 @@ app.use(function (err, req, res) {
 });
 
 async function getHomePageData(req) {
-  const { mainBoardsList, statusList } = require('./util/listData');
+  const { statusList } = require('./util/listData');
   const awsConfig = require('./util/awsConfig');
-  let resData = { mainBoardsList };
+  let resData = {};
   resData.categories = await getSideBarList(req.query);
   if (!req.query.status && req.query.main_category && req.query.sub_category) {
     resData.statusList = statusList;

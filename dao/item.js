@@ -32,14 +32,12 @@ function getItemDataByType(page, category, nickname) {
         resolve(result);
       });
     } else {
-      // lastest
+      // latest
       const string = itemJoinString + 'WHERE i.availability = "true" ORDER BY i.time DESC LIMIT ?, 20';
       const condition = [page * 20];
       pool.query(string, condition, (err, result) => {
         if (err) { reject(err); console.log(err); return; }
         if (result.length === 20) { result.next_paging = page + 1; }
-        console.log('result')
-        console.log(result)
         resolve(result);
       });
     }

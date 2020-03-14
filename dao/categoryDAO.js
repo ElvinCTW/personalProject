@@ -11,16 +11,12 @@ module.exports = {
         if (queryData.action === 'getSubCategories') {
           categoriesType = 'subCategories';
           queryString = 
-          `SELECT s.* FROM sub_main sm 
-          JOIN main_categories m 
-          ON m.id = sm.main_id 
-          JOIN sub_categories s 
-          ON s.id = sm.sub_id 
-          WHERE m.id = ? 
+          `SELECT s.* FROM sub_categories s 
+          JOIN main_sub_categories ms 
+          ON s.id = ms.sub_category_id 
+          WHERE ms.main_category_id = ?  
           ORDER BY s.id DESC`;
           queryCondition.push(queryData.main_category);
-          console.log('queryCondition');
-          console.log(queryCondition);
         } else if (queryData.action === 'getMainCategories') {
           categoriesType = 'mainCategories';
           queryString = 'SELECT * FROM main_categories m ORDER BY m.id DESC';

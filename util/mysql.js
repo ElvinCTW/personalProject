@@ -19,10 +19,12 @@ const itemJoinString =
   `SELECT i.*, 
   u.nickname user_nickname,
   u.id user_id,
-  ic.main_category_id main_category_text,
-  ic.sub_category_id sub_category_text
+  mc.main_category main_category_text,
+  sc.sub_category sub_category_text
   FROM items i 
-  JOIN item_categories ic ON i.id = ic.item_id
+  JOIN items_category ic ON i.id = ic.item_id
+  JOIN main_categories mc ON mc.id = ic.main_category_id
+  JOIN sub_categories sc ON sc.id = ic.sub_category_id
   JOIN users u on u.id = i.user_id `;
 
 function errLog(err, functionName, fileName) {

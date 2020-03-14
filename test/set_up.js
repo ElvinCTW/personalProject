@@ -13,51 +13,27 @@ const setup = async ()=>{
 };
 
 async function checkFakeData() {
-  await getAllUsers();
-  await getAllWant();
-  await getAllItems();
+  await checkTable('want');
+  await checkTable('users');
+  await checkTable('items');
+  await checkTable('main_categories');
+  await checkTable('sub_categories');
+  await checkTable('messages');
+  await checkTable('matches');
+  await checkTable('items_category');
+  await checkTable('main_sub_categories');
   return;
 }
 
-function getAllWant() {
+function checkTable(table) {
   return new Promise((resolve,reject)=>{
-    let string = 'SELECT * FROM want';
+    let string = `SELECT * FROM ${table}`;
     let condition = [];
     pool.query(string, condition, (err, result) => {
       if (err) {
         reject(err);
       } else {
-        console.log(` Count of want : ${result.length}`);
-        resolve();
-      }
-    });
-  });
-}
-
-function getAllItems() {
-  return new Promise((resolve,reject)=>{
-    let string = 'SELECT * FROM items';
-    let condition = [];
-    pool.query(string, condition, (err, result) => {
-      if (err) {
-        reject(err);
-      } else {
-        console.log(` Count of items : ${result.length}`);
-        resolve();
-      }
-    });
-  });
-}
-
-function getAllUsers() {
-  return new Promise((resolve,reject)=>{
-    let string = 'SELECT * FROM users';
-    let condition = [];
-    pool.query(string, condition, (err, result) => {
-      if (err) {
-        reject(err);
-      } else {
-        console.log(` Count of users : ${result.length}`);
+        console.log(`Count of ${table} : ${result.length}`);
         resolve();
       }
     });

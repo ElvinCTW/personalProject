@@ -207,123 +207,182 @@ const main_categories = [
 const sub_categories = [
   {
     id: 1,
-    main_category_id: 1,
     sub_category: '其他',
   },
   {
     id: 2,
-    main_category_id: 2,
     sub_category: '相機',
   },
   {
     id: 3,
-    main_category_id: 3,
     sub_category: '鏡頭',
   },
   {
     id: 4,
-    main_category_id: 4,
     sub_category: '底片',
   },
   {
     id: 5,
-    main_category_id: 5,
     sub_category: '沖洗用具',
   },
   {
     id: 6,
-    main_category_id: 3,
     sub_category: '球棒',
   },
   {
     id: 7,
-    main_category_id: 4,
     sub_category: '眼影',
   },
   {
     id: 8,
-    main_category_id: 4,
     sub_category: '遮瑕糕',
   },
   {
     id: 9,
-    main_category_id: 4,
     sub_category: '化妝水',
   },
   {
     id: 10,
-    main_category_id: 4,
     sub_category: '面膜',
   },
   {
     id: 11,
-    main_category_id: 5,
     sub_category: '拳套',
   },
   {
     id: 12,
-    main_category_id: 5,
     sub_category: '手綁帶',
   },
   {
     id: 13,
-    main_category_id: 5,
     sub_category: '護具',
   },
   {
     id: 14,
-    main_category_id: 5,
     sub_category: '手靶',
   },
   {
     id: 15,
-    main_category_id: 5,
     sub_category: '腿靶',
   },
   {
     id: 16,
-    main_category_id: 5,
     sub_category: '訓練用品',
   },
   {
     id: 17,
-    main_category_id: 3,
     sub_category: '鞋',
   },
   {
     id: 18,
-    main_category_id: 3,
     sub_category: '球衣',
   },
   {
     id: 19,
-    main_category_id: 3,
     sub_category: '球員卡',
   },
   {
     id: 20,
-    main_category_id: 3,
     sub_category: '紀念品',
   },
+];
+
+const main_sub_categories = [
   {
-    id: 21,
-    main_category_id: 4,
-    sub_category: '鞋',
+    main_category_id:1,
+    sub_category_id:1,
   },
   {
-    id: 22,
-    main_category_id: 4,
-    sub_category: '球衣',
+    main_category_id:2,
+    sub_category_id:2,
   },
   {
-    id: 23,
-    main_category_id: 4,
-    sub_category: '球員卡',
+    main_category_id:2,
+    sub_category_id:3,
   },
   {
-    id: 24,
-    main_category_id: 4,
-    sub_category: '紀念品',
+    main_category_id:2,
+    sub_category_id:4,
+  },
+  {
+    main_category_id:2,
+    sub_category_id:5,
+  },
+  {
+    main_category_id:3,
+    sub_category_id:6,
+  },
+  {
+    main_category_id:4,
+    sub_category_id:7,
+  },
+  {
+    main_category_id:4,
+    sub_category_id:8,
+  },
+  {
+    main_category_id:4,
+    sub_category_id:9,
+  },
+  {
+    main_category_id:4,
+    sub_category_id:10,
+  },
+  {
+    main_category_id:5,
+    sub_category_id:11,
+  },
+  {
+    main_category_id:5,
+    sub_category_id:12,
+  },
+  {
+    main_category_id:5,
+    sub_category_id:13,
+  },
+  {
+    main_category_id:5,
+    sub_category_id:14,
+  },
+  {
+    main_category_id:5,
+    sub_category_id:15,
+  },
+  {
+    main_category_id:5,
+    sub_category_id:16,
+  },
+  {
+    main_category_id:3,
+    sub_category_id:17,
+  },
+  {
+    main_category_id:3,
+    sub_category_id:18,
+  },
+  {
+    main_category_id:3,
+    sub_category_id:19,
+  },
+  {
+    main_category_id:3,
+    sub_category_id:20,
+  },
+  {
+    main_category_id:6,
+    sub_category_id:17,
+  },
+  {
+    main_category_id:6,
+    sub_category_id:18,
+  },
+  {
+    main_category_id:6,
+    sub_category_id:19,
+  },
+  {
+    main_category_id:6,
+    sub_category_id:20,
   },
 ];
 
@@ -332,8 +391,6 @@ const messages = [
     content: 'test1',
     sender: 'system',
     time: '1582601355567',
-    // matched_id: null,
-    // mentioned_item_id: null,
     watched: 'false',
     link: '/want/invitation',
     receiver: 1,
@@ -346,20 +403,20 @@ const matches = [{
   end_item_id:8,
 }];
 
-const item_categories = [
+const items_category = [
   {
     main_category_id:1,
     sub_category:1,
     item_id:1,
   },
   {
-    main_category_id:1,
-    sub_category:1,
+    main_category_id:2,
+    sub_category:2,
     item_id:2,
   },
   {
-    main_category_id:1,
-    sub_category:1,
+    main_category_id:2,
+    sub_category:3,
     item_id:3,
   },
   {
@@ -397,5 +454,6 @@ module.exports = {
   sub_categories,
   messages,
   matches,
-  item_categories
+  items_category,
+  main_sub_categories,
 };

@@ -72,7 +72,7 @@ function getWantInvitation(token) {
 
     },
     error: (err) => {
-      alert(err);
+      alert('暫時無法為您顯示邀請><若持續發生請通知我們，謝謝！');
     }
   });
 }

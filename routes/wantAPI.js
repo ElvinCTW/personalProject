@@ -328,6 +328,9 @@ router.get('/invitation', async (req, res) => {
     // get wants from db
     const wantArrToCurUser = await getReversedWants(token);
     // want_item_id 已排除 curUser item
+    if (wantArrToCurUser.length>0) {
+      
+    }
     const wantArrToReversedSecondUser = await getReversedWants(token, wantArrToCurUser.map(obj => obj.want_item_id));
     let wantArrFromCurUser = await getUserWantByToken(token);
     wantArrFromCurUser = wantArrFromCurUser.map((obj) => {

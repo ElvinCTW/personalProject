@@ -60,7 +60,7 @@ $('#exchange-request-btn').click(() => {
 
 
 let picCount = 0;
-let imgLength = $('img').length;
+let imgLength = $('.item-pic').length;
 $('#img0').attr('style', 'display:``');
 
 // 點擊換照
@@ -69,9 +69,11 @@ $('#item-detail-pic-div').click(() => { changePic(); });
 window.setInterval(() => { changePic(); }, 3000);
 // 換照function
 function changePic() {
-  $(`#img${picCount % imgLength}`).attr('style', 'display:none;');
-  picCount++;
-  $(`#img${picCount % imgLength}`).attr('style', 'display:``');
+  if (imgLength>1) {
+    $(`#img${picCount % imgLength}`).attr('style', 'display:none;');
+    picCount++;
+    $(`#img${picCount % imgLength}`).attr('style', 'display:``');
+  }
 }
 
 // 讀取 user items 

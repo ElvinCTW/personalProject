@@ -1,6 +1,6 @@
 require('dotenv').config();
 const { NODE_ENV } = process.env;
-const { users, want, items, main_categories, sub_categories, messages, matches, item_categories } = require('./fake_data');
+const { main_sub_categories, users, want, items, main_categories, sub_categories, messages, matches, items_category } = require('./fake_data');
 const { pool } = require('../util/mysql');
 
 /**
@@ -38,14 +38,15 @@ async function truncateFakeData() {
   };
 
   return setForeignKey(0)
-    .then(() => { return truncateTable('items'); })
-    .then(() => { return truncateTable('main_categories'); })
-    .then(() => { return truncateTable('matches'); })
-    .then(() => { return truncateTable('messages'); })
-    .then(() => { return truncateTable('sub_categories'); })
-    .then(() => { return truncateTable('item_categories'); })
-    .then(() => { return truncateTable('users'); })
+    .then(() => { return truncateTable('items_category'); })
     .then(() => { return truncateTable('want'); })
+    .then(() => { return truncateTable('matches'); })
+    .then(() => { return truncateTable('main_sub_categories'); })
+    .then(() => { return truncateTable('items'); })
+    .then(() => { return truncateTable('messages'); })
+    .then(() => { return truncateTable('main_categories'); })
+    .then(() => { return truncateTable('sub_categories'); })
+    .then(() => { return truncateTable('users'); })
     .then(() => { return setForeignKey(1); })
     .catch(err => console.log(err));
 }
@@ -62,17 +63,30 @@ async function _createFakeData() {
   return _createFakeUser()
     .then(() => { return _createFakeMainCategories(); })
     .then(() => { return _createFakeSubCategories(); })
-    .then(() => { return _createFakeMessages(); })
+    .then(() => { return _createFakeMessages(); }) 
     .then(() => { return _createFakeItems(); })
     .then(() => { return _createFakeMatches(); })
     .then(() => { return _createFakeWant(); })
     .then(() => { return _createFakeItemCategories(); })
+    .then(() => { return _createFakeMainSubCategories(); })
     .catch(err => console.log(err));
+
+  function _createFakeMainSubCategories() {
+    return new Promise((resolve, reject) => {
+      pool.query('INSERT INTO main_sub_categories(main_category_id, sub_category_id) values ?', [main_sub_categories.map(obj => Object.values(obj))], (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    }).catch(err => console.log(err));
+  }
 
   function _createFakeItemCategories() {
     return new Promise((resolve, reject) => {
-      pool.query('INSERT INTO item_categories(item_id, main_category_id, sub_category_id) values ?', [item_categories.map(obj => Object.values(obj))], (err) => {
-        if (err) {  
+      pool.query('INSERT INTO items_category(main_category_id, sub_category_id, item_id) values ?', [items_category.map(obj => Object.values(obj))], (err) => {
+        if (err) {
           reject(err);
         } else {
           resolve();
@@ -119,7 +133,7 @@ async function _createFakeData() {
 
   function _createFakeSubCategories() {
     return new Promise((resolve, reject) => {
-      pool.query('INSERT INTO sub_categories(id, main_category_id ,sub_category) values ?', [sub_categories.map(obj => Object.values(obj))], (err) => {
+      pool.query('INSERT INTO sub_categories(id ,sub_category) values ?', [sub_categories.map(obj => Object.values(obj))], (err) => {
         if (err) {
           reject(err);
         } else {

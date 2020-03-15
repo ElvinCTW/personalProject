@@ -139,7 +139,7 @@ async function _createFakeData() {
 
   function _createFakeMessages() {
     return new Promise((resolve, reject) => {
-      pool.query('INSERT INTO messages(id, content, sender, time, watched, link, receiver) values ?', [messages.map(obj => Object.values(obj))], (err) => {
+      pool.query('INSERT INTO messages(id, content, sender, time, watched, link, receiver, mentioned_item_id, matched_id) values ?', [messages.map(obj => Object.values(obj))], (err) => {
         if (err) {
           reject(err);
         } else {

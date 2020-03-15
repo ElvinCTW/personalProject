@@ -288,7 +288,7 @@ router.post('/checked', async (req, res) => {
         if (id_Arr.indexOf(notification.notificated_item_id) === -1) {
           insertMsgQueryDataArr.push([`哭哭！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}"的交換配對，因該物品下架已被取消><`, 'system', notification.notificated_user, notification.gone_item_id, null, Date.now().toString(), ' ']);
         } else {
-          insertMsgQueryDataArr.push([`恭喜！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}"的交換已成交～交換編號為${insertedMatchId}，現在就打開"成交紀錄"頁面，和對方討論交換細節吧！`, 'system', notification.notificated_user, notification.gone_item_id, insertedMatchId, Date.now().toString(), '/matches/confirmed/']);
+          insertMsgQueryDataArr.push([`恭喜！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}"的交換已成交～交換編號為 ${insertedMatchId} 號，現在就打開"成交紀錄"頁面，和對方討論交換細節吧！`, 'system', notification.notificated_user, notification.gone_item_id, insertedMatchId, Date.now().toString(), '/matches/confirmed/']);
         }
       });
       // 3.2 將 msg 插入 message table 

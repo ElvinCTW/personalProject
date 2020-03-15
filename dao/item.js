@@ -3,7 +3,7 @@ const { pool, itemJoinString } = require('../util/mysql');
 function getItemDataByType(page, category, nickname) {
   return new Promise((resolve, reject) => {
     if (nickname) {
-      const string = itemJoinString + 'WHERE u.nickname = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
+      const string = itemJoinString + 'WHERE u.nickname = ? AND i.availability = "true" ORDER BY i.id DESC LIMIT ?, 20';
       const condition = [nickname, page * 20];
       pool.query(string, condition, (err, result) => {
         if (err) { reject(err); return; }
@@ -14,16 +14,16 @@ function getItemDataByType(page, category, nickname) {
       let condition;
       if (!category.sub_category) {
         // select all by main category only
-        string = itemJoinString + 'WHERE ic.main_category_id = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
+        string = itemJoinString + 'WHERE ic.main_category_id = ? AND i.availability = "true" ORDER BY i.id DESC LIMIT ?, 20';
         condition = [category.main_category, page * 20];
       } else {
         if (!category.status) {
           // select all by main and sub category
-          string = itemJoinString + 'WHERE ic.main_category_id = ? AND ic.sub_category_id = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
+          string = itemJoinString + 'WHERE ic.main_category_id = ? AND ic.sub_category_id = ? AND i.availability = "true" ORDER BY i.id  DESC LIMIT ?, 20';
           condition = [category.main_category, category.sub_category, page * 20];
         } else {
           // select all by main and sub category and status
-          string = itemJoinString + 'WHERE ic.main_category_id = ? AND ic.sub_category_id = ? AND i.status = ? AND i.availability = "true" ORDER BY time DESC LIMIT ?, 20';
+          string = itemJoinString + 'WHERE ic.main_category_id = ? AND ic.sub_category_id = ? AND i.status = ? AND i.availability = "true" ORDER BY i.id DESC LIMIT ?, 20';
           condition = [category.main_category, category.sub_category, category.status, page * 20];
         }
       }
@@ -33,7 +33,7 @@ function getItemDataByType(page, category, nickname) {
       });
     } else {
       // latest
-      const string = itemJoinString + 'WHERE i.availability = "true" ORDER BY i.time DESC LIMIT ?, 20';
+      const string = itemJoinString + 'WHERE i.availability = "true" ORDER BY i.id DESC LIMIT ?, 20';
       const condition = [page * 20];
       pool.query(string, condition, (err, result) => {
         if (err) { reject(err); console.log(err); return; }

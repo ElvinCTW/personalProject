@@ -27,7 +27,9 @@ block content
                 .introduction-div.tags
                   - let tagsArr = tags.split(' ')
                   each tag in tagsArr
-                    .tag=tag
+                    - let tagInUrl = tag.replace(/#/g, '');
+                    a(href=`/?search=%23${tagInUrl}`)
+                      .tag()=tag
                 .introduction-div.item-detail=introduction
           else 
             h1.sub-title 您來晚了><物品已不在架上～

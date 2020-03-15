@@ -1,8 +1,18 @@
 # Triangle Trade
 
+<img src="./public/images/demo/intro.gif" alt="intro"/>
+
 Triangle Trade aims to provide a brand new social experience for aficionados around the world. Browse, click and chat to gather your own treasure while metting different types of new friends with same habit.
 
 [Website URL](https://triangletrade.jia-boung.com/)
+
+Test accounts :
+
+ID: test, Password: 123 (Default)
+
+ID: test2, Password: 123
+
+ID: test3, Password: 123
 
 ## Table of Contents
 
@@ -11,7 +21,15 @@ Triangle Trade aims to provide a brand new social experience for aficionados aro
 * [Database Schema](#database-schema)
 * [Workflow](#workflow)
 * [Manual](#manual)
+  * [Browse items](#browse-items)
+  * [Add items](#add-items)
+  * [View item details](#view-item-details)
+  * [Check notifications](#check-notifications)
 * [Exchange Operations](#exchange-operations)
+  * [Send invitations](#send-invitations)
+  * [Match with others](#match-with-others)
+  * [Confirm for trade](#confirm-for-trade)
+* [Contect](#contect)
 
 ## Techniques
 
@@ -68,9 +86,11 @@ Triangle Trade aims to provide a brand new social experience for aficionados aro
 
 Lastest items will appear in the middle of homepage, users can find items they are instersted in by **clicking classifications** on side bar, or **searching key words** with navigation bar.
 
+<div style="display:flexbox;">
 <img src="./public/images/demo/index-scroll.gif" alt="index-scroll" width="250"/>
 <img src="./public/images/demo/index-category.gif" alt="index-category" width="250"/>
 <img src="./public/images/demo/index-searchbar.gif" alt="index-searchbar" width="250"/>
+</div>
 
 ### Add items
 

@@ -63,7 +63,7 @@ function getWantInvitation(token) {
         let match = $('<div></div>').attr({
           'class': 'match-container',
           'id': 'no-match-text',
-        }).html('目前沒有配對');
+        }).html('目前沒有邀請');
         $('#items-area-match').append(match);
       }
       if ($('.item-div.user-item.cur-user').length > 0) {

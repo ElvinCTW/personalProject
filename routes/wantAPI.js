@@ -327,8 +327,14 @@ router.get('/invitation', async (req, res) => {
   async function getWantsArrAndHashWantsObj(token) {
     // get wants from db
     const wantArrToCurUser = await getReversedWants(token);
-    if (wantArrToCurUser.length===0) {
-      let wantArrFromCurUser = await getUserWantByToken(token); // 1
+    let wantArrFromCurUser = await getUserWantByToken(token); // 1
+    if (wantArrToCurUser.length === 0 && wantArrFromCurUser.length === 0) {
+      return {
+        hashedInvitationArrFromCurUser: {},
+        hashedPosibleInvitationArrToCurUser: {},
+        hashedDataCollection: {},
+      };
+    } else if (wantArrToCurUser.length === 0) {
       wantArrFromCurUser = wantArrFromCurUser.map((obj) => { // 2
         return {
           want_item_id: obj.want_item_id,
@@ -336,7 +342,7 @@ router.get('/invitation', async (req, res) => {
         };
       });
       const hashedInvitationArrFromCurUser = hashWantArrObjMaker(wantArrFromCurUser, true); // 5
-      wantArrFromCurUser = wantArrFromCurUser.map(obj=>Object.values(obj)).flat(); // 3
+      wantArrFromCurUser = wantArrFromCurUser.map(obj => Object.values(obj)).flat(); // 3
       let dataCollection = await getItemDataByIdArr(wantArrFromCurUser); // 取得資料 // 4
       const hashedDataCollection = dataCollection.reduce((acu, data) => { // 6
         acu[data.id] = data;
@@ -344,13 +350,71 @@ router.get('/invitation', async (req, res) => {
       }, {});
       return ({ // 7
         hashedInvitationArrFromCurUser,
-        hashedPosibleInvitationArrToCurUser:{},
+        hashedPosibleInvitationArrToCurUser: {},
         hashedDataCollection,
       });
+    } else if (wantArrFromCurUser.length === 0) {
+      const wantArrToReversedSecondUser = await getReversedWants(token, wantArrToCurUser.map(obj => obj.want_item_id));
+      const hashedWantsObjToCurUser = hashWantArrObjMaker(wantArrToCurUser); // {want_item_id: [required_item_id...], ...}
+      if (wantArrToReversedSecondUser.length === 0) {
+        // const doubleNoMatchedWantToCurUserArr = filterOutMatchedWants(hashedWantsObjFromCurUser, wantArrToCurUser);
+        // 把每個 want value 變成 array 並回傳 [[]]，之後合併 arraies 並打平成為純數字 array
+        const allItemsIdArr = wantArrToCurUser
+          .map(want => Object.values(want)).flat();
+        const uniqueAllItemsIdArr = [... new Set(allItemsIdArr)]; //去除重複
+        let dataCollection = await getItemDataByIdArr(uniqueAllItemsIdArr); // 取得資料 // 4
+        // 整理 curUser 的潛在配對
+        const hashedPosibleInvitationArrToCurUser = hashWantArrObjMaker(wantArrToCurUser, true);
+        const hashedDataCollection = dataCollection.reduce((acu, data) => { // 6
+          acu[data.id] = data;
+          return acu;
+        }, {});
+        return ({ // 7
+          hashedInvitationArrFromCurUser: {},
+          hashedPosibleInvitationArrToCurUser,
+          hashedDataCollection,
+        });
+      } else {
+        const hashedWantsObjToReversedSecondUser = hashWantArrObjMaker(wantArrToReversedSecondUser);
+        let joinedWantFromReversedThirdToCurUser = [];
+        // 組合相乘得到所有的 reversed third item to cur user item wants 
+        for (let [wantItemId, requiredItemIdArr] of Object.entries(hashedWantsObjToReversedSecondUser)) {
+          requiredItemIdArr.forEach(requiredItemId =>
+            hashedWantsObjToCurUser[requiredItemId].forEach(curUserItemId =>
+              joinedWantFromReversedThirdToCurUser.push({
+                want_item_id: parseInt(wantItemId),
+                middle_item_id: requiredItemId,
+                required_item_id: curUserItemId,
+              })
+            ));
+        }
+        // 整理 Id 以取得資料集
+        // const doubleNoMatchedWantToCurUserArr = filterOutMatchedWants(hashedWantsObjFromCurUser, wantArrToCurUser);
+        // const tripleNoMatchedWantToCurUserArr = filterOutMatchedWants(hashedWantsObjFromCurUser, joinedWantFromReversedThirdToCurUser);
+        // 把每個 want value 變成 array 並回傳 [[]]，之後合併 arraies 並打平成為純數字 array
+        const allItemsIdArr = wantArrToCurUser
+          .map(want => Object.values(want))
+          .concat(joinedWantFromReversedThirdToCurUser
+            .map(want => Object.values(want)))
+          .flat();
+        const uniqueAllItemsIdArr = [... new Set(allItemsIdArr)]; //去除重複
+        let dataCollection = await getItemDataByIdArr(uniqueAllItemsIdArr); // 取得資料 // 4
+        // 整理 curUser 的潛在配對
+        const hashedPosibleInvitationArrToCurUser = hashWantArrObjMaker(wantArrToCurUser.concat(joinedWantFromReversedThirdToCurUser), true);
+        const hashedDataCollection = dataCollection.reduce((acu, data) => { // 6
+          acu[data.id] = data;
+          return acu;
+        }, {});
+        return ({ // 7
+          hashedInvitationArrFromCurUser: {},
+          hashedPosibleInvitationArrToCurUser,
+          hashedDataCollection,
+        });
+      }
     }
     // want_item_id 已排除 curUser item
     const wantArrToReversedSecondUser = await getReversedWants(token, wantArrToCurUser.map(obj => obj.want_item_id));
-    let wantArrFromCurUser = await getUserWantByToken(token); // 1
+    // let wantArrFromCurUser = await getUserWantByToken(token); // 1
     wantArrFromCurUser = wantArrFromCurUser.map((obj) => { // 2
       return {
         want_item_id: obj.want_item_id,

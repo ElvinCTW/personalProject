@@ -453,7 +453,7 @@ const matches = [
   }
 ];
 
-const items_category = [
+const item_category = [
   {
     main_category_id: 1,
     sub_category: 1,
@@ -511,7 +511,7 @@ const tags = [
   }
 ];
 
-const items_tags = [
+const item_tags = [
   {
     item_id:1,
     tag_id:1,
@@ -534,8 +534,8 @@ module.exports = {
   sub_categories,
   messages,
   matches,
-  items_category,
+  item_category,
   main_sub_categories,
   tags,
-  items_tags,
+  item_tags,
 };

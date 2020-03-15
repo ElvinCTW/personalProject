@@ -57,19 +57,35 @@ router.post('/new', async (req, res) => {
       time: Date.now().toString(),
     });
 
-    const insertCount = await insertItemCategory({
+    const insertCategoryCount = await insertItemCategory({
       main_category_id: req.body.main_category,
       sub_category_id: req.body.sub_category,
       item_id: insertItemResult.insertId,
     });
 
-    if (insertCount === 1) {
+    const tagsArr = req.body.tags.replace(/#/g, '').split(' ');
+    await insertItemTags(insertItemResult.insertId, tagsArr)
+      .catch(err=>{console.log(err);});
+
+    if (insertCategoryCount === 1) {
       res.status(200).render('item_result', { successMsg: '新增物品成功!' });
     } else {
       res.status(500).render('item_result', { errorMsg: '抱歉，新增物品失敗><若持續發生請聯繫我們' });
     }
     
   });
+
+  async function insertItemTags(itemId, tagsArr) {
+    const { insertNewTags, getTagIds, insertItemTags } = require('../dao/tagDAO');
+    await insertNewTags(tagsArr);
+    const tagIdArr = await getTagIds(tagsArr);
+    const insertedTagsOfItemCount = await insertItemTags(itemId, tagIdArr);
+    if (tagIdArr.length !== insertedTagsOfItemCount) {
+      console.log('Counts of item tags insertion was wrong :');
+      console.log(`Counts of tags: ${tagIdArr.length}, counts of insertion ${insertedTagsOfItemCount}`);
+    }
+  }
+
 });
 // get recommmand items
 router.get('/all', async (req, res) => {

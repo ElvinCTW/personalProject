@@ -20,10 +20,10 @@ async function checkFakeData() {
   await checkTable('sub_categories');
   await checkTable('messages');
   await checkTable('matches');
-  await checkTable('items_category');
+  await checkTable('item_category');
   await checkTable('main_sub_categories');
   await checkTable('tags');
-  await checkTable('items_tags');
+  await checkTable('item_tags');
   return;
 }
 

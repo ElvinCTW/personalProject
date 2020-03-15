@@ -11,6 +11,7 @@ const itemAPI = require('./routes/itemAPI');
 const wantAPI = require('./routes/wantAPI');
 const msgAPI = require('./routes/msgAPI');
 const categoryAPI = require('./routes/categoryAPI');
+const tagAPI = require('./routes/tagAPI');
 const { getItemDetail } = require('./dao/item');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -30,8 +31,6 @@ app.get('/', async (req, res) => {
   const homePageData =  await getHomePageData(req)
     .catch(err=>{console.log(err); res.render('index', {}); });
   if (!homePageData) return;
-  console.log('homePageData');
-  console.log(homePageData);
   res.render('index', homePageData);
 });
 // sign up
@@ -57,6 +56,7 @@ app.use('/api/1.0/items', itemAPI);
 app.use('/api/1.0/want', wantAPI);
 app.use('/api/1.0/message', msgAPI);
 app.use('/api/1.0/category', categoryAPI);
+app.use('/api/1.0/tags', tagAPI);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

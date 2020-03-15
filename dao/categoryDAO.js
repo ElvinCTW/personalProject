@@ -41,11 +41,11 @@ module.exports = {
 function insertItemCategory(data) {
   return new Promise((resolve,reject)=>{
     const string = 
-    'INSERT INTO items_category SET ?';
+    'INSERT INTO item_category SET ?';
     const condition = [data];
     pool.query(string, condition, (err, result) => {
-      if (err) { reject(err); return; }
-      resolve(result.affectedRows);
+      if (err) { reject(err); }
+      else {resolve(result.affectedRows);}
     });
   });
 }

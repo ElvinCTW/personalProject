@@ -35,7 +35,7 @@ Triangle Trade aims to provide a brand new social experience for aficionados aro
 * jQuery
 * CSS & HTML
 
-### Develop Tools
+### Development
 
 * Jest
 * Trello
@@ -83,8 +83,8 @@ Users will received notifications once an invitation, match or trade event relat
 ## Exchange Operations
 
 There are three scenarios of an exchange :
-> **Invitation** : If no matches were found for a new "want", system will send an exchange invitation to the owner of target item.
-> **Match** : Once system found an potential exchange among items, it will send match notification to all related matchers.
+> **Invitation** : If no matches were found for a new "want", system will send an exchange invitation to the owner of target item.  
+> **Match** : Once system found an potential exchange among items, it will send match notification to all related matchers.  
 > **Trade** : If all related matcher confirmed an exchange, system will generate a trade record and discontinue all items of the trade automatically.
 
 ### Send invitations

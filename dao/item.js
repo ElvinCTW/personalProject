@@ -128,9 +128,10 @@ async function getItemDataFromSearchBar(titleArr, hashtagArr) {
       for (let j = count; j < hashtagArr.length + count; j++) {
         queryString +=
           `SELECT i${j}.*
-        FROM items i${j}
-        WHERE i${j}.tags
-        LIKE ?
+        FROM item_tags it${j}
+        JOIN items i${j} ON i${j}.id = it${j}.item_id
+        JOIN tags t${j} ON t${j}.id = it${j}.tag_id
+        WHERE t${j}.tag = ?
         AND i${j}.availability = "true"
         UNION ALL `;
       }
@@ -139,7 +140,7 @@ async function getItemDataFromSearchBar(titleArr, hashtagArr) {
     queryString +=
       `SELECT i.* FROM items i WHERE i.id < 0 ) total 
       GROUP BY id ORDER BY counts DESC`;
-    let queryCondition = titleArr.concat(hashtagArr).map(word => `%${word}%`);
+    let queryCondition = titleArr.map(word => `%${word}%`).concat(hashtagArr);
     pool.query(queryString, queryCondition, (err, result) => {
       if (err) { reject(err); return; }
       resolve(result);

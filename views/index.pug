@@ -75,7 +75,7 @@ block content
                           .item.info
                             span.nickname=item.user_nickname
                           .item.tags
-                            -let tagsArr = item.tags.split(' ')
+                            -let tagsArr = item.tags
                             each tag in tagsArr
                               span=tag+' '
               else  

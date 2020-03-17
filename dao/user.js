@@ -48,6 +48,19 @@ function getUserDataByToken(token, item_id) {
   });
 }
 
+function getUserDataByColumn(table , value) {
+  return new Promise((resolve, reject) => {
+    let string;
+    let condition;
+    string = 'SELECT * FROM users WHERE ? = ?';
+    condition = [table, value];
+    mysql.pool.query(string, condition, (err, result) => {
+      if (err) { reject(err); return; }
+      resolve(result[0]);
+    });
+  });
+}
+
 async function registerTransaction(reqBody) {
   return new Promise((resolve, reject) => {
     mysql.pool.getConnection((err, con) => {
@@ -127,7 +140,6 @@ async function registerTransaction(reqBody) {
       let token = crypto.createHash('sha256').update(userObj.id + Date.now().toString(), 'utf8').digest('hex');
       // make object
       userObj.token = token;
-      userObj.time = Date.now().toString();
       let queryString = 'INSERT INTO users SET ?';
       let queryCondition = [userObj];
       con.query(queryString, queryCondition, (err) => {
@@ -162,9 +174,9 @@ function updateWatchMsgTime(token) {
   return new Promise((resolve, reject) => {
     const string =
       `UPDATE users u
-      SET watch_msg_time = ?
+      SET watch_msg_time = NOW()
       WHERE u.token = ?`;
-    const condition = [Date.now(), token];
+    const condition = [token];
     mysql.pool.query(string, condition, (err, result) => {
       if (err) { reject(err); return; }
       const success = result.affectedRows === 1 ? true : false;
@@ -186,8 +198,11 @@ function getLastMsgWatchedTime(token) {
   });
 }
 
+
+
 module.exports = {
   getUserDataByToken,
+  getUserDataByColumn,
   checkVaildUserOfChat,
   registerTransaction,
   signinProcess,

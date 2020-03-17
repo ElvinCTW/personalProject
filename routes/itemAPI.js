@@ -19,10 +19,16 @@ router.post('/new', async (req, res) => {
       contentType: multerS3.AUTO_CONTENT_TYPE,
       acl: 'public-read',
       key: async function (req, file, cb) {
-        const userDataArr = await getUserDataByToken(req.body.token);
-        userID = userDataArr[0].id;
-        userNickname = userDataArr[0].nickname;
-        cb(null, `userUpload/${userNickname}/${userNickname}-` + Date.now().toString());
+        const userDataArr = await getUserDataByToken(req.body.token)
+          .catch(()=>{res.status(500).send();});
+        if (userDataArr[0]) {
+          userID = userDataArr[0].id;
+          userNickname = userDataArr[0].nickname;
+          cb(null, `userUpload/${userNickname}/${userNickname}-` + Date.now().toString());
+        } else {
+          res.status(403).send();
+          return;
+        }
       }
     })
   }).fields([{ name: 'pictures', maxCount: 6 }]);
@@ -49,12 +55,10 @@ router.post('/new', async (req, res) => {
     // insert item
     const insertItemResult = await insertNewItem({
       user_id: userID,
-      tags: req.body.tags,
       title: req.body.title,
       status: req.body.status,
       introduction: req.body.introduction,
       pictures: picturesString,
-      time: Date.now().toString(),
     });
 
     const insertCategoryCount = await insertItemCategory({
@@ -65,14 +69,14 @@ router.post('/new', async (req, res) => {
 
     const tagsArr = req.body.tags.replace(/#/g, '').split(' ');
     await insertItemTags(insertItemResult.insertId, tagsArr)
-      .catch(err=>{console.log(err);});
+      .catch(err => { console.log(err); });
 
     if (insertCategoryCount === 1) {
       res.status(200).render('item_result', { successMsg: '新增物品成功!' });
     } else {
       res.status(500).render('item_result', { errorMsg: '抱歉，新增物品失敗><若持續發生請聯繫我們' });
     }
-    
+
   });
 
   async function insertItemTags(itemId, tagsArr) {
@@ -97,6 +101,7 @@ router.get('/all', async (req, res) => {
 
 async function getItemDataProcess(req) {
   const { getItemDataByType } = require('../dao/item');
+  const { appendTagsToItemData } = require('../dao/tagDAO');
   const nickname = req.query.user_nickname ?
     req.query.user_nickname : null;
   const page = req.query.page ? req.query.page : 0;
@@ -107,9 +112,11 @@ async function getItemDataProcess(req) {
     req.query.sub_category : null;
   category.status = req.query.status ?
     req.query.status : null;
-  let ItemDataArr = await getItemDataByType(page, category, nickname)
+  let itemDataArr = await getItemDataByType(page, category, nickname)
     .catch(err => { throw err; });
-  return ItemDataArr;
+
+  let itemDataWithTagsArr = await appendTagsToItemData(itemDataArr);
+  return itemDataWithTagsArr;
 }
 
 module.exports = router;

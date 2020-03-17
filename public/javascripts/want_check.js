@@ -83,25 +83,25 @@ if (!localStorage.getItem('token')) {
             itemContentDiv.append(titleDiv);
             itemContentDiv.append(tagsDiv);
             // add tags to tagsDiv
-            let tagsArr = itemData.tags.split(' ');
+            let tagsArr = itemData.tags;
             for (let j = 0; j < tagsArr.length; j++) {
               let tagSpan = $('<div />').attr('class', 'tag user-item').html(`${tagsArr[j]} `);
               tagsDiv.append(tagSpan);
             }
           });
         } else {
-          let match = $('<div></div>').attr({ 
+          let match = $('<div></div>').attr({
             'class': 'match-container',
             'id': 'no-match-text',
           }).html('目前沒有配對');
           $('#items-area-match').append(match);
         }
-        if ($('.item-div.user-item.cur-user').length>0) {
+        if ($('.item-div.user-item.cur-user').length > 0) {
           $('.item-div.user-item.cur-user:first').trigger('click');
         }
       },
-      error: (err) => {
-        alert(err);
+      error: () => {
+        alert('金拍謝，暫時無法取得您的配對資料，若持續發生請聯繫我們');
       }
     });
   })(token);
@@ -113,7 +113,7 @@ $('#search-by-curuser-item').click(() => {
   $('#search-by-required-item').attr('style', 'background:none;');
   $('.item-div.user-item.cur-user').attr('style', 'display:flex;background:none;');
   $('.item-div.user-item.required-user').attr('style', 'display:none;background:none;');
-  if ($('.item-div.user-item.cur-user').length>0) {
+  if ($('.item-div.user-item.cur-user').length > 0) {
     $('.item-div.user-item.cur-user:first').trigger('click');
   }
 });
@@ -122,7 +122,7 @@ $('#search-by-required-item').click(() => {
   $('#search-by-required-item').attr('style', 'background:rgb(235,235,235);');
   $('.item-div.user-item.required-user').attr('style', 'display:flex;background:none;');
   $('.item-div.user-item.cur-user').attr('style', 'display:none;background:none;');
-  if ($('.item-div.user-item.required-user').length>0) {
+  if ($('.item-div.user-item.required-user').length > 0) {
     $('.item-div.user-item.required-user:first').trigger('click');
   }
 });
@@ -131,12 +131,12 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
   let matchedItemsDataArr;
   // 取得 matches
   if (item_type === 'requiredUser') {
-    let tempDArr = matchResultObj.doubleMatchResultArr.filter(match=>match.secondUserWant.item_id === item_id);
-    let tempTArr = matchResultObj.tripleMatchResultArr.filter(match=>match.secondUserWant.item_id === item_id);
+    let tempDArr = matchResultObj.doubleMatchResultArr.filter(match => match.secondUserWant.item_id === item_id);
+    let tempTArr = matchResultObj.tripleMatchResultArr.filter(match => match.secondUserWant.item_id === item_id);
     matchedItemsDataArr = tempDArr.concat(tempTArr);
   } else {
-    let tempDArr = matchResultObj.doubleMatchResultArr.filter(match=>match.curUserWant.item_id === item_id);
-    let tempTArr = matchResultObj.tripleMatchResultArr.filter(match=>match.curUserWant.item_id === item_id);
+    let tempDArr = matchResultObj.doubleMatchResultArr.filter(match => match.curUserWant.item_id === item_id);
+    let tempTArr = matchResultObj.tripleMatchResultArr.filter(match => match.curUserWant.item_id === item_id);
     matchedItemsDataArr = tempDArr.concat(tempTArr);
   }
   $('#items-area-match').empty();
@@ -170,19 +170,14 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
           interactionBtnDiv.attr({ 'style': 'display:none;' });
           // 若有配對成功，alert 成功訊息
           alert(checkAllConfirmResultArr.msg);
-          if (checkAllConfirmResultArr.msg === '配對成功！商品已自動為您下架，請至配對頁查詢配對結果') {
-            location.reload();
-          }
+          location.reload();
         },
-        error: (error) => {
-          console.log(error.errorMsg);
+        error: () => {
           alert('金拍謝，暫時無法為您送出交換邀請確認請求，若持續發生請聯繫我們');
-          return;
         },
       });
     });
     let checkStatusNodeArr = [];
-    // let ownersArr = Object.keys(matchedItemsDataArr[i]).length === 3 ? ['您', '對方', '他人']:['您', '對方'];
     /**
      * 商品資訊區
      */
@@ -191,7 +186,7 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
     let show = true;
     for (let e in matchedItemsDataArr[i]) {
       if (typeof matchedItemsDataArr[i][e] === 'object') {
-        let itemData = matchResultObj.itemsDataArr.filter(item=>item.id === matchedItemsDataArr[i][e].item_id)[0];
+        let itemData = matchResultObj.itemsDataArr.filter(item => item.id === matchedItemsDataArr[i][e].item_id)[0];
         let link = $('<a></a>').attr({ 'href': `/items/detail?item_id=${itemData.id}` });
         link.insertBefore(interaction);
         // Create new Item outside container
@@ -231,7 +226,7 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
         let nicknameSpan = $('<span />').attr({ 'class': 'nickname' }).html(`${itemData.user_nickname}`);
         itemInfoDiv.append(nicknameSpan);
         // add tags to tagsDiv
-        let tagsArr = itemData.tags.split(' ');
+        let tagsArr = itemData.tags;
         for (let j = 0; j < tagsArr.length; j++) {
           let tagSpan = $('<span />').html(`${tagsArr[j]} `);
           tagsDiv.append(tagSpan);
@@ -239,10 +234,12 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
         /**
          * 配對互動區
          */
-        if (matchedItemsDataArr[i].curUserWant.checked === 'confirm') {show = false;}
-        let checked = matchedItemsDataArr[i][e].checked === 'confirm'?'已確認':'未確認';
+        if (matchedItemsDataArr[i].curUserWant.confirmed === 1) { show = false; }
+        console.log('matchedItemsDataArr[i].curUserWant')
+        console.log(matchedItemsDataArr[i].curUserWant)
+        let confirmed = matchedItemsDataArr[i][e].confirmed === 1 ? '已確認' : '未確認';
         let ownercheckStatsus = $('<div></div>').attr({ 'class': 'user-check-status' }).html(
-          `${itemData.user_nickname}: ${checked}`
+          `${itemData.user_nickname}: ${confirmed}`
         );
         checkStatusNodeArr.push(ownercheckStatsus);
         ownercheckStatsus.insertBefore(interactionBtnDiv);

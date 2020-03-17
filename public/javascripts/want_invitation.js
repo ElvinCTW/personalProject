@@ -17,6 +17,8 @@ function getWantInvitation(token) {
       authorization: `Bearer ${token}`,
     },
     success: (data) => {
+      console.log('data ')
+      console.log(data)
       // 取得側邊bar items by cur user
       const itemIdArr = Object.keys(data.hashedInvitationArrFromCurUser).concat(Object.keys(data.hashedPosibleInvitationArrToCurUser));
       if (itemIdArr.length > 0) {
@@ -53,7 +55,7 @@ function getWantInvitation(token) {
           itemContentDiv.append(titleDiv);
           itemContentDiv.append(tagsDiv);
           // add tags to tagsDiv
-          let tagsArr = itemData.tags.split(' ');
+          let tagsArr = itemData.tags;
           for (let j = 0; j < tagsArr.length; j++) {
             let tagSpan = $('<div />').attr('class', 'tag user-item').html(`${tagsArr[j]} `);
             tagsDiv.append(tagSpan);
@@ -117,14 +119,10 @@ function getMatchedResultData(item_id, data, item_type) {
           success: (checkAllConfirmResultArr) => {
             // 若有配對成功，alert 成功訊息
             alert(checkAllConfirmResultArr.msg);
-            if (checkAllConfirmResultArr.msg === '配對成功！請至配對頁查詢配對結果') {
-              location.reload();
-            }
+            location.reload();
           },
-          error: (error) => {
-            console.log(error.errorMsg);
+          error: () => {
             alert('金拍謝，暫時無法為您送出交換邀請，若持續發生請聯繫我們');
-            return;
           },
         });
       });
@@ -177,26 +175,11 @@ function getMatchedResultData(item_id, data, item_type) {
       let nicknameSpan = $('<span />').attr({ 'class': 'nickname' }).html(`${itemData.user_nickname}`);
       itemInfoDiv.append(nicknameSpan);
       // add tags to tagsDiv
-      let tagsArr = itemData.tags.split(' ');
+      let tagsArr = itemData.tags;
       for (let j = 0; j < tagsArr.length; j++) {
         let tagSpan = $('<span />').html(`${tagsArr[j]} `);
         tagsDiv.append(tagSpan);
       }
-      // /**
-      //  * 配對互動區
-      //  */
-      // if (matchedItemsDataArr[i].curUserWant.checked === "confirm") { show = false }
-      // let checked = matchedItemsDataArr[i][e].checked === 'confirm' ? '已確認' : '未確認'
-      // // if (itemData.checked === 'confirm') {
-      // //   itemData.checked = '已確認'
-      // // } else {
-      // //   itemData.checked = '未確認'
-      // // }
-      // let ownercheckStatsus = $('<div></div>').attr({ 'class': 'user-check-status' }).html(
-      //   `User : ${ownersArr[divCounter]}, ${checked}`
-      // );
-      // checkStatusNodeArr.push(ownercheckStatsus);
-      // ownercheckStatsus.insertBefore(interactionBtnDiv);
     }
   }
 

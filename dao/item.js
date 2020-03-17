@@ -1,4 +1,6 @@
 const { pool, itemJoinString } = require('../util/mysql');
+const moment = require('moment');
+moment.locale('zh-tw');
 
 function getItemDataByType(page, category, nickname) {
   return new Promise((resolve, reject) => {
@@ -89,8 +91,7 @@ function getConfirmedMatches(token) {
     const string =
       `SELECT i.matched_id, 
       i2.title required_item_title, 
-      i2.pictures required_item_pictures,
-      i2.tags required_item_tags
+      i2.pictures required_item_pictures
       FROM items i 
       JOIN items i2 ON i.matched_item_id = i2.id 
       JOIN users u ON i.user_id = u.id 
@@ -159,7 +160,11 @@ async function getItemDetail(itemId, gone) {
     let condition = [itemId];
     pool.query(string, condition, (err, result) => {
       if (err) { reject(err); return; }
-      resolve(result[0]);
+      let response = result.length > 0? result[0]:{};
+      if (result.length > 0) {
+        result[0].create_time = moment(result[0].create_time).format('lll');
+      }
+      resolve(response);
     });
   });
 }

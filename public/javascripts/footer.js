@@ -54,7 +54,7 @@ function getNotification(token) {
           });
           $('#notification-area').append(link);
           let outerNotificationDiv;
-          if (msgObj.watched === 'false') { //unread msg
+          if (msgObj.watched === 0) { //unread msg
             outerNotificationDiv = $('<div></div>').attr({ 'class': 'notification-div outer notification new' });
           } else {
             outerNotificationDiv = $('<div></div>').attr({ 'class': 'notification-div outer notification' });
@@ -64,7 +64,7 @@ function getNotification(token) {
           let notificationDiv = $('<div></div>').attr({ 'class': 'notification-div new' }).html(`${msgObj.content}`);
           outerNotificationDiv.append(indentDot);
           outerNotificationDiv.append(notificationDiv);
-          if (msgObj.watched === 'false') {
+          if (msgObj.watched === 0) {
             // 標示為已讀
             link.click(() => {
               $.ajax({ // 要改成針對每個 notification
@@ -76,17 +76,15 @@ function getNotification(token) {
                 success: () => {
                   outerNotificationDiv.attr({ 'class': 'notification-div outer notification' });
                 },
-                error: (err) => {
-                  console.log(err);
-                  return;
+                error: () => {
                 }
               });
             });
           }
         });
         // 顯示新訊息紅點 => 改為比對最新訊息時間與最後觀看時間**
-        let lastWatchTime = await getLastMsgWatchedTime(token);
-        if ( msgArr[0].time > lastWatchTime) {
+        let lastWatchTime = await getLastMsgWatchedTime(token).catch(()=>{});
+        if ( msgArr[0].create_time > lastWatchTime) {
           let notificationCount = $('<div></div>').attr({ 'id': 'notification-count' });
           notificationCount.insertAfter($('#notification-span'));
         }
@@ -97,8 +95,7 @@ function getNotification(token) {
         $(outerNotificationDiv).append(notificationDiv);
       }
     },
-    error: (err) => {
-      console.log(err);
+    error: () => {
     }
   });
 }
@@ -111,10 +108,7 @@ function updateMsgWatchedTime(token) {
       Authorization: `Bearer ${token}`,
     },
     success: () => {},
-    error: (err, textStatus, errorThrown) => {
-      console.log(err);
-      console.log(textStatus);
-      console.log(errorThrown);
+    error: () => {
     }
   });
 }
@@ -131,7 +125,6 @@ async function getLastMsgWatchedTime(token) {
         resolve(time);
       },
       error: (err) => {
-        console.log(err);
         reject(err);
       }
     });

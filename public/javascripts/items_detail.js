@@ -4,9 +4,6 @@ let nomoreUpdate = false;
 let user_nickname = null;
 let selectItemIDArr = [];
 let lastTimeSelectedArr;
-let time = $('#item-detail-time');
-
-time.html(new Date(parseInt(time.html())).toString().slice(4, 21));
 
 /**
  * 申請用戶選擇完畢後，點選按鈕送出申請資料
@@ -35,19 +32,15 @@ $('#exchange-request-btn').click(() => {
         url: '/api/1.0/want/new',
         data: {
           'want_items_Arr': wantItemArr.toString(),
-          // 'want_items_owner': user_nickname,
           'required_item': parseInt(window.location.search.split('=')[1]),
-          // 'required_item_owner': $('#required-owner').html(),
           'token': localStorage.getItem('token'),
         },
         success: (successMsg) => {
           alert(successMsg.msg);
           location.reload();
         },
-        error: (failResponse) => {
-          console.log(failResponse);
+        error: () => {
           alert('金拍謝，暫時無法為您添加交換邀請，若持續發生請聯繫我們');
-          return;
         }
       });
     } else {
@@ -134,7 +127,7 @@ if (page !== 'end') {
             itemContentDiv.append(titleDiv);
             itemContentDiv.append(tagsDiv);
             // add tags to tagsDiv
-            let tagsArr = itemsListArr[i - 20 * page].tags.split(' ');
+            let tagsArr = itemsListArr[i - 20 * page].tags;
             for (let j = 0; j < tagsArr.length; j++) {
               let tagSpan = $('<div />').attr('class', 'tag user-item').html(`${tagsArr[j]} `);
               tagsDiv.append(tagSpan);
@@ -146,16 +139,14 @@ if (page !== 'end') {
             page = 'end';
           }
         },
-        error: (err) => {
+        error: () => {
           alert('金拍謝，暫時找不到你的物品資訊QQ，若持續發生請聯繫我們');
-          return;
         }
       });
     },
-    error: (err) => {
+    error: () => {
       // alert(err);
       alert('暫時無法找到您上次的交換邀請紀錄');
-      return;
     }
   });
 } else {

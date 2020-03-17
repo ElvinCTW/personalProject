@@ -16,7 +16,7 @@ block content
                     .sub-title.category=main_category_text
                     .sub-title.category=sub_category_text
                     .sub-title.category=status
-                    .sub-title.time(id="item-detail-time")=time
+                    .sub-title.time(id="item-detail-time")=create_time
                 .picture-div.item-detail(id="item-detail-pic-div")
                   - let imgArr = pictures.split(',').map(pic=>'https://triangletradeelvintokyo.s3-ap-northeast-1.amazonaws.com/'+pic)
                   - let i = 0
@@ -25,7 +25,7 @@ block content
                     - i++
               .sub-main-container.text-content
                 .introduction-div.tags
-                  - let tagsArr = tags.split(' ')
+                  - let tagsArr = tags
                   each tag in tagsArr
                     .tag=tag
                 .introduction-div.item-detail=introduction

@@ -25,7 +25,7 @@ const itemJoinString =
   JOIN item_category ic ON i.id = ic.item_id
   JOIN main_categories mc ON mc.id = ic.main_category_id
   JOIN sub_categories sc ON sc.id = ic.sub_category_id
-  JOIN users u on u.id = i.user_id `;
+  JOIN users u ON u.id = i.user_id `;
 
 function errLog(err, functionName, fileName) {
   console.log('-------------ERROR START-------------');

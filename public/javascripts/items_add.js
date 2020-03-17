@@ -50,9 +50,7 @@ $.ajax({
       $('#main_category_list').append(option);
     });
   },
-  error: (err) => {
-    alert(err.errorMsg);
-  }
+  error: () => {}
 });
 // 更新主分類 & 主分類選擇
 $('#main_category_list').click((e) => {
@@ -74,9 +72,7 @@ $('#main_category_list').click((e) => {
         $('#sub_category_list').append(option);
       });
     },
-    error: (err) => {
-      alert(err);
-    }
+    error: () => {}
   });
   if ($('#status_input').val() !== '' && $('#sub_category_input').val() !== '') {
     $('#add-items-btn').attr({ type: 'submit' });
@@ -113,7 +109,6 @@ $('#introduction_input').change(() => {
 });
 // tag部分排除基本輸入錯誤
 function tagsNormalization() {
-  // let tags = $('#tags_input').val()
   if ($('#tags_input').val() !== '') {
     // 抽換＃為#
     let tags = $('#tags_input').val().replace(/＃/g, '#');
@@ -138,7 +133,6 @@ function readURL(input) {
     const reader = new FileReader();
     if (input.files && input.files[0]) {
       reader.onload = function (e) {
-        // for (let i = 0; i < input.files.length; i++) {
         $(`#pic${i}`).attr('src', e.target.result);
       };
     }

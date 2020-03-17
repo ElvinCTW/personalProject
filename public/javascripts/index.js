@@ -91,7 +91,7 @@ function createMoreItems() {
           let nicknameSpan = $('<span />').attr({ 'class': 'nickname' }).html(`${itemsListArr[i - 20 * page].user_nickname}`);
           itemInfoDiv.append(nicknameSpan);
           // add tags to tagsDiv
-          let tagsArr = itemsListArr[i - 20 * page].tags.split(' ');
+          let tagsArr = itemsListArr[i - 20 * page].tags;
           for (let j = 0; j < tagsArr.length; j++) {
             let tagSpan = $('<span />').html(`${tagsArr[j]} `);
             tagsDiv.append(tagSpan);

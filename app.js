@@ -11,8 +11,8 @@ const itemAPI = require('./routes/itemAPI');
 const wantAPI = require('./routes/wantAPI');
 const msgAPI = require('./routes/msgAPI');
 const categoryAPI = require('./routes/categoryAPI');
-const tagAPI = require('./routes/tagAPI');
 const { getItemDetail } = require('./dao/item');
+const { appendTagsToItemData } = require('./dao/tagDAO');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use(logger('dev'));
@@ -42,10 +42,10 @@ app.get('/matches/confirmed', (req, res) => { res.render('match_confirmed'); });
 // Items
 app.get('/items/new', (req, res) => { res.render('items_add'); });
 app.get('/items/gone', async (req, res) => {
-  res.render('items_detail_gone', await getItemDetail(req.query.item_id, 'gone'));
+  res.render('items_detail_gone', await getItemDetailData(req.query.item_id, 'gone') );
 });
 app.get('/items/detail', async (req, res) => {
-  res.render('items_detail', await getItemDetail(req.query.item_id));
+  res.render('items_detail', await getItemDetailData(req.query.item_id));
 });
 
 /**
@@ -56,7 +56,6 @@ app.use('/api/1.0/items', itemAPI);
 app.use('/api/1.0/want', wantAPI);
 app.use('/api/1.0/message', msgAPI);
 app.use('/api/1.0/category', categoryAPI);
-app.use('/api/1.0/tags', tagAPI);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -71,6 +70,13 @@ app.use(function (err, req, res) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+async function getItemDetailData(itemId, gone) {
+  let itemDetail = gone ?  await getItemDetail(itemId, 'gone'): await getItemDetail(itemId);
+
+  let itemDataArrWithTags = await appendTagsToItemData([itemDetail]);
+  return itemDataArrWithTags[0];
+}
 
 async function getHomePageData(req) {
   const { statusList } = require('./util/listData');
@@ -125,9 +131,10 @@ async function getHomePageData(req) {
     const hashtagArrWithHash = hashtagArr.filter(hash => hash !== '');
     hashtagArr = hashtagArrWithHash.map(hashtag => hashtag.slice(1));
     let itemsDataArr = await getItemDataFromSearchBar(titleArr, hashtagArr);
+    itemsDataArr = await appendTagsToItemData(itemsDataArr);
     let keywordString = '';
     if (titleArr.length > 0 && hashtagArrWithHash.length > 0) {
-      titleArr.map(keyword => '/' + keyword).concat(hashtagArrWithHash).forEach(keyword => { resData.keywordString += keyword + ' '; });
+      titleArr.map(keyword => '/' + keyword).concat(hashtagArrWithHash).forEach(keyword => { keywordString += keyword + ' '; });
     } else if (titleArr.length > 0) {
       titleArr.forEach(keyword => { keywordString += '/' + keyword + ' '; });
     } else {

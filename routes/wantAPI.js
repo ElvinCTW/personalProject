@@ -3,6 +3,7 @@ const router = express.Router();
 const { getWantOfItemsByItemIds, insertNewWant } = require('../dao/wantDAO');
 const { getUserDataByToken } = require('../dao/user');
 const { getItemDataByIdArr } = require('../dao/item');
+const { appendTagsToItemData } = require('../dao/tagDAO');
 
 // item_detail page 建立 want 用
 router.post('/new', async (req, res) => {
@@ -21,7 +22,7 @@ router.post('/new', async (req, res) => {
       // 建立當前 user's want
       const newWantInsertResult = await insertNewWant(intCurUserItemsIdArr, secondItemId).catch(err => { console.log(err); res.status(500).send(); return; });
       // 取得物品資料
-      const itemsDataOfAllObj = await getRelatedItemsData(thirdItemsIds, intCurUserItemsIdArr, secondItemId).catch(err => { console.log(err); res.status(500).send(); return; });
+      let itemsDataOfAllObj = await getRelatedItemsData(thirdItemsIds, intCurUserItemsIdArr, secondItemId).catch(err => { console.log(err); res.status(500).send(); return; });
       // 傳送通知訊息
       await sendMsgToMatchers(wantOfSecondUserToCurUserItems, wantOfThirdItemsToCurUserItems, itemsDataOfAllObj, secondItemId, checkUserResult).catch(err => { console.log(err); }); // 對 user 影響不大，不停止 response
       // Send back success or fail msg
@@ -63,24 +64,25 @@ router.post('/new', async (req, res) => {
       const insertCount = await sendMsgToNoMatcher({
         content: `您的物品"${itemsDataOfAllObj[secondItemId].title}"收到了來自"${checkUserResult[0].nickname}"的新交換邀請，快到"邀請查詢"頁面查看一下吧`,
         receiver: itemsDataOfAllObj[secondItemId].user_id,
-        sender: 'system',
-        time: Date.now().toString(),
+        sender: 4,
         link: '/want/invitation'
       });
       if (insertCount !== 1) { console.log('insertCount not equal to 1, it is ' + insertCount); }
     } else {
+      console.log('itemsDataOfAllObj');
+      console.log(itemsDataOfAllObj);
       if (wantOfSecondUserToCurUserItems.length > 0) {
         wantOfSecondUserToCurUserItems.forEach(doubleMatch => {
           // 通知 second user 配對成立
-          msgArr.push([`已建立您對"${itemsDataOfAllObj[doubleMatch.required_item_id].title}"的一組新兩人配對，快到"配對查詢"頁面確認吧！`, 'system', itemsDataOfAllObj[doubleMatch.want_item_id].user_id, Date.now().toString(), doubleMatch.required_item_id]);
+          msgArr.push([`已建立您對"${itemsDataOfAllObj[doubleMatch.required_item_id].title}"的一組新兩人配對，快到"配對查詢"頁面確認吧！`, 4, itemsDataOfAllObj[doubleMatch.want_item_id].user_id, doubleMatch.required_item_id]);
         });
       }
       if (wantOfThirdItemsToCurUserItems.length > 0) {
         wantOfThirdItemsToCurUserItems.forEach(tripleMatch => {
           // 通知 second & third user 配對成立
           msgArr.push(
-            [`已建立您對"${itemsDataOfAllObj[tripleMatch.want_item_id].title}"的一組新三人配對，快到"配對查詢"頁面確認吧！`, 'system', itemsDataOfAllObj[secondItemId].user_id, Date.now().toString(), tripleMatch.want_item_id],
-            [`已建立您對"${itemsDataOfAllObj[tripleMatch.required_item_id].title}"的一組新三人配對，快到"配對查詢"頁面確認吧！`, 'system', itemsDataOfAllObj[tripleMatch.want_item_id].user_id, Date.now().toString(), tripleMatch.required_item_id]
+            [`已建立您對"${itemsDataOfAllObj[tripleMatch.want_item_id].title}"的一組新三人配對，快到"配對查詢"頁面確認吧！`, 4, itemsDataOfAllObj[secondItemId].user_id, tripleMatch.want_item_id],
+            [`已建立您對"${itemsDataOfAllObj[tripleMatch.required_item_id].title}"的一組新三人配對，快到"配對查詢"頁面確認吧！`, 4, itemsDataOfAllObj[tripleMatch.want_item_id].user_id, tripleMatch.required_item_id]
           );
         });
       }
@@ -137,11 +139,11 @@ router.get('/check', async (req, res) => {
           doubleMatchResultArr.push({
             curUserWant: {
               item_id: curUserWantArr[i].want_item_id,
-              checked: curUserWantArr[i].checked
+              confirmed: curUserWantArr[i].confirmed
             },
             secondUserWant: {
               item_id: secondItemWantArr[j].want_item_id,
-              checked: secondItemWantArr[j].checked
+              confirmed: secondItemWantArr[j].confirmed
             },
           }); // 裡面有兩個 item_id, 以及 want 的 check 狀態
           break;
@@ -164,9 +166,9 @@ router.get('/check', async (req, res) => {
           if (curUserWantArr[j].required_item_id === secondItemWantArr[i].want_item_id) {
             combinedWantArr.push({
               want_item_id: curUserWantArr[j].want_item_id, // 把第一個 want 的頭當成新 want 的頭
-              curUserWantStatus: curUserWantArr[j].checked,
+              curUserWantStatus: curUserWantArr[j].confirmed,
               second_item_id: secondItemWantArr[i].want_item_id, // 紀錄兩個原始的 want 結合點的共同 item_id
-              secondUserWantStatus: secondItemWantArr[i].checked,
+              secondUserWantStatus: secondItemWantArr[i].confirmed,
               required_item_id: secondItemWantArr[i].required_item_id, // 把第二個 want 的尾當成新 want 的尾
             });
           }
@@ -184,15 +186,15 @@ router.get('/check', async (req, res) => {
             tripleMatchResultArr.push({
               curUserWant: {
                 item_id: combinedWantArr[i].want_item_id,
-                checked: combinedWantArr[i].curUserWantStatus,
+                confirmed: combinedWantArr[i].curUserWantStatus,
               },
               secondUserWant: {
                 item_id: combinedWantArr[i].second_item_id,
-                checked: combinedWantArr[i].secondUserWantStatus,
+                confirmed: combinedWantArr[i].secondUserWantStatus,
               },
               thirdUserWant: {
                 item_id: combinedWantArr[i].required_item_id,
-                checked: thirdItemWantArr[j].checked
+                confirmed: thirdItemWantArr[j].confirmed
               },
             }); // 裡面有三個item_id, 以及 want 的 check 狀態
             break;
@@ -204,6 +206,7 @@ router.get('/check', async (req, res) => {
   }
   async function getItemsData(...args) {
     let dataIdArr = [];
+    const { appendTagsToItemData } = require('../dao/tagDAO');
     for (let i = 0; i < args.length; i++) {
       args[i].forEach(match => {
         for (let want in match) {
@@ -213,7 +216,8 @@ router.get('/check', async (req, res) => {
         }
       });
     }
-    let itemsDataArr = dataIdArr.length > 0 ? getItemDataByIdArr(dataIdArr) : [];
+    let itemsDataArr = dataIdArr.length > 0 ? await getItemDataByIdArr(dataIdArr) : [];
+    itemsDataArr = await appendTagsToItemData(itemsDataArr);
     return itemsDataArr;
   }
 });
@@ -286,9 +290,9 @@ router.post('/checked', async (req, res) => {
       let insertMsgQueryDataArr = [];
       notificationList.forEach(notification => {
         if (id_Arr.indexOf(notification.notificated_item_id) === -1) {
-          insertMsgQueryDataArr.push([`哭哭！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}"的交換配對，因該物品下架已被取消><`, 'system', notification.notificated_user, notification.gone_item_id, null, Date.now().toString(), ' ']);
+          insertMsgQueryDataArr.push([`哭哭！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}"的交換配對，因該物品下架已被取消><`, 4, notification.notificated_user, notification.gone_item_id, null, ' ']);
         } else {
-          insertMsgQueryDataArr.push([`恭喜！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}"的交換已成交～交換編號為 ${insertedMatchId} 號，現在就打開"成交紀錄"頁面，和對方討論交換細節吧！`, 'system', notification.notificated_user, notification.gone_item_id, insertedMatchId, Date.now().toString(), '/matches/confirmed/']);
+          insertMsgQueryDataArr.push([`恭喜！您以"${notification.notificated_item_title}"對"${notification.gone_item_title}"的交換已成交～交換編號為 ${insertedMatchId} 號，現在就打開"成交紀錄"頁面，和對方討論交換細節吧！`, 4, notification.notificated_user, notification.gone_item_id, insertedMatchId, '/matches/confirmed/']);
         }
       });
       // 3.2 將 msg 插入 message table 
@@ -328,6 +332,10 @@ router.get('/invitation', async (req, res) => {
     // get wants from db
     const wantArrToCurUser = await getReversedWants(token);
     let wantArrFromCurUser = await getUserWantByToken(token); // 1
+    console.log('wantArrFromCurUser');
+    console.log(wantArrFromCurUser.length);
+    console.log('wantArrToCurUser');
+    console.log(wantArrToCurUser.length);
     if (wantArrToCurUser.length === 0 && wantArrFromCurUser.length === 0) {
       return {
         hashedInvitationArrFromCurUser: {},
@@ -344,6 +352,7 @@ router.get('/invitation', async (req, res) => {
       const hashedInvitationArrFromCurUser = hashWantArrObjMaker(wantArrFromCurUser, true); // 5
       wantArrFromCurUser = wantArrFromCurUser.map(obj => Object.values(obj)).flat(); // 3
       let dataCollection = await getItemDataByIdArr(wantArrFromCurUser); // 取得資料 // 4
+      dataCollection = await appendTagsToItemData(dataCollection);
       const hashedDataCollection = dataCollection.reduce((acu, data) => { // 6
         acu[data.id] = data;
         return acu;
@@ -363,6 +372,7 @@ router.get('/invitation', async (req, res) => {
           .map(want => Object.values(want)).flat();
         const uniqueAllItemsIdArr = [... new Set(allItemsIdArr)]; //去除重複
         let dataCollection = await getItemDataByIdArr(uniqueAllItemsIdArr); // 取得資料 // 4
+        dataCollection = await appendTagsToItemData(dataCollection);
         // 整理 curUser 的潛在配對
         const hashedPosibleInvitationArrToCurUser = hashWantArrObjMaker(wantArrToCurUser, true);
         const hashedDataCollection = dataCollection.reduce((acu, data) => { // 6
@@ -399,6 +409,7 @@ router.get('/invitation', async (req, res) => {
           .flat();
         const uniqueAllItemsIdArr = [... new Set(allItemsIdArr)]; //去除重複
         let dataCollection = await getItemDataByIdArr(uniqueAllItemsIdArr); // 取得資料 // 4
+        dataCollection = await appendTagsToItemData(dataCollection);
         // 整理 curUser 的潛在配對
         const hashedPosibleInvitationArrToCurUser = hashWantArrObjMaker(wantArrToCurUser.concat(joinedWantFromReversedThirdToCurUser), true);
         const hashedDataCollection = dataCollection.reduce((acu, data) => { // 6
@@ -451,6 +462,7 @@ router.get('/invitation', async (req, res) => {
       .flat();
     const uniqueAllItemsIdArr = [... new Set(allItemsIdArr)]; //去除重複
     let dataCollection = await getItemDataByIdArr(uniqueAllItemsIdArr); // 取得資料 // 4
+    dataCollection = await appendTagsToItemData(dataCollection);
     // 整理 curUser 的潛在配對
     const hashedPosibleInvitationArrToCurUser = hashWantArrObjMaker(doubleNoMatchedWantToCurUserArr.concat(tripleNoMatchedWantToCurUserArr), true);
     const hashedInvitationArrFromCurUser = hashWantArrObjMaker(wantArrFromCurUser, true); // 5

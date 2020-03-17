@@ -3,7 +3,6 @@ if (!localStorage.getItem('token')) {
   // 確認使用者有登入，如果沒有，跳alert請user登入
   alert('請登入以進入交換討論頁面');
   window.location.assign('/');
-  // 應確認使用者為指定 user_nickname 的使用者
 } 
 
 $('#send-msg-btn').click(()=>{
@@ -13,7 +12,6 @@ $('#send-msg-btn').click(()=>{
 function sendMsg() {
   // get user input msg
   let userInputContent = $('#user-type-content').val();
-  // let currentTime = Date.now();
   // send msg to front end page
   if (userInputContent.length > 0 && currentMatchedId) {
     socket.emit('message', {

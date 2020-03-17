@@ -66,13 +66,13 @@ async function _createFakeData() {
     .then(() => { return _createFakeTags(); })
     .then(() => { return _createFakeMainCategories(); })
     .then(() => { return _createFakeSubCategories(); })
-    .then(() => { return _createFakeMessages(); }) 
     .then(() => { return _createFakeItems(); })
-    .then(() => { return _createFakeMatches(); })
     .then(() => { return _createFakeWant(); })
     .then(() => { return _createFakeItemsTag(); })
     .then(() => { return _createFakeItemCategories(); })
     .then(() => { return _createFakeMainSubCategories(); })
+    .then(() => { return _createFakeMatches(); })
+    .then(() => { return _createFakeMessages(); }) 
     .catch(err => console.log(err));
 
 
@@ -139,7 +139,7 @@ async function _createFakeData() {
 
   function _createFakeMessages() {
     return new Promise((resolve, reject) => {
-      pool.query('INSERT INTO messages(id, content, sender, time, watched, link, receiver, mentioned_item_id, matched_id) values ?', [messages.map(obj => Object.values(obj))], (err) => {
+      pool.query('INSERT INTO messages(id, content, sender, watched, link, receiver, mentioned_item_id, matched_id) values ?', [messages.map(obj => Object.values(obj))], (err) => {
         if (err) {
           reject(err);
         } else {
@@ -175,7 +175,7 @@ async function _createFakeData() {
 
   function _createFakeUser() {
     return new Promise((resolve, reject) => {
-      pool.query('INSERT INTO users(id, sign_id, password, nickname, token, time, watch_msg_time) values ?', [users.map(obj => Object.values(obj))], (err) => {
+      pool.query('INSERT INTO users(id, sign_id, password, nickname, token) values ?', [users.map(obj => Object.values(obj))], (err) => {
         if (err) {
           reject(err);
         } else {
@@ -187,7 +187,7 @@ async function _createFakeData() {
 
   function _createFakeItems() {
     return new Promise((resolve, reject) => {
-      pool.query('INSERT INTO items(id, user_id, tags, title, status, introduction, pictures, time, availability, matched_id, matched_item_id) VALUES ?', [items.map(obj => Object.values(obj))], (err) => {
+      pool.query('INSERT INTO items(id, user_id, title, status, introduction, pictures, availability, matched_id, matched_item_id) VALUES ?', [items.map(obj => Object.values(obj))], (err) => {
         if (err) {
           reject(err);
         } else {
@@ -199,7 +199,7 @@ async function _createFakeData() {
 
   function _createFakeWant() {
     return new Promise((resolve, reject) => {
-      pool.query('INSERT INTO want(id, want_item_id, required_item_id, checked) VALUES ?', [want.map(obj => Object.values(obj))], (err) => {
+      pool.query('INSERT INTO want(id, want_item_id, required_item_id, confirmed) VALUES ?', [want.map(obj => Object.values(obj))], (err) => {
         if (err) {
           reject(err);
         } else {

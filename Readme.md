@@ -86,12 +86,6 @@ ID: test3, Password: 123
 
 Lastest items will appear in the middle of homepage, users can find items they are instersted in by **clicking classifications** on side bar, or **searching key words** with navigation bar.
 
-<div style="display:flexbox;">
-<img src="./public/images/demo/index-scroll.gif" alt="index-scroll" width="250"/>
-<img src="./public/images/demo/index-category.gif" alt="index-category" width="250"/>
-<img src="./public/images/demo/index-searchbar.gif" alt="index-searchbar" width="250"/>
-</div>
-
 ### Add items
 
 Users need to add new items before starting exchanging with others in "Add" page.

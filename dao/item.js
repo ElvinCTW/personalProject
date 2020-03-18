@@ -162,7 +162,7 @@ async function getItemDetail(itemId, gone) {
       if (err) { reject(err); return; }
       let response = result.length > 0? result[0]:{};
       if (result.length > 0) {
-        result[0].create_time = moment(result[0].create_time).utc().zone(+8).format('lll');
+        result[0].create_time = moment(result[0].create_time).utc().zone(-8).format('lll');
       }
       resolve(response);
     });

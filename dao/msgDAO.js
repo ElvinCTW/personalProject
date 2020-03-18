@@ -84,7 +84,7 @@ function getConfirmedMatchMsg(matched_id) {
       if (err) { reject(err); return; }
       let response = [];
       result.forEach(e=>{
-        e.create_time = moment(e.create_time).utc().zone(+8).format('lll');
+        e.create_time = moment(e.create_time).utc().zone(-8).format('lll');
         response.push(e);
       });
       resolve(response);
@@ -99,7 +99,7 @@ function getInsertedMsgTime(msgId) {
     WHERE m.id = ?`;
     pool.query(string, [msgId], (err, result) => {
       if (err) { reject(err); return; }
-      resolve(moment(result[0].create_time).utc().zone(+8).format('lll'));
+      resolve(moment(result[0].create_time).utc().zone(-8).format('lll'));
     });
   });
 }

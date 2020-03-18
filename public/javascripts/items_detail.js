@@ -62,7 +62,7 @@ $('#item-detail-pic-div').click(() => { changePic(); });
 window.setInterval(() => { changePic(); }, 3000);
 // 換照function
 function changePic() {
-  if (imgLength>1) {
+  if (imgLength > 1) {
     $(`#img${picCount % imgLength}`).attr('style', 'display:none;');
     picCount++;
     $(`#img${picCount % imgLength}`).attr('style', 'display:``');
@@ -118,7 +118,10 @@ if (page !== 'end') {
             link.append(itemImgDiv);
             link.append(itemContentDiv);
             // add picture
-            let itemImg = $('<img></img>').attr({ 'src': s3_url + itemsListArr[i - 20 * page].pictures.split(',')[0] });
+            let itemImg = $('<img></img>').attr({
+              'src': s3_url + itemsListArr[i - 20 * page].pictures.split(',')[0],
+              'alt': itemsListArr[i - 20 * page].title,
+            });
             itemImgDiv.append(itemImg);
             // add title, item-info and tags Divs
             let titleDiv = $('<span></span>').attr({ 'class': 'title user-item' }).html(`${itemsListArr[i - 20 * page].title}`);

@@ -2,10 +2,10 @@
 let page = 0;
 let nomoreUpdate = false;
 let getData = true;
-if ($('#items-area-recommand').length>0) {
+if ($('#items-area-recommand').length > 0) {
   createMoreItems();
-} 
-if ($('#no-item').length>0) {
+}
+if ($('#no-item').length > 0) {
   alert('此搜尋沒有上架中的匹配物品，請修改搜尋條件或晚點再試～');
 }
 /**
@@ -17,7 +17,7 @@ $('#items-area-recommand').scroll(function () {
   const $ItemHeight = $('.item-link').height(); // 253px;
   // 偵測目前捲軸頂點
   let $ScrollTop = $(this).scrollTop();
-  if ((5*$ItemHeight)*(page) < ($BodyHeight + $ScrollTop)*2) {
+  if ((5 * $ItemHeight) * (page) < ($BodyHeight + $ScrollTop) * 2) {
     if (page !== 'end') {
       if (getData) {
         getData = false;
@@ -28,7 +28,7 @@ $('#items-area-recommand').scroll(function () {
     } else {
       if (!nomoreUpdate) {
         nomoreUpdate = true;
-        $('#nomore-text-div').attr({'onclick': ''}).html('沒有更多物品囉～');
+        $('#nomore-text-div').attr({ 'onclick': '' }).html('沒有更多物品囉～');
       }
     }
   }
@@ -41,26 +41,26 @@ function createMoreItems() {
     let url = `/api/1.0/items/all?page=${page}`;
     let params = (new URL(document.location)).searchParams;
     if (params.get('main_category')) {
-      url+=`&main_category=${params.get('main_category')}`;
-    } 
-    if (params.get('sub_category')){
-      url+=`&sub_category=${params.get('sub_category')}`;
+      url += `&main_category=${params.get('main_category')}`;
     }
-    if (params.get('status')){
-      url+=`&status=${params.get('status')}`;
+    if (params.get('sub_category')) {
+      url += `&sub_category=${params.get('sub_category')}`;
+    }
+    if (params.get('status')) {
+      url += `&status=${params.get('status')}`;
     }
     $.ajax({
       url: url,
       type: 'get',
       success: (itemsListArr) => {
-        if (itemsListArr.length===0) {
+        if (itemsListArr.length === 0) {
           alert('此分類目前沒有更多商品囉～');
           page = 'end';
           return;
         }
         for (let i = 20 * page; i < (20 * page + itemsListArr.length); i++) {
           // Create link to item detail page
-          let link = $('<a></a>').attr({ 
+          let link = $('<a></a>').attr({
             'href': `/items/detail?item_id=${itemsListArr[i - 20 * page].id}`,
             'class': 'item-link'
           });
@@ -78,7 +78,10 @@ function createMoreItems() {
           newItemContainer_Inside.append(itemImgDiv);
           newItemContainer_Inside.append(itemContentDiv);
           // add picture
-          let itemImg = $('<img></img>').attr({ 'src': s3_url + itemsListArr[i - 20 * page].pictures.split(',')[0] });
+          let itemImg = $('<img></img>').attr({
+            'src': s3_url + itemsListArr[i - 20 * page].pictures.split(',')[0],
+            'alt': itemsListArr[i - 20 * page].title,
+          });
           itemImgDiv.append(itemImg);
           // add title, item-info and tags Divs
           let titleDiv = $('<div></div>').attr({ 'class': 'item title' }).html(`${itemsListArr[i - 20 * page].title}`);
@@ -112,7 +115,7 @@ function createMoreItems() {
   } else {
     if (!nomoreUpdate) {
       nomoreUpdate = true;
-      $('#nomore-text-div').attr({'onclick': ''}).html('沒有更多物品囉～');
+      $('#nomore-text-div').attr({ 'onclick': '' }).html('沒有更多物品囉～');
     }
   }
 }

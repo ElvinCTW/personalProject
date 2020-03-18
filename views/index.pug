@@ -68,7 +68,7 @@ block content
                       .item-container.inside.main.index
                         .item-img.main
                           - let pic_url = item.pictures.split(',')[0]
-                          img(src=s3_url+pic_url)
+                          img(src=s3_url+pic_url alt=`${item.title}`)
                         .item.content
                           .item.title=item.title
                           .item.info

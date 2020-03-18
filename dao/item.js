@@ -162,7 +162,7 @@ async function getItemDetail(itemId, gone) {
       if (err) { reject(err); return; }
       let response = result.length > 0? result[0]:{};
       if (result.length > 0) {
-        result[0].create_time = moment(result[0].create_time).format('lll');
+        result[0].create_time = moment(result[0].create_time).utc().zone(+8).format('lll');
       }
       resolve(response);
     });
@@ -175,7 +175,8 @@ async function getItemDetail(itemId, gone) {
  * @param {*} insertedMatchId optional, only work for matched discontinue
  */
 function discontinueItem(id_Arr, insertedMatchId, con) {
-  // update items // turn item / availability to false
+  // update items 
+  // turn item / availability to false
   let updateAvailabilitiesCount = 0;
   return new Promise((resolve, reject) => {
     let string = insertedMatchId ?

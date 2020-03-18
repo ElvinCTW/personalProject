@@ -235,8 +235,6 @@ function getMatchedResultData(item_id, matchResultObj, item_type) {
          * 配對互動區
          */
         if (matchedItemsDataArr[i].curUserWant.confirmed === 1) { show = false; }
-        console.log('matchedItemsDataArr[i].curUserWant')
-        console.log(matchedItemsDataArr[i].curUserWant)
         let confirmed = matchedItemsDataArr[i][e].confirmed === 1 ? '已確認' : '未確認';
         let ownercheckStatsus = $('<div></div>').attr({ 'class': 'user-check-status' }).html(
           `${itemData.user_nickname}: ${confirmed}`

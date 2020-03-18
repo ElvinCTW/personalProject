@@ -17,8 +17,6 @@ function getWantInvitation(token) {
       authorization: `Bearer ${token}`,
     },
     success: (data) => {
-      console.log('data ')
-      console.log(data)
       // 取得側邊bar items by cur user
       const itemIdArr = Object.keys(data.hashedInvitationArrFromCurUser).concat(Object.keys(data.hashedPosibleInvitationArrToCurUser));
       if (itemIdArr.length > 0) {

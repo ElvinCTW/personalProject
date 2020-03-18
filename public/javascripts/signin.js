@@ -19,7 +19,7 @@ if (!localStorage.getItem('token')) {
           return;
         }
       },
-      error: (err)=>{
+      error: ()=>{
         alert('登入有點問題喔，請確認一下，若持續發生請聯絡我們');
         return;
       }

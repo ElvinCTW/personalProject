@@ -1,4 +1,3 @@
-// const app = require('../app')
 const {NODE_ENV} = process.env;
 const {truncateFakeData, _createFakeData} = require('./fake_data_generator');
 const {pool} = require('../util/mysql');

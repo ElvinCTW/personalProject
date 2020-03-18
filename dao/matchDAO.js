@@ -15,7 +15,6 @@ function getConfirmedMatchItemsId(matched_id) {
       DAO_name: 'matchDAO',
       reject: reject,
     }, (confirmedMatchItemsData) => {
-      // resolve(confirmedMatchItemsData)
       if (typeof confirmedMatchItemsData[0].middle_item_id !== 'number') {
         resolve({
           start_item_id: confirmedMatchItemsData[0].start_item_id,

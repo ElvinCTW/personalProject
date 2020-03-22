@@ -80,15 +80,6 @@ function getWantInvitation(token) {
 function getMatchedResultData(item_id, data, item_type) {
   // 取得 matches
   const matchedItemsDataArr = item_type === 'requiredUser' ? data.hashedPosibleInvitationArrToCurUser[item_id] : data.hashedInvitationArrFromCurUser[item_id];
-  // if (item_type === 'requiredUser') {
-  //   let tempDArr = data.doubleMatchResultArr.filter(match=>match.secondUserWant.item_id === item_id)
-  //   let tempTArr = data.tripleMatchResultArr.filter(match=>match.secondUserWant.item_id === item_id)
-  //   matchedItemsDataArr = tempDArr.concat(tempTArr);
-  // } else {
-  //   let tempDArr = data.doubleMatchResultArr.filter(match=>match.curUserWant.item_id === item_id)
-  //   let tempTArr = data.tripleMatchResultArr.filter(match=>match.curUserWant.item_id === item_id)
-  //   matchedItemsDataArr = tempDArr.concat(tempTArr);
-  // }
   $('#items-area-match').empty();
   // 畫大框框給每個 match
   for (let i = 0; i < matchedItemsDataArr.length; i++) {

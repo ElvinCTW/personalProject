@@ -18,7 +18,7 @@ if (localStorage.getItem('newItem')) {
   localStorage.removeItem('newItem');
 }
 // 註冊分類開關
-(()=>{
+(() => {
   $('#main_category').click(() => {
     $('#main_category_box').toggle();
     $('#sub_category_box').hide();
@@ -50,7 +50,7 @@ $.ajax({
       $('#main_category_list').append(option);
     });
   },
-  error: () => {}
+  error: () => { }
 });
 // 更新主分類 & 主分類選擇
 $('#main_category_list').click((e) => {
@@ -72,7 +72,7 @@ $('#main_category_list').click((e) => {
         $('#sub_category_list').append(option);
       });
     },
-    error: () => {}
+    error: () => { }
   });
   if ($('#status_input').val() !== '' && $('#sub_category_input').val() !== '') {
     $('#add-items-btn').attr({ type: 'submit' });

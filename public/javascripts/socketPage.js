@@ -37,8 +37,8 @@ socket.on('join', (obj) => {
       itemContentDiv.append(tagsDiv);
       // add lastest msg into tag div 'class', 'tag user-item'
       let tagSpan = $('<div />').attr({
-        class:'tag user-item',
-        id:`side-bar-msg-${match.matched_id}`,
+        class: 'tag user-item',
+        id: `side-bar-msg-${match.matched_id}`,
       });
       if (obj.lastestMsgArr) {
         let msg;
@@ -64,7 +64,7 @@ socket.on('history', (confirmedMatchObj) => {
       let matchers = '';
       for (let i = 0; i < confirmedMatchObj.itemDataArr.length; i++) {
         // Create link to item detail page
-        let link = $('<a></a>').attr('href',`/items/gone?item_id=${confirmedMatchObj.itemDataArr[i].id}`);
+        let link = $('<a></a>').attr('href', `/items/gone?item_id=${confirmedMatchObj.itemDataArr[i].id}`);
         $('#gone-item-area').append(link);
         let itemInfoDiv = $('<div></div>').attr({ 'class': 'item-div user-item item-info' });
         link.append(itemInfoDiv);
@@ -78,8 +78,8 @@ socket.on('history', (confirmedMatchObj) => {
         let tagsDiv = $('<div></div>').attr({ 'class': 'introduction-div tags user-item item-info' }).html(`${confirmedMatchObj.itemDataArr[i].user_nickname}`);
         itemContentDiv.append(titleDiv);
         itemContentDiv.append(tagsDiv);
-        const matcher = i === confirmedMatchObj.itemDataArr.length-1 ? `${confirmedMatchObj.itemDataArr[i].user_nickname} `:`${confirmedMatchObj.itemDataArr[i].user_nickname}, `;
-        matchers+=matcher;
+        const matcher = i === confirmedMatchObj.itemDataArr.length - 1 ? `${confirmedMatchObj.itemDataArr[i].user_nickname} ` : `${confirmedMatchObj.itemDataArr[i].user_nickname}, `;
+        matchers += matcher;
       }
       $('#matchers').html(matchers);
     }
@@ -147,19 +147,19 @@ socket.on('message', (obj) => {
     // auto scroll to bottom
     let msgArea = document.getElementById('msg-scroll');
     msgArea.scrollTop = msgArea.scrollHeight;
-  } 
+  }
   // 更新側邊小框
   $(`#side-bar-msg-${obj.matched_id}`).html(obj.content);
 });
 
 function getMatchedResultData(matched_id) {
-  currentMatchedId=matched_id;
+  currentMatchedId = matched_id;
   socket.emit('history', {
-    matched_id:matched_id,
-    token:localStorage.getItem('token'),
+    matched_id: matched_id,
+    token: localStorage.getItem('token'),
   });
 }
 
-socket.on('error', (obj)=>{
+socket.on('error', (obj) => {
   alert(obj.errorMsg);
 });

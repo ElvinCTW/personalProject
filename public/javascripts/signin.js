@@ -2,13 +2,13 @@
 if (!localStorage.getItem('token')) {
   console.log('no localstorage, signin');
   // No token, call userSign API
-  $('#signin-btn').click(()=>{
+  $('#signin-btn').click(() => {
     console.log('btn-clicked');
     $.ajax({
       url: '/api/1.0/users/signin',
       type: 'post',
       data: $('#sign-form').serialize(),
-      success: (signInResponse)=>{
+      success: (signInResponse) => {
         if (typeof signInResponse === 'object') {
           console.log(signInResponse);
           localStorage.setItem('token', signInResponse.user.token);
@@ -19,7 +19,7 @@ if (!localStorage.getItem('token')) {
           return;
         }
       },
-      error: ()=>{
+      error: () => {
         alert('登入有點問題喔，請確認一下，若持續發生請聯絡我們');
         return;
       }

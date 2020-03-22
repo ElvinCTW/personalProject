@@ -3,9 +3,9 @@ if (!localStorage.getItem('token')) {
   // 確認使用者有登入，如果沒有，跳alert請user登入
   alert('請登入以進入交換討論頁面');
   window.location.assign('/');
-} 
+}
 
-$('#send-msg-btn').click(()=>{
+$('#send-msg-btn').click(() => {
   sendMsg();
 });
 
@@ -15,11 +15,11 @@ function sendMsg() {
   // send msg to front end page
   if (userInputContent.length > 0 && currentMatchedId) {
     socket.emit('message', {
-      token:localStorage.getItem('token'),
-      matched_id:currentMatchedId,
+      token: localStorage.getItem('token'),
+      matched_id: currentMatchedId,
       data: {
-        content:userInputContent,
-        sender:localStorage.getItem('nickname'),
+        content: userInputContent,
+        sender: localStorage.getItem('nickname'),
         matched_id: currentMatchedId,
       }
     });
@@ -29,12 +29,12 @@ function sendMsg() {
   }
 }
 let infoBtn = $('#items-info-btn');
-infoBtn.click(()=>{
+infoBtn.click(() => {
   if ($('.item-info').length > 0) {
-    if (infoBtn.attr('style')==='background:rgb(235,235,235)') {
-      infoBtn.attr('style','background:none').html('顯示成交物品');
+    if (infoBtn.attr('style') === 'background:rgb(235,235,235)') {
+      infoBtn.attr('style', 'background:none').html('顯示成交物品');
     } else {
-      infoBtn.attr('style','background:rgb(235,235,235)').html('隱藏成交物品');
+      infoBtn.attr('style', 'background:rgb(235,235,235)').html('隱藏成交物品');
     }
     // 點擊後變色
     // 點擊後開關 items-info-div
@@ -45,7 +45,7 @@ infoBtn.click(()=>{
 });
 // textarea 點擊 enter 自動送出
 $('#user-type-content').keypress(function (e) {
-  if(e.which == 13 && !e.shiftKey) {        
+  if (e.which == 13 && !e.shiftKey) {
     $('#send-msg-btn').trigger('click');
   }
 });

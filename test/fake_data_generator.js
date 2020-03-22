@@ -72,7 +72,7 @@ async function _createFakeData() {
     .then(() => { return _createFakeItemCategories(); })
     .then(() => { return _createFakeMainSubCategories(); })
     .then(() => { return _createFakeMatches(); })
-    .then(() => { return _createFakeMessages(); }) 
+    .then(() => { return _createFakeMessages(); })
     .catch(err => console.log(err));
 
 

@@ -48,7 +48,7 @@ function getUserDataByToken(token, item_id) {
   });
 }
 
-function getUserDataByColumn(table , value) {
+function getUserDataByColumn(table, value) {
   return new Promise((resolve, reject) => {
     let string;
     let condition;

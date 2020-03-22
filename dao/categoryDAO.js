@@ -1,4 +1,4 @@
-const {pool} = require('../util/mysql');
+const { pool } = require('../util/mysql');
 module.exports = {
   get: (queryData) => {
     return new Promise((resolve, reject) => {
@@ -10,8 +10,8 @@ module.exports = {
         let categoriesType;
         if (queryData.action === 'getSubCategories') {
           categoriesType = 'subCategories';
-          queryString = 
-          `SELECT s.* FROM sub_categories s 
+          queryString =
+            `SELECT s.* FROM sub_categories s 
           JOIN main_sub_categories ms 
           ON s.id = ms.sub_category_id 
           WHERE ms.main_category_id = ?  
@@ -27,7 +27,7 @@ module.exports = {
           if (err) {
             reject(err);
           } else {
-            let resObj = {listData};
+            let resObj = { listData };
             resObj[categoriesType] = categoriesType;
             resolve(resObj);
           }
@@ -39,13 +39,13 @@ module.exports = {
 };
 
 function insertItemCategory(data) {
-  return new Promise((resolve,reject)=>{
-    const string = 
-    'INSERT INTO item_category SET ?';
+  return new Promise((resolve, reject) => {
+    const string =
+      'INSERT INTO item_category SET ?';
     const condition = [data];
     pool.query(string, condition, (err, result) => {
       if (err) { reject(err); }
-      else {resolve(result.affectedRows);}
+      else { resolve(result.affectedRows); }
     });
   });
 }

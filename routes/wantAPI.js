@@ -332,10 +332,6 @@ router.get('/invitation', async (req, res) => {
     // get wants from db
     const wantArrToCurUser = await getReversedWants(token);
     let wantArrFromCurUser = await getUserWantByToken(token); // 1
-    console.log('wantArrFromCurUser');
-    console.log(wantArrFromCurUser.length);
-    console.log('wantArrToCurUser');
-    console.log(wantArrToCurUser.length);
     if (wantArrToCurUser.length === 0 && wantArrFromCurUser.length === 0) {
       return {
         hashedInvitationArrFromCurUser: {},

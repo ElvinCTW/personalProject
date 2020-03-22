@@ -5,7 +5,7 @@ function insertNewTags(tagsArr) {
   return new Promise((resolve, reject) => {
     const string =
       'INSERT IGNORE INTO tags(tag) VALUES ?';
-    const condition = [tagsArr.map(e=>[e])];
+    const condition = [tagsArr.map(e => [e])];
     pool.query(string, condition, (err, result) => {
       if (err) { reject(err); }
       else { resolve(result); }
@@ -15,15 +15,15 @@ function insertNewTags(tagsArr) {
 
 // Select tags id from db
 function getTagIds(tagsArr) {
-  return new Promise((resolve,reject)=>{
-    const string = 
-    'SELECT id FROM tags WHERE tag in ?';
+  return new Promise((resolve, reject) => {
+    const string =
+      'SELECT id FROM tags WHERE tag in ?';
     const condition = [[tagsArr]];
     pool.query(string, condition, (err, result) => {
       if (err) { reject(err); }
       else {
-        const response = result.map(obj=>obj.id);
-        resolve(response); 
+        const response = result.map(obj => obj.id);
+        resolve(response);
       }
     });
   });
@@ -31,10 +31,10 @@ function getTagIds(tagsArr) {
 
 // insert items_tag with itemId and tagId
 function insertItemTags(itemId, tagIdArr) {
-  return new Promise((resolve,reject)=>{
-    const string = 
-    'INSERT INTO item_tags(item_id, tag_id) VALUES ?';
-    const condition = [tagIdArr.map((id)=>{return [itemId,id];})];
+  return new Promise((resolve, reject) => {
+    const string =
+      'INSERT INTO item_tags(item_id, tag_id) VALUES ?';
+    const condition = [tagIdArr.map((id) => { return [itemId, id]; })];
     pool.query(string, condition, (err, result) => {
       if (err) { reject(err); }
       else { resolve(result.affectedRows); }
@@ -43,21 +43,21 @@ function insertItemTags(itemId, tagIdArr) {
 }
 
 function getItemTagsByIdArr(itemIdArr) {
-  return new Promise((resolve,reject)=>{
-    const string = 
-    `SELECT it.item_id, t.tag FROM tags t 
+  return new Promise((resolve, reject) => {
+    const string =
+      `SELECT it.item_id, t.tag FROM tags t 
     JOIN item_tags it ON it.tag_id = t.id 
     WHERE it.item_id in ? `;
     const condition = [[itemIdArr]];
     pool.query(string, condition, (err, result) => {
-      if (err) { reject(err);}
-      else { 
+      if (err) { reject(err); }
+      else {
         let response = [];
-        result.forEach(e=>{
-          e.tag = '#'+e.tag;
+        result.forEach(e => {
+          e.tag = '#' + e.tag;
           response.push(e);
         });
-        resolve(response); 
+        resolve(response);
       }
     });
   });
@@ -71,12 +71,12 @@ async function appendTagsToItemData(itemDataArr) {
       .catch(err => { throw err; });
     const hashItemTags = hashItemTagsMaker(itemTagsArr);
     // put tags into item data
-    let itemDataWithTagsArr = itemDataArr.map((data)=>{
+    let itemDataWithTagsArr = itemDataArr.map((data) => {
       let itemId = data.id;
       data.tags = hashItemTags[itemId] ? hashItemTags[itemId] : [];
       return data;
     });
-    return itemDataWithTagsArr ;
+    return itemDataWithTagsArr;
   }
 
   function hashItemTagsMaker(itemTagsArr) {

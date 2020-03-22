@@ -3,7 +3,7 @@ if (localStorage.getItem('token')) {
 
   // Sign in status
   const token = localStorage.getItem('token');
-  const nickname = $('<div />').attr('style','margin-right:14px;').html(localStorage.getItem('nickname'));
+  const nickname = $('<div />').attr('style', 'margin-right:14px;').html(localStorage.getItem('nickname'));
   nickname.insertBefore($('.userbar'));
   $('#navbar-member-link').text('登出').attr('href', '/').click(() => {
     localStorage.removeItem('token');
@@ -83,8 +83,8 @@ function getNotification(token) {
           }
         });
         // 顯示新訊息紅點 => 改為比對最新訊息時間與最後觀看時間**
-        let lastWatchTime = await getLastMsgWatchedTime(token).catch(()=>{});
-        if ( msgArr[0].create_time > lastWatchTime) {
+        let lastWatchTime = await getLastMsgWatchedTime(token).catch(() => { });
+        if (msgArr[0].create_time > lastWatchTime) {
           let notificationCount = $('<div></div>').attr({ 'id': 'notification-count' });
           notificationCount.insertAfter($('#notification-span'));
         }
@@ -107,14 +107,14 @@ function updateMsgWatchedTime(token) {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    success: () => {},
+    success: () => { },
     error: () => {
     }
   });
 }
 
 async function getLastMsgWatchedTime(token) {
-  return new Promise((resolve,reject)=>{
+  return new Promise((resolve, reject) => {
     $.ajax({
       url: '/api/1.0/users/lastMsgWatchedTime',
       type: 'get',

@@ -1,11 +1,11 @@
 const mysql = require('mysql');
 require('dotenv').config();
 
-const host = process.env.NODE_ENV==='test' ? process.env.TEST_DB_HOST:process.env.DB_HOST;
-const user = process.env.NODE_ENV==='test' ? process.env.TEST_DB_USER:process.env.DB_USER;
-const password = process.env.NODE_ENV==='test' ? process.env.TEST_DB_PASS:process.env.DB_PASS;
-const port = process.env.NODE_ENV==='test' ? process.env.TEST_DB_PORT:process.env.DB_PORT;
-const database = process.env.NODE_ENV==='test' ? process.env.TEST_DB_DATABASE:process.env.DB_DATABASE;
+const host = process.env.NODE_ENV === 'test' ? process.env.TEST_DB_HOST : process.env.DB_HOST;
+const user = process.env.NODE_ENV === 'test' ? process.env.TEST_DB_USER : process.env.DB_USER;
+const password = process.env.NODE_ENV === 'test' ? process.env.TEST_DB_PASS : process.env.DB_PASS;
+const port = process.env.NODE_ENV === 'test' ? process.env.TEST_DB_PORT : process.env.DB_PORT;
+const database = process.env.NODE_ENV === 'test' ? process.env.TEST_DB_DATABASE : process.env.DB_DATABASE;
 
 const pool = mysql.createPool({
   connectionLimit: 10,
@@ -15,7 +15,7 @@ const pool = mysql.createPool({
   port,
   database,
 });
-const itemJoinString = 
+const itemJoinString =
   `SELECT i.*, 
   u.nickname user_nickname,
   u.id user_id,

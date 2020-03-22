@@ -20,7 +20,7 @@ router.post('/new', async (req, res) => {
       acl: 'public-read',
       key: async function (req, file, cb) {
         const userDataArr = await getUserDataByToken(req.body.token)
-          .catch(()=>{res.status(500).send();});
+          .catch(() => { res.status(500).send(); });
         if (userDataArr[0]) {
           userID = userDataArr[0].id;
           userNickname = userDataArr[0].nickname;

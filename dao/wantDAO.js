@@ -208,7 +208,7 @@ function getReversedWants(token, secondIdArr) {
       condition = [token, secondIdArr];
     } else {
       string =
-      `SELECT w.want_item_id,
+        `SELECT w.want_item_id,
       w.required_item_id 
       FROM want w
       JOIN items i ON i.id = w.required_item_id

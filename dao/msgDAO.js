@@ -73,8 +73,8 @@ function getLastestMsg(matchedIdArr) {
 }
 function getConfirmedMatchMsg(matched_id) {
   return new Promise((resolve, reject) => {
-    const string = 
-    `SELECT m.content, u.nickname sender, m.create_time 
+    const string =
+      `SELECT m.content, u.nickname sender, m.create_time 
     FROM messages m
     JOIN users u ON u.id = m.sender
     WHERE matched_id = ? 
@@ -83,7 +83,7 @@ function getConfirmedMatchMsg(matched_id) {
     pool.query(string, [matched_id], (err, result) => {
       if (err) { reject(err); return; }
       let response = [];
-      result.forEach(e=>{
+      result.forEach(e => {
         e.create_time = moment(e.create_time).utc().zone(-8).format('lll');
         response.push(e);
       });
@@ -93,8 +93,8 @@ function getConfirmedMatchMsg(matched_id) {
 }
 function getInsertedMsgTime(msgId) {
   return new Promise((resolve, reject) => {
-    const string = 
-    `SELECT m.create_time 
+    const string =
+      `SELECT m.create_time 
     FROM messages m
     WHERE m.id = ?`;
     pool.query(string, [msgId], (err, result) => {

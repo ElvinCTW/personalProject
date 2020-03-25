@@ -11,12 +11,12 @@ if ($('#no-item').length > 0) {
 /**
  * 捲動時自動帶入新物件
  */
-$('#items-area-recommand').scroll(function () {
+$('#items-area-recommand').scroll(function() {
   // 判斷整體網頁的高度
-  const $BodyHeight = $('#items-area-recommand').height(); //920px
+  const $BodyHeight = $('#items-area-recommand').height(); // 920px
   const $ItemHeight = $('.item-link').height(); // 253px;
   // 偵測目前捲軸頂點
-  let $ScrollTop = $(this).scrollTop();
+  const $ScrollTop = $(this).scrollTop();
   if ((5 * $ItemHeight) * (page) < ($BodyHeight + $ScrollTop) * 2) {
     if (page !== 'end') {
       if (getData) {
@@ -28,7 +28,7 @@ $('#items-area-recommand').scroll(function () {
     } else {
       if (!nomoreUpdate) {
         nomoreUpdate = true;
-        $('#nomore-text-div').attr({ 'onclick': '' }).html('沒有更多物品囉～');
+        $('#nomore-text-div').attr({'onclick': ''}).html('沒有更多物品囉～');
       }
     }
   }
@@ -39,7 +39,7 @@ $('#items-area-recommand').scroll(function () {
 function createMoreItems() {
   if (page !== 'end') {
     let url = `/api/1.0/items/all?page=${page}`;
-    let params = (new URL(document.location)).searchParams;
+    const params = (new URL(document.location)).searchParams;
     if (params.get('main_category')) {
       url += `&main_category=${params.get('main_category')}`;
     }
@@ -60,43 +60,50 @@ function createMoreItems() {
         }
         for (let i = 20 * page; i < (20 * page + itemsListArr.length); i++) {
           // Create link to item detail page
-          let link = $('<a></a>').attr({
+          const link = $('<a></a>').attr({
             'href': `/items/detail?item_id=${itemsListArr[i - 20 * page].id}`,
-            'class': 'item-link'
+            'class': 'item-link',
           });
           $('#items-area-recommand').append(link);
           // Create new Item outside container
-          let newItemContainer_Outside = $('<div></div>').attr({ 'class': 'item-container outside main index' });
-          link.append(newItemContainer_Outside);
+          const newItemContainerOutside = $('<div></div>')
+              .attr({'class': 'item-container outside main index'});
+          link.append(newItemContainerOutside);
           // Create new Item inside container
-          let newItemContainer_Inside = $('<div></div>').attr({ 'class': 'item-container inside main index' });
-          newItemContainer_Outside.append(newItemContainer_Inside);
+          const newItemContainerInside = $('<div></div>')
+              .attr({'class': 'item-container inside main index'});
+          newItemContainerOutside.append(newItemContainerInside);
           // Create basedonDiv, itemImgDiv and itemContentDiv
-          let itemImgDiv = $('<div></div>').attr({ 'class': 'item-img main' });
-          let itemContentDiv = $('<div></div>').attr({ 'class': 'item content' });
-          // newItemContainer_Inside.append(basedonDiv);
-          newItemContainer_Inside.append(itemImgDiv);
-          newItemContainer_Inside.append(itemContentDiv);
+          const itemImgDiv = $('<div></div>').attr({'class': 'item-img main'});
+          const itemContentDiv = $('<div></div>')
+              .attr({'class': 'item content'});
+          // newItemContainerInside.append(basedonDiv);
+          newItemContainerInside.append(itemImgDiv);
+          newItemContainerInside.append(itemContentDiv);
           // add picture
-          let itemImg = $('<img></img>').attr({
-            'src': s3_url + itemsListArr[i - 20 * page].pictures.split(',')[0],
+          const itemImg = $('<img></img>').attr({
+            'src': s3URL + itemsListArr[i - 20 * page].pictures.split(',')[0],
             'alt': itemsListArr[i - 20 * page].title,
           });
           itemImgDiv.append(itemImg);
           // add title, item-info and tags Divs
-          let titleDiv = $('<div></div>').attr({ 'class': 'item title' }).html(`${itemsListArr[i - 20 * page].title}`);
-          let itemInfoDiv = $('<div></div>').attr({ 'class': 'item info' });
-          let tagsDiv = $('<div></div>').attr({ 'class': 'item tags' });
+          const titleDiv = $('<div></div>')
+              .attr({'class': 'item title'})
+              .html(`${itemsListArr[i - 20 * page].title}`);
+          const itemInfoDiv = $('<div></div>').attr({'class': 'item info'});
+          const tagsDiv = $('<div></div>').attr({'class': 'item tags'});
           itemContentDiv.append(itemInfoDiv);
           itemContentDiv.append(titleDiv);
           itemContentDiv.append(tagsDiv);
           // add nickname and status span
-          let nicknameSpan = $('<span />').attr({ 'class': 'nickname' }).html(`${itemsListArr[i - 20 * page].user_nickname}`);
+          const nicknameSpan = $('<span />')
+              .attr({'class': 'nickname'})
+              .html(`${itemsListArr[i - 20 * page].user_nickname}`);
           itemInfoDiv.append(nicknameSpan);
           // add tags to tagsDiv
-          let tagsArr = itemsListArr[i - 20 * page].tags;
+          const tagsArr = itemsListArr[i - 20 * page].tags;
           for (let j = 0; j < tagsArr.length; j++) {
-            let tagSpan = $('<span />').html(`${tagsArr[j]} `);
+            const tagSpan = $('<span />').html(`${tagsArr[j]} `);
             tagsDiv.append(tagSpan);
           }
         }
@@ -110,12 +117,12 @@ function createMoreItems() {
       error: (failResponse) => {
         console.log(failResponse);
         alert('物品暫時無法顯示，QQ，若持續發生請聯繫我們');
-      }
+      },
     });
   } else {
     if (!nomoreUpdate) {
       nomoreUpdate = true;
-      $('#nomore-text-div').attr({ 'onclick': '' }).html('沒有更多物品囉～');
+      $('#nomore-text-div').attr({'onclick': ''}).html('沒有更多物品囉～');
     }
   }
 }

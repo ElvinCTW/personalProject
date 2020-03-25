@@ -1,6 +1,6 @@
-let nickname = document.getElementById('nickname').value;
-let token = document.getElementById('token').value;
-let errorMsg = document.getElementById('errorMsg');
+const nickname = document.getElementById('nickname').value;
+const token = document.getElementById('token').value;
+const errorMsg = document.getElementById('errorMsg');
 if (errorMsg) {
   alert(errorMsg.value);
   window.location.assign('/users/signup');

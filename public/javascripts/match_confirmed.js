@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 /* eslint-disable no-undef */
 if (!localStorage.getItem('token')) {
   // 確認使用者有登入，如果沒有，跳alert請user登入
@@ -11,7 +12,7 @@ $('#send-msg-btn').click(() => {
 
 function sendMsg() {
   // get user input msg
-  let userInputContent = $('#user-type-content').val();
+  const userInputContent = $('#user-type-content').val();
   // send msg to front end page
   if (userInputContent.length > 0 && currentMatchedId) {
     socket.emit('message', {
@@ -21,14 +22,14 @@ function sendMsg() {
         content: userInputContent,
         sender: localStorage.getItem('nickname'),
         matched_id: currentMatchedId,
-      }
+      },
     });
   } else {
     alert('請確認已點選左方配對物，並填入對話內容');
     $('#user-type-content').val('');
   }
 }
-let infoBtn = $('#items-info-btn');
+const infoBtn = $('#items-info-btn');
 infoBtn.click(() => {
   if ($('.item-info').length > 0) {
     if (infoBtn.attr('style') === 'background:rgb(235,235,235)') {
@@ -44,7 +45,7 @@ infoBtn.click(() => {
   }
 });
 // textarea 點擊 enter 自動送出
-$('#user-type-content').keypress(function (e) {
+$('#user-type-content').keypress(function(e) {
   if (e.which == 13 && !e.shiftKey) {
     $('#send-msg-btn').trigger('click');
   }

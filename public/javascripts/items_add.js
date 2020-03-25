@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 const token = localStorage.getItem('token');
@@ -42,40 +43,43 @@ $.ajax({
   url: '/api/1.0/category/item_insertion/main',
   type: 'get',
   success: (mainList) => {
-    mainList.forEach(main => {
-      let option = $('<div></div>').attr({
+    mainList.forEach((main) => {
+      const option = $('<div></div>').attr({
         class: 'option',
         main_id: main.id,
       }).html(main.main_category);
       $('#main_category_list').append(option);
     });
   },
-  error: () => { }
+  error: () => { },
 });
 // 更新主分類 & 主分類選擇
 $('#main_category_list').click((e) => {
   $('#main_category_text').text(`${e.toElement.innerText}`);
-  $('#main_category_input').val(`${e.originalEvent.toElement.attributes.main_id.value}`);
+  $('#main_category_input')
+      .val(`${e.originalEvent.toElement.attributes.main_id.value}`);
   // 取得次分類資料
   $.ajax({
-    url: `/api/1.0/category/item_insertion/sub?main_category=${e.originalEvent.toElement.attributes.main_id.value}`,
+    url: `/api/1.0/category/item_insertion/sub?main_category=
+    ${e.originalEvent.toElement.attributes.main_id.value}`,
     type: 'get',
     success: (subCategorylist) => {
       console.log(subCategorylist);
       $('#sub_category_list').empty();
       $('#sub_category_text').text('次分類   ▾');
-      subCategorylist.forEach(sub => {
-        let option = $('<div></div>').attr({
+      subCategorylist.forEach((sub) => {
+        const option = $('<div></div>').attr({
           class: 'option',
-          sub_id: sub.id
+          sub_id: sub.id,
         }).html(sub.sub_category);
         $('#sub_category_list').append(option);
       });
     },
-    error: () => { }
+    error: () => { },
   });
-  if ($('#status_input').val() !== '' && $('#sub_category_input').val() !== '') {
-    $('#add-items-btn').attr({ type: 'submit' });
+  if ($('#status_input').val() !== '' &&
+      $('#sub_category_input').val() !== '') {
+    $('#add-items-btn').attr({type: 'submit'});
   }
 });
 // 更新次分類 & 次分類選擇
@@ -84,9 +88,11 @@ $('#sub_category_list').click((e) => {
     alert('請先選擇主分類');
   } else {
     $('#sub_category_text').text(`${e.toElement.innerText}`);
-    $('#sub_category_input').val(`${e.originalEvent.toElement.attributes.sub_id.value}`);
-    if ($('#status_input').val() !== '' && $('#main_category_input').val() !== '') {
-      $('#add-items-btn').attr({ type: 'submit' });
+    $('#sub_category_input')
+        .val(`${e.originalEvent.toElement.attributes.sub_id.value}`);
+    if ($('#status_input').val() !== '' &&
+        $('#main_category_input').val() !== '') {
+      $('#add-items-btn').attr({type: 'submit'});
     }
   }
 });
@@ -96,11 +102,12 @@ $('#status_list').click((e) => {
   $('#status_input').val(`${e.toElement.innerText}`);
   // 自動 focus 標題輸入框
   $('#title_input').trigger('focus');
-  if ($('#main_category_input').val() !== '' && $('#sub_category_input').val() !== '') {
-    $('#add-items-btn').attr({ type: 'submit' });
+  if ($('#main_category_input').val() !== '' &&
+      $('#sub_category_input').val() !== '') {
+    $('#add-items-btn').attr({type: 'submit'});
   }
 });
-// autoFocus & click 
+// autoFocus & click
 $('#title_input').change(() => {
   $('#tags_input').trigger('focus');
 });
@@ -115,7 +122,9 @@ function tagsNormalization() {
     // 去除空白
     tags = tags.replace(/\s*/g, '');
     // 若沒#，添加#
-    if (tags[0] !== '#') { tags = '#' + tags; }
+    if (tags[0] !== '#') {
+      tags = '#' + tags;
+    }
     // 填上空白+去頭
     tags = tags.replace(/#/g, ' #');
     tags = tags.substr(1);
@@ -132,24 +141,24 @@ function readURL(input) {
   for (let i = 0; i < input.files.length; i++) {
     const reader = new FileReader();
     if (input.files && input.files[0]) {
-      reader.onload = function (e) {
+      reader.onload = function(e) {
         $(`#pic${i}`).attr('src', e.target.result);
       };
     }
     reader.readAsDataURL(input.files[i]);
   }
 }
-$('#pics-input').change(function () {
+$('#pics-input').change(function() {
   $('.item-add-pictures').attr('src', '');
   readURL(this);
 });
 // 檢查圖片限制
 let vaildImageUpload = true;
 // check images size
-$('#pics-input').bind('change', function () {
+$('#pics-input').bind('change', function() {
   $('#plus-icon').attr('style', 'display:none;');
   // check files count
-  let files = this.files;
+  const files = this.files;
   if (files.length > 4) {
     vaildImageUpload = false;
     alert('圖片超過4張，請減少圖片數量');
@@ -174,13 +183,15 @@ $('#pics-input').bind('change', function () {
     $('#add-items-btn').attr({
       'id': 'add-items-btn',
       'type': 'button',
-      'onclick': 'alert("請先處理上傳圖片問題")'
+      'onclick': 'alert("請先處理上傳圖片問題")',
     });
   }
 });
 // 上傳前檢查輸入
 $('#add-items-btn').click(() => {
-  if ($('#main_category_input').val() === '' || $('#sub_category_input').val() === '' || $('#status_input').val() === '') {
+  if ($('#main_category_input').val() === '' ||
+      $('#sub_category_input').val() === '' ||
+      $('#status_input').val() === '') {
     alert('請先選擇商品分類與商品狀態');
   } else if ($('#pics-input').val() === '') {
     alert('請先選擇至少一張圖片');
@@ -191,7 +202,7 @@ const form = document.getElementById('add-items-form');
 form.addEventListener('submit', () => {
   $('#add-items-btn').attr({
     type: 'button',
-    background: 'rgba(20,59,81,0.5)'
+    background: 'rgba(20,59,81,0.5)',
   }).html('上傳中');
 });
 // 選擇圖片後自動上傳

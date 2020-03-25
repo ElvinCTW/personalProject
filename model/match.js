@@ -1,16 +1,17 @@
+/* eslint-disable require-jsdoc */
 const mysql = require('../util/mysql');
 
-function getConfirmedMatchItemsId(matched_id) {
+function getConfirmedMatchItemsId(matchedId) {
   return new Promise((resolve, reject) => {
-    let queryString =
-      `SELECT start_item_id, 
+    const queryString =
+    `SELECT start_item_id, 
     middle_item_id, 
     end_item_id 
     FROM matches 
     WHERE matches.id = ?`;
     mysql.advancedQuery({
       queryString: queryString,
-      queryCondition: [matched_id],
+      queryCondition: [matchedId],
       queryName: 'confirmedMatchItemsData',
       DAO_name: 'matchDAO',
       reject: reject,
@@ -26,17 +27,24 @@ function getConfirmedMatchItemsId(matched_id) {
     });
   });
 }
-function insertMatchRecord(id_Arr) {
+function insertMatchRecord(idArr) {
   return new Promise((resolve, reject) => {
     let queryString = '';
-    if (id_Arr) {
-      if (id_Arr.length === 3) {
-        queryString = 'INSERT INTO matches(start_item_id, middle_item_id, end_item_id) VALUES(?)';
-      } else if (id_Arr.length === 2) {
-        queryString = 'INSERT INTO matches(start_item_id, end_item_id) VALUES(?)';
+    if (idArr) {
+      if (idArr.length === 3) {
+        queryString =
+        `INSERT INTO matches
+        (start_item_id, middle_item_id, end_item_id)
+        VALUES (?)`;
+      } else if (idArr.length === 2) {
+        queryString = `INSERT INTO
+        matches (start_item_id, end_item_id)
+        VALUES (?)`;
       }
-      mysql.pool.query(queryString, [id_Arr], (err, insertMatchTableResult) => {
-        if (err) { reject(err); return; }
+      mysql.pool.query(queryString, [idArr], (err, insertMatchTableResult) => {
+        if (err) {
+          reject(err); return;
+        }
         resolve(insertMatchTableResult.insertId);
       });
     }

@@ -1,6 +1,9 @@
+/* eslint-disable require-jsdoc */
 /* eslint-disable no-undef */
-const { getWantBetweenItemIds, checkTripleMatch, checkDoubleMatch } = require('../dao/wantDAO');
-const { pool } = require('../util/mysql');
+const {getWantBetweenItemIds,
+  checkTripleMatch,
+  checkDoubleMatch} = require('../dao/wantDAO');
+const {pool} = require('../util/mysql');
 
 describe('want unit test', () => {
   test.each([
@@ -8,7 +11,7 @@ describe('want unit test', () => {
     [[1], [3], 0],
     [[2], [1], 1],
   ])('.getWantBetweenItemIds(%o, %o)', async (a, b, expected) => {
-    let result = await getWantBetweenItemIds(a, b);
+    const result = await getWantBetweenItemIds(a, b);
     expect(result.length).toBe(expected);
   });
 });
@@ -20,7 +23,7 @@ describe('checkTripleMatch', () => {
     [3, 4, {}],
     [6, 5, {}],
   ])('.checkTripleMatch(%i, %i)', async (a, b, expected) => {
-    let con = await getCon();
+    const con = await getCon();
     expect(await checkTripleMatch(a, b, con)).toEqual(expected);
     con.release();
   });
@@ -30,8 +33,8 @@ describe('checkTripleMatch', () => {
     [7, 8, 1],
     [8, 6, 1],
   ])('.checkTripleMatch(%i, %i,con)', async (a, b) => {
-    let con = await getCon();
-    let result = await checkTripleMatch(a, b, con);
+    const con = await getCon();
+    const result = await checkTripleMatch(a, b, con);
     expect(result).toHaveProperty('msg');
     expect(result.msg).toBe('tripleConfirmedMatch');
     con.release();
@@ -42,10 +45,10 @@ describe('checkDoubleMatch', () => {
   // success cases
   test.each([
     [4, 5],
-    [5, 4]
+    [5, 4],
   ])('.checkDoubleMatch(%i,%i,con)', async (a, b) => {
-    let con = await getCon();
-    let result = await checkDoubleMatch(a, b, con);
+    const con = await getCon();
+    const result = await checkDoubleMatch(a, b, con);
     expect(result).toHaveProperty('msg');
     expect(result.msg).toEqual('doubleConfirmedMatch');
     con.release();
@@ -54,10 +57,10 @@ describe('checkDoubleMatch', () => {
   test.each([
     [1, 2],
     [5, 8],
-    [11, 6]
+    [11, 6],
   ])('.checkDoubleMatch(%i,%i,con)', async (a, b) => {
-    let con = await getCon();
-    let result = await checkDoubleMatch(a, b, con);
+    const con = await getCon();
+    const result = await checkDoubleMatch(a, b, con);
     expect(result).toEqual({});
     con.release();
   });
@@ -66,7 +69,7 @@ describe('checkDoubleMatch', () => {
     ['41', 'select'],
     ['5', 'where'],
   ])('.checkDoubleMatch(%i,%s,con)', async (a, b) => {
-    let con = await getCon();
+    const con = await getCon();
     await expect(checkDoubleMatch(a, b)).rejects.toThrow();
     con.release();
   });
@@ -74,7 +77,9 @@ describe('checkDoubleMatch', () => {
 
 describe('throw error test', () => {
   test('error case', async () => {
-    expect(() => { throwError(); }).toThrow();
+    expect(() => {
+      throwError();
+    }).toThrow();
   });
 });
 

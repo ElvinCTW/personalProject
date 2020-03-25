@@ -1,14 +1,20 @@
-const { pool, itemJoinString } = require('../util/mysql');
+/* eslint-disable require-jsdoc */
+const {pool, itemJoinString} = require('../util/mysql');
 const moment = require('moment');
 moment.locale('zh-tw');
 
 function getItemDataByType(page, category, nickname) {
   return new Promise((resolve, reject) => {
     if (nickname) {
-      const string = itemJoinString + 'WHERE u.nickname = ? AND i.availability = "true" ORDER BY i.id DESC LIMIT ?, 20';
+      const string = itemJoinString +
+      `WHERE u.nickname = ? 
+      AND i.availability = "true" 
+      ORDER BY i.id DESC LIMIT ?, 20`;
       const condition = [nickname, page * 20];
       pool.query(string, condition, (err, result) => {
-        if (err) { reject(err); return; }
+        if (err) {
+          reject(err); return;
+        }
         resolve(result);
       });
     } else if (category.main_category) {
@@ -16,30 +22,61 @@ function getItemDataByType(page, category, nickname) {
       let condition;
       if (!category.sub_category) {
         // select all by main category only
-        string = itemJoinString + 'WHERE ic.main_category_id = ? AND i.availability = "true" ORDER BY i.id DESC LIMIT ?, 20';
+        string = itemJoinString +
+        `WHERE ic.main_category_id = ?
+        AND i.availability = "true"
+        ORDER BY i.id DESC
+        LIMIT ?, 20`;
         condition = [category.main_category, page * 20];
       } else {
         if (!category.status) {
           // select all by main and sub category
-          string = itemJoinString + 'WHERE ic.main_category_id = ? AND ic.sub_category_id = ? AND i.availability = "true" ORDER BY i.id  DESC LIMIT ?, 20';
-          condition = [category.main_category, category.sub_category, page * 20];
+          string = itemJoinString +
+          `WHERE ic.main_category_id = ?
+          AND ic.sub_category_id = ?
+          AND i.availability = "true"
+          ORDER BY i.id DESC
+          LIMIT ?, 20`;
+          condition = [
+            category.main_category,
+            category.sub_category,
+            page * 20];
         } else {
           // select all by main and sub category and status
-          string = itemJoinString + 'WHERE ic.main_category_id = ? AND ic.sub_category_id = ? AND i.status = ? AND i.availability = "true" ORDER BY i.id DESC LIMIT ?, 20';
-          condition = [category.main_category, category.sub_category, category.status, page * 20];
+          string = itemJoinString +
+          `WHERE ic.main_category_id = ?
+          AND ic.sub_category_id = ?
+          AND i.status = ?
+          AND i.availability = "true"
+          ORDER BY i.id DESC
+          LIMIT ?, 20`;
+          condition = [
+            category.main_category,
+            category.sub_category,
+            category.status,
+            page * 20];
         }
       }
       pool.query(string, condition, (err, result) => {
-        if (err) { reject(err); return; }
+        if (err) {
+          reject(err); return;
+        }
         resolve(result);
       });
     } else {
       // latest
-      const string = itemJoinString + 'WHERE i.availability = "true" ORDER BY i.id DESC LIMIT ?, 20';
+      const string = itemJoinString +
+      `WHERE i.availability = "true"
+      ORDER BY i.id DESC
+      LIMIT ?, 20`;
       const condition = [page * 20];
       pool.query(string, condition, (err, result) => {
-        if (err) { reject(err); console.log(err); return; }
-        if (result.length === 20) { result.next_paging = page + 1; }
+        if (err) {
+          reject(err); console.log(err); return;
+        }
+        if (result.length === 20) {
+          result.next_paging = page + 1;
+        }
         resolve(result);
       });
     }
@@ -49,7 +86,9 @@ function getItemDataByType(page, category, nickname) {
 function insertNewItem(data) {
   return new Promise((resolve, reject) => {
     pool.query('INSERT INTO items SET ?', data, (err, result) => {
-      if (err) { reject(err); return; }
+      if (err) {
+        reject(err); return;
+      }
       resolve(result);
     });
   });
@@ -57,10 +96,15 @@ function insertNewItem(data) {
 
 function getHotBoardList() {
   return new Promise((resolve, reject) => {
-    let string = 'SELECT main_category hot_board, COUNT(*) count FROM items GROUP BY main_category ORDER BY count DESC LIMIT 0,500';
+    const string =
+    `SELECT main_category hot_board, COUNT(*) count
+    FROM items GROUP BY main_category
+    ORDER BY count DESC LIMIT 0,500`;
     // let data = [];
     pool.query(string, (err, hotCountsResult) => {
-      if (err) { reject(err); return; }
+      if (err) {
+        reject(err); return;
+      }
       resolve(hotCountsResult);
     });
   });
@@ -68,9 +112,11 @@ function getHotBoardList() {
 
 function getConfirmedMatchItemsData(idArr) {
   return new Promise((resolve, reject) => {
-    let string = itemJoinString + 'WHERE i.id in (?)';
+    const string = itemJoinString + 'WHERE i.id in (?)';
     pool.query(string, [idArr], (err, getConfirmedMatchItemsDataResult) => {
-      if (err) { reject(err); return; }
+      if (err) {
+        reject(err); return;
+      }
       resolve(getConfirmedMatchItemsDataResult);
     });
   });
@@ -78,9 +124,12 @@ function getConfirmedMatchItemsData(idArr) {
 
 function getItemDataByIdArr(idArr) {
   return new Promise((resolve, reject) => {
-    let string = itemJoinString + 'WHERE i.id IN (?) AND i.availability = "true"';
+    const string = itemJoinString +
+    'WHERE i.id IN (?) AND i.availability = "true"';
     pool.query(string, [idArr], (err, getItemResultArr) => {
-      if (err) { reject(err); return; }
+      if (err) {
+        reject(err); return;
+      }
       resolve(getItemResultArr);
     });
   });
@@ -100,7 +149,9 @@ function getConfirmedMatches(token) {
       AND u.token = ?
       ORDER BY matched_id DESC`;
     pool.query(string, [token], (err, result) => {
-      if (err) { reject(err); return; }
+      if (err) {
+        reject(err); return;
+      }
       resolve(result);
     });
   });
@@ -141,9 +192,13 @@ async function getItemDataFromSearchBar(titleArr, hashtagArr) {
     queryString +=
       `SELECT i.* FROM items i WHERE i.id < 0 ) total 
       GROUP BY id ORDER BY counts DESC`;
-    let queryCondition = titleArr.map(word => `%${word}%`).concat(hashtagArr);
+    const queryCondition = titleArr
+        .map((word) => `%${word}%`)
+        .concat(hashtagArr);
     pool.query(queryString, queryCondition, (err, result) => {
-      if (err) { reject(err); return; }
+      if (err) {
+        reject(err); return;
+      }
       resolve(result);
     });
   });
@@ -157,12 +212,15 @@ async function getItemDetail(itemId, gone) {
     } else {
       string = itemJoinString + 'WHERE i.id = ? AND i.availability = "false"';
     }
-    let condition = [itemId];
+    const condition = [itemId];
     pool.query(string, condition, (err, result) => {
-      if (err) { reject(err); return; }
-      let response = result.length > 0 ? result[0] : {};
+      if (err) {
+        reject(err); return;
+      }
+      const response = result.length > 0 ? result[0] : {};
       if (result.length > 0) {
-        result[0].create_time = moment(result[0].create_time).utc().zone(-8).format('lll');
+        result[0].create_time =
+        moment(result[0].create_time).utc().zone(-8).format('lll');
       }
       resolve(response);
     });
@@ -170,37 +228,52 @@ async function getItemDetail(itemId, gone) {
 }
 
 /**
- * 
- * @param {*} id_Arr single ID or ID array
- * @param {*} insertedMatchId optional, only work for matched discontinue
+ *
+ * @param {array} idArr single ID or ID array
+ * @param {number} insertedMatchId optional, only work for matched discontinue
+ * @param {object} con connection of transaction
+ * @return {void}
  */
-function discontinueItem(id_Arr, insertedMatchId, con) {
-  // update items 
+function discontinueItem(idArr, insertedMatchId, con) {
+  // update items
   // turn item / availability to false
   let updateAvailabilitiesCount = 0;
   return new Promise((resolve, reject) => {
-    let string = insertedMatchId ?
-      'UPDATE items SET availability = "false", matched_id = ?, matched_item_id = ? WHERE id = ?' :
+    const string = insertedMatchId ?
+      `UPDATE items SET availability = "false",
+      matched_id = ?, matched_item_id = ? WHERE id = ?` :
       'UPDATE items SET availability = "false" WHERE id = ?';
     if (insertedMatchId) {
-      for (let i = 0; i < id_Arr.length; i++) {
-        con.query(string, [insertedMatchId, id_Arr[(i + 1) % id_Arr.length], id_Arr[i % id_Arr.length]], (err, updateAvailbilityResult) => {
-          if (err) { reject(err); con.rollback(() => { con.release(); }); return; }
+      for (let i = 0; i < idArr.length; i++) {
+        const condition =[
+          insertedMatchId,
+          idArr[(i + 1) % idArr.length],
+          idArr[i % idArr.length],
+        ];
+        con.query(string, condition, (err, updateAvailbilityResult) => {
+          if (err) {
+            reject(err); con.rollback(() => {
+              con.release();
+            }); return;
+          }
           updateAvailabilitiesCount += updateAvailbilityResult.affectedRows;
-          if (i === id_Arr.length - 1) {
-            if (updateAvailabilitiesCount !== id_Arr.length) {
-              console.log('updateAvailabilitiesCount is not identical with id_Arr.length, updateAvailabilitiesCount is :');
+          if (i === idArr.length - 1) {
+            if (updateAvailabilitiesCount !== idArr.length) {
+              console.log('updateAvailabilitiesCount != idArr.length :');
               console.log(updateAvailabilitiesCount);
             }
             resolve(updateAvailabilitiesCount);
           }
-
         });
       }
     } else {
-      pool.query(string, [id_Arr], (err, result) => {
-        if (err) { reject(err); return; }
-        if (result.affectedRows !== 1) { console.log(`discontinueItem err, actually count ${result.affectedRows}`); }
+      pool.query(string, [idArr], (err, result) => {
+        if (err) {
+          reject(err); return;
+        }
+        if (result.affectedRows !== 1) {
+          console.log(`discontinueItem only counts ${result.affectedRows}`);
+        }
         resolve();
       });
     }

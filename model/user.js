@@ -1,9 +1,10 @@
+/* eslint-disable require-jsdoc */
 const mysql = require('../util/mysql');
 const crypto = require('crypto');
 
-function checkVaildUserOfChat(token, matched_id) {
+function checkVaildUserOfChat(token, matchedId) {
   return new Promise((resolve, reject) => {
-    let queryString =
+    const queryString =
       `SELECT u.* FROM items i
       JOIN users u ON i.user_id = u.id
       JOIN matches m ON m.id = i.matched_id
@@ -11,38 +12,41 @@ function checkVaildUserOfChat(token, matched_id) {
       AND i.matched_id = ?`;
     mysql.advancedQuery({
       queryString: queryString,
-      queryCondition: [token, matched_id],
+      queryCondition: [token, matchedId],
       queryName: 'checkVaildUserOfChat',
       DAO_name: 'itemDAO',
       reject: reject,
     }, (result) => {
-      let response = result.length > 0 ? result[0] : null;
+      const response = result.length > 0 ? result[0] : null;
       resolve(response);
     });
   });
 }
 
 /**
- * 
- * @param {*} token 
- * @param {*} item_id optional, add this param when case need to check users with item
+ *
+ * @param {string} token
+ * @param {number} itemId optional, add this when checking owner of item
+ * @return {object} user data
  */
-function getUserDataByToken(token, item_id) {
+function getUserDataByToken(token, itemId) {
   return new Promise((resolve, reject) => {
     let string;
     let condition;
-    if (item_id) {
+    if (itemId) {
       string =
         `SELECT * FROM users u 
       JOIN items i ON i.user_id = u.id 
       WHERE u.token = ? AND i.id = ?`;
-      condition = [token, item_id];
+      condition = [token, itemId];
     } else {
       string = 'SELECT * FROM users WHERE token = ?';
       condition = [token];
     }
     mysql.pool.query(string, condition, (err, result) => {
-      if (err) { reject(err); return; }
+      if (err) {
+        reject(err); return;
+      }
       resolve(result);
     });
   });
@@ -50,18 +54,18 @@ function getUserDataByToken(token, item_id) {
 
 function getUserDataByColumn(table, value) {
   return new Promise((resolve, reject) => {
-    let string;
-    let condition;
-    string = 'SELECT * FROM users WHERE ? = ?';
-    condition = [table, value];
+    const string = 'SELECT * FROM users WHERE ? = ?';
+    const condition = [table, value];
     mysql.pool.query(string, condition, (err, result) => {
-      if (err) { reject(err); return; }
+      if (err) {
+        reject(err); return;
+      }
       resolve(result[0]);
     });
   });
 }
 
-async function registerTransaction(reqBody) {
+async function registerTransaction(req) {
   return new Promise((resolve, reject) => {
     mysql.pool.getConnection((err, con) => {
       if (err) {
@@ -70,54 +74,65 @@ async function registerTransaction(reqBody) {
       }
       con.beginTransaction(async (err) => {
         if (err) {
-          con.rollback(() => { con.release(); });
+          con.rollback(() => {
+            con.release();
+          });
           reject(err);
         }
-        const duplicateUser = await findDuplicatedUser(reqBody.id, reqBody.name, con)
-          .catch(err => {
-            con.rollback(() => con.release());
-            reject(err);
-          });
+        const duplicateUser =await findDuplicatedUser(req.id, req.name, con)
+            .catch((err) => {
+              con.rollback(() => con.release());
+              reject(err);
+            });
         if (duplicateUser) {
-          con.rollback(() => { con.release(); });
+          con.rollback(() => {
+            con.release();
+          });
           resolve(duplicateUser);
         } else {
           await insertUserData({
-            sign_id: reqBody.id,
-            password: reqBody.password,
-            nickname: reqBody.name,
+            sign_id: req.id,
+            password: req.password,
+            nickname: req.name,
           }, con)
-            .catch(err => {
-              con.rollback(() => { con.release(); });
-              reject(err);
-            })
-            .then(insertUserResult => {
-              con.commit((err) => {
-                if (err) {
-                  con.rollback(() => { con.release(); });
-                  reject(err);
-                } else { con.release(); }
+              .catch((err) => {
+                con.rollback(() => {
+                  con.release();
+                });
+                reject(err);
+              })
+              .then((insertUserResult) => {
+                con.commit((err) => {
+                  if (err) {
+                    con.rollback(() => {
+                      con.release();
+                    });
+                    reject(err);
+                  } else {
+                    con.release();
+                  }
+                });
+                resolve(insertUserResult);
               });
-              resolve(insertUserResult);
-            });
         }
       });
     });
   });
 
-  function findDuplicatedUser(sign_id, nickname, con) {
+  function findDuplicatedUser(signId, nickname, con) {
     return new Promise((resolve, reject) => {
-      let queryString = 'SELECT * FROM users WHERE sign_id = ? OR nickname = ?';
-      let queryCondition = [sign_id, nickname];
-      con.query(queryString, queryCondition, (err, result) => {
+      const string = 'SELECT * FROM users WHERE sign_id = ? OR nickname = ?';
+      const queryCondition = [signId, nickname];
+      con.query(string, queryCondition, (err, result) => {
         if (err) {
           mysql.errLog(err, 'checkdoubleUserInfo', 'userDAO');
           reject(err);
         } else {
           let sendbackObj = {};
           if (result.length > 0) {
-            let doubleIdCount = result.filter(userInfo => userInfo.sign_id === sign_id).length;
-            let doubleNicknameCount = result.length - doubleIdCount;
+            const doubleIdCount = result
+                .filter((userInfo) => userInfo.sign_id === signId).length;
+            const doubleNicknameCount = result.length - doubleIdCount;
             if (doubleIdCount === 0) {
               sendbackObj.errorMsg = '暱稱重複，請修改後再試一次';
             } else if (doubleNicknameCount === 0) {
@@ -136,13 +151,19 @@ async function registerTransaction(reqBody) {
   function insertUserData(userObj, con) {
     return new Promise((resolve, reject) => {
       // hash
-      userObj.password = crypto.createHash('sha256').update(userObj.password).digest('hex');
-      let token = crypto.createHash('sha256').update(userObj.id + Date.now().toString(), 'utf8').digest('hex');
+      userObj.password =
+      crypto.createHash('sha256')
+          .update(userObj.password)
+          .digest('hex');
+      const token =
+      crypto.createHash('sha256')
+          .update(userObj.id + Date.now().toString(), 'utf8')
+          .digest('hex');
       // make object
       userObj.token = token;
-      let queryString = 'INSERT INTO users SET ?';
-      let queryCondition = [userObj];
-      con.query(queryString, queryCondition, (err) => {
+      const string = 'INSERT INTO users SET ?';
+      const queryCondition = [userObj];
+      con.query(string, queryCondition, (err) => {
         if (err) {
           reject(err);
         } else {
@@ -154,17 +175,17 @@ async function registerTransaction(reqBody) {
       });
     });
   }
-
-
 }
 
 function signinProcess(id, password) {
   return new Promise((resolve, reject) => {
     password = crypto.createHash('sha256').update(password).digest('hex');
-    let queryString = 'SELECT * FROM users WHERE sign_id = ? AND password = ?';
-    let queryCondition = [id, password];
-    mysql.pool.query(queryString, queryCondition, (err, signinResult) => {
-      if (err) { reject(err); return; }
+    const string = 'SELECT * FROM users WHERE sign_id = ? AND password = ?';
+    const queryCondition = [id, password];
+    mysql.pool.query(string, queryCondition, (err, signinResult) => {
+      if (err) {
+        reject(err); return;
+      }
       resolve(signinResult[0]);
     });
   });
@@ -178,7 +199,9 @@ function updateWatchMsgTime(token) {
       WHERE u.token = ?`;
     const condition = [token];
     mysql.pool.query(string, condition, (err, result) => {
-      if (err) { reject(err); return; }
+      if (err) {
+        reject(err); return;
+      }
       const success = result.affectedRows === 1 ? true : false;
       resolve(success);
     });
@@ -187,17 +210,18 @@ function updateWatchMsgTime(token) {
 
 function getLastMsgWatchedTime(token) {
   return new Promise((resolve, reject) => {
-    let string =
+    const string =
       `SELECT u.watch_msg_time FROM users u
     WHERE u.token = ?`;
-    let condition = [token];
+    const condition = [token];
     mysql.pool.query(string, condition, (err, result) => {
-      if (err) { reject(err); return; }
+      if (err) {
+        reject(err); return;
+      }
       resolve(result[0].watch_msg_time);
     });
   });
 }
-
 
 
 module.exports = {

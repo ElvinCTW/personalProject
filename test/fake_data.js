@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+/* eslint-disable max-len */
 const users = [
   {
     id: 4,
@@ -478,7 +480,7 @@ const matches = [
     start_item_id: 6,
     middle_item_id: 7,
     end_item_id: 8,
-  }
+  },
 ];
 
 const item_category = [

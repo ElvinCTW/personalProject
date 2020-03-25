@@ -1,8 +1,9 @@
+/* eslint-disable require-jsdoc */
 /* eslint-disable no-undef */
 let page = 0;
 let nomoreUpdate = false;
-let user_nickname = null;
-let selectItemIDArr = [];
+let userNickname = null;
+const selectItemIDArr = [];
 let lastTimeSelectedArr;
 
 /**
@@ -25,7 +26,8 @@ $('#exchange-request-btn').click(() => {
     return;
   } else if (selectItemIDArr.length > 0) {
     // 送出請求 Aajx
-    let wantItemArr = selectItemIDArr.filter(id => lastTimeSelectedArr.indexOf(id) === -1);
+    const wantItemArr = selectItemIDArr
+        .filter((id) => lastTimeSelectedArr.indexOf(id) === -1);
     if (wantItemArr.length > 0) {
       $.ajax({
         method: 'post',
@@ -41,7 +43,7 @@ $('#exchange-request-btn').click(() => {
         },
         error: () => {
           alert('金拍謝，暫時無法為您添加交換邀請，若持續發生請聯繫我們');
-        }
+        },
       });
     } else {
       alert('您本次選擇的物品已在以前選擇過了，請選擇其他物品');
@@ -53,13 +55,17 @@ $('#exchange-request-btn').click(() => {
 
 
 let picCount = 0;
-let imgLength = $('.item-pic').length;
+const imgLength = $('.item-pic').length;
 $('#img0').attr('style', 'display:``');
 
 // 點擊換照
-$('#item-detail-pic-div').click(() => { changePic(); });
+$('#item-detail-pic-div').click(() => {
+  changePic();
+});
 // 輪播照片
-window.setInterval(() => { changePic(); }, 3000);
+window.setInterval(() => {
+  changePic();
+}, 3000);
 // 換照function
 function changePic() {
   if (imgLength > 1) {
@@ -69,23 +75,26 @@ function changePic() {
   }
 }
 
-// 讀取 user items 
+// 讀取 user items
 if (page !== 'end') {
   // $('#subdiv-itemdetail-useritems').attr({ style: '' })
-  user_nickname = localStorage.getItem('nickname');
+  userNickname = localStorage.getItem('nickname');
   $.ajax({
-    url: `/api/1.0/want/last?required_item_id=${parseInt(window.location.search.split('=')[1])}&user_nickname=${user_nickname}`,
+    url: `/api/1.0/want/last?required_item_id=
+    ${parseInt(window.location.search.split('=')[1])}&
+    user_nickname=${userNickname}`,
     type: 'get',
     success: (result) => {
       lastTimeSelectedArr = result;
       $.ajax({ // 前端發送 ajax，更新現有頁面為申請者所有物品頁面
-        url: `/api/1.0/items/all?page=${page}&user_nickname=${user_nickname}`,
+        url: `/api/1.0/items/all?page=${page}&user_nickname=${userNickname}`,
         type: 'get',
         success: (itemsListArr) => {
           for (let i = 20 * page; i < (20 * page + itemsListArr.length); i++) {
             // Create link to item detail page
             let link;
-            if (lastTimeSelectedArr.indexOf(itemsListArr[i - 20 * page].id) !== -1) {
+            if (lastTimeSelectedArr
+                .indexOf(itemsListArr[i - 20 * page].id) !== -1) {
               link = $('<div></div>').attr({
                 'class': 'item-div user-item',
                 'item_id': itemsListArr[i - 20 * page].id,
@@ -100,7 +109,7 @@ if (page !== 'end') {
             link.click(() => {
               if (link.attr('style') === 'background:rgb(235,235,235)') {
                 // 取消點選時將 itemID 移出 selectorListArr
-                link.attr({ 'style': 'background:none;' });
+                link.attr({'style': 'background:none;'});
                 selectItemIDArr.forEach((itemID) => {
                   if (itemID === parseInt(link.attr('item_id'))) {
                     selectItemIDArr.splice(selectItemIDArr.indexOf(itemID), 1);
@@ -108,31 +117,37 @@ if (page !== 'end') {
                 });
               } else {
                 // 點選時將 itemID 加入 selectorListArr
-                link.attr({ 'style': 'background:rgb(235,235,235)' });
+                link.attr({'style': 'background:rgb(235,235,235)'});
                 selectItemIDArr.push(parseInt(link.attr('item_id')));
               }
             });
             $('#items-area-user-item').append(link);
-            let itemImgDiv = $('<div></div>').attr({ 'class': 'picture-div user-item' });
-            let itemContentDiv = $('<div></div>').attr({ 'class': 'content-div user-item' });
+            const itemImgDiv = $('<div></div>')
+                .attr({'class': 'picture-div user-item'});
+            const itemContentDiv = $('<div></div>')
+                .attr({'class': 'content-div user-item'});
             link.append(itemImgDiv);
             link.append(itemContentDiv);
             // add picture
-            let itemImg = $('<img></img>').attr({
-              'src': s3_url + itemsListArr[i - 20 * page].pictures.split(',')[0],
+            const itemImg = $('<img></img>').attr({
+              'src': s3URL + itemsListArr[i - 20 * page].pictures.split(',')[0],
               'alt': itemsListArr[i - 20 * page].title,
             });
             itemImgDiv.append(itemImg);
             // add title, item-info and tags Divs
-            let titleDiv = $('<span></span>').attr({ 'class': 'title user-item' }).html(`${itemsListArr[i - 20 * page].title}`);
-            // let itemInfoDiv = $('<div></div>').attr({ 'class': 'item-info' });
-            let tagsDiv = $('<div></div>').attr({ 'class': 'introduction-div tags user-item' });
+            const titleDiv = $('<span></span>')
+                .attr({'class': 'title user-item'})
+                .html(`${itemsListArr[i - 20 * page].title}`);
+            const tagsDiv = $('<div></div>')
+                .attr({'class': 'introduction-div tags user-item'});
             itemContentDiv.append(titleDiv);
             itemContentDiv.append(tagsDiv);
             // add tags to tagsDiv
-            let tagsArr = itemsListArr[i - 20 * page].tags;
+            const tagsArr = itemsListArr[i - 20 * page].tags;
             for (let j = 0; j < tagsArr.length; j++) {
-              let tagSpan = $('<div />').attr('class', 'tag user-item').html(`${tagsArr[j]} `);
+              const tagSpan = $('<div />')
+                  .attr('class', 'tag user-item')
+                  .html(`${tagsArr[j]} `);
               tagsDiv.append(tagSpan);
             }
           }
@@ -144,17 +159,17 @@ if (page !== 'end') {
         },
         error: () => {
           alert('金拍謝，暫時找不到你的物品資訊QQ，若持續發生請聯繫我們');
-        }
+        },
       });
     },
     error: () => {
       // alert(err);
       alert('暫時無法找到您上次的交換邀請紀錄');
-    }
+    },
   });
 } else {
   if (!nomoreUpdate) {
     nomoreUpdate = true;
-    $('#change-btn-item-detail').attr({ 'onclick': '' }).html('沒有更多物品囉');
+    $('#change-btn-item-detail').attr({'onclick': ''}).html('沒有更多物品囉');
   }
 }

@@ -1,14 +1,18 @@
-const { pool } = require('../util/mysql');
+/* eslint-disable require-jsdoc */
+const {pool} = require('../util/mysql');
 
 function insertNewTags(tagsArr) {
-  // Insert all tags with ignore 
+  // Insert all tags with ignore
   return new Promise((resolve, reject) => {
     const string =
       'INSERT IGNORE INTO tags(tag) VALUES ?';
-    const condition = [tagsArr.map(e => [e])];
+    const condition = [tagsArr.map((e) => [e])];
     pool.query(string, condition, (err, result) => {
-      if (err) { reject(err); }
-      else { resolve(result); }
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
     });
   });
 }
@@ -20,9 +24,10 @@ function getTagIds(tagsArr) {
       'SELECT id FROM tags WHERE tag in ?';
     const condition = [[tagsArr]];
     pool.query(string, condition, (err, result) => {
-      if (err) { reject(err); }
-      else {
-        const response = result.map(obj => obj.id);
+      if (err) {
+        reject(err);
+      } else {
+        const response = result.map((obj) => obj.id);
         resolve(response);
       }
     });
@@ -34,10 +39,15 @@ function insertItemTags(itemId, tagIdArr) {
   return new Promise((resolve, reject) => {
     const string =
       'INSERT INTO item_tags(item_id, tag_id) VALUES ?';
-    const condition = [tagIdArr.map((id) => { return [itemId, id]; })];
+    const condition = [tagIdArr.map((id) => {
+      return [itemId, id];
+    })];
     pool.query(string, condition, (err, result) => {
-      if (err) { reject(err); }
-      else { resolve(result.affectedRows); }
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result.affectedRows);
+      }
     });
   });
 }
@@ -50,10 +60,11 @@ function getItemTagsByIdArr(itemIdArr) {
     WHERE it.item_id in ? `;
     const condition = [[itemIdArr]];
     pool.query(string, condition, (err, result) => {
-      if (err) { reject(err); }
-      else {
-        let response = [];
-        result.forEach(e => {
+      if (err) {
+        reject(err);
+      } else {
+        const response = [];
+        result.forEach((e) => {
           e.tag = '#' + e.tag;
           response.push(e);
         });
@@ -67,12 +78,14 @@ async function appendTagsToItemData(itemDataArr) {
   if (itemDataArr.length === 0) {
     return [];
   } else {
-    const itemTagsArr = await getItemTagsByIdArr(itemDataArr.map(e => e.id))
-      .catch(err => { throw err; });
+    const itemTagsArr = await getItemTagsByIdArr(itemDataArr.map((e) => e.id))
+        .catch((err) => {
+          throw err;
+        });
     const hashItemTags = hashItemTagsMaker(itemTagsArr);
     // put tags into item data
-    let itemDataWithTagsArr = itemDataArr.map((data) => {
-      let itemId = data.id;
+    const itemDataWithTagsArr = itemDataArr.map((data) => {
+      const itemId = data.id;
       data.tags = hashItemTags[itemId] ? hashItemTags[itemId] : [];
       return data;
     });

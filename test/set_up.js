@@ -1,14 +1,19 @@
-const { NODE_ENV } = process.env;
-const { truncateFakeData, _createFakeData } = require('./fake_data_generator');
-const { pool } = require('../util/mysql');
+/* eslint-disable require-jsdoc */
+const {NODE_ENV} = process.env;
+const {truncateFakeData, _createFakeData} = require('./fake_data_generator');
+const {pool} = require('../util/mysql');
 
 const setup = async () => {
   if (NODE_ENV !== 'test') {
-    throw 'Not in test env';
+    throw new Error('Not in test env');
   }
   return truncateFakeData()
-    .then(() => { return _createFakeData(); })
-    .catch((err) => { console.log(err); });
+      .then(() => {
+        return _createFakeData();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 };
 
 async function checkFakeData() {
@@ -28,8 +33,8 @@ async function checkFakeData() {
 
 function checkTable(table) {
   return new Promise((resolve, reject) => {
-    let string = `SELECT * FROM ${table}`;
-    let condition = [];
+    const string = `SELECT * FROM ${table}`;
+    const condition = [];
     pool.query(string, condition, (err, result) => {
       if (err) {
         reject(err);

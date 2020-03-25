@@ -1,9 +1,10 @@
+/* eslint-disable require-jsdoc */
 /* eslint-disable no-undef */
 if (localStorage.getItem('token')) {
-
   // Sign in status
   const token = localStorage.getItem('token');
-  const nickname = $('<div />').attr('style', 'margin-right:14px;').html(localStorage.getItem('nickname'));
+  const nickname =$('<div />').attr('style', 'margin-right:14px;')
+      .html(localStorage.getItem('nickname'));
   nickname.insertBefore($('.userbar'));
   $('#navbar-member-link').text('登出').attr('href', '/').click(() => {
     localStorage.removeItem('token');
@@ -46,22 +47,26 @@ function getNotification(token) {
     success: async (msgArr) => {
       if (msgArr.length > 0) {
         // insert msg into msg area
-        msgArr.forEach(msgObj => {
+        msgArr.forEach((msgObj) => {
           // show unread dot
-          let link = $('<a />').attr({
+          const link = $('<a />').attr({
             href: msgObj.link,
             class: 'header-msg',
           });
           $('#notification-area').append(link);
           let outerNotificationDiv;
-          if (msgObj.watched === 0) { //unread msg
-            outerNotificationDiv = $('<div></div>').attr({ 'class': 'notification-div outer notification new' });
+          if (msgObj.watched === 0) { // unread msg
+            outerNotificationDiv = $('<div></div>')
+                .attr({'class': 'notification-div outer notification new'});
           } else {
-            outerNotificationDiv = $('<div></div>').attr({ 'class': 'notification-div outer notification' });
+            outerNotificationDiv = $('<div></div>')
+                .attr({'class': 'notification-div outer notification'});
           }
           link.append(outerNotificationDiv);
-          let indentDot = $('<div></div>').attr({ 'id': 'indent-dot' });
-          let notificationDiv = $('<div></div>').attr({ 'class': 'notification-div new' }).html(`${msgObj.content}`);
+          const indentDot = $('<div></div>').attr({'id': 'indent-dot'});
+          const notificationDiv = $('<div></div>')
+              .attr({'class': 'notification-div new'})
+              .html(`${msgObj.content}`);
           outerNotificationDiv.append(indentDot);
           outerNotificationDiv.append(notificationDiv);
           if (msgObj.watched === 0) {
@@ -74,29 +79,34 @@ function getNotification(token) {
                   Authorization: `Bearer ${token}`,
                 },
                 success: () => {
-                  outerNotificationDiv.attr({ 'class': 'notification-div outer notification' });
+                  outerNotificationDiv
+                      .attr({'class': 'notification-div outer notification'});
                 },
                 error: () => {
-                }
+                },
               });
             });
           }
         });
         // 顯示新訊息紅點 => 改為比對最新訊息時間與最後觀看時間**
-        let lastWatchTime = await getLastMsgWatchedTime(token).catch(() => { });
+        const lastWatchTime = await getLastMsgWatchedTime(token)
+            .catch(() => {});
         if (msgArr[0].create_time > lastWatchTime) {
-          let notificationCount = $('<div></div>').attr({ 'id': 'notification-count' });
+          const notificationCount = $('<div></div>')
+              .attr({'id': 'notification-count'});
           notificationCount.insertAfter($('#notification-span'));
         }
       } else {
-        let outerNotificationDiv = $('<div></div>').attr({ 'class': 'notification-div outer notification' });
+        const outerNotificationDiv = $('<div></div>')
+            .attr({'class': 'notification-div outer notification'});
         $('#notification-area').append(outerNotificationDiv);
-        let notificationDiv = $('<div></div>').attr({ 'class': 'notification-div new' }).html('現在沒有新訊息喔！');
+        const notificationDiv = $('<div></div>')
+            .attr({'class': 'notification-div new'}).html('現在沒有新訊息喔！');
         $(outerNotificationDiv).append(notificationDiv);
       }
     },
     error: () => {
-    }
+    },
   });
 }
 
@@ -109,7 +119,7 @@ function updateMsgWatchedTime(token) {
     },
     success: () => { },
     error: () => {
-    }
+    },
   });
 }
 
@@ -126,7 +136,7 @@ async function getLastMsgWatchedTime(token) {
       },
       error: (err) => {
         reject(err);
-      }
+      },
     });
   });
 }

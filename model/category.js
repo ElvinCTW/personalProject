@@ -1,12 +1,14 @@
-const { pool } = require('../util/mysql');
+/* eslint-disable require-jsdoc */
+const {pool} = require('../util/mysql');
 module.exports = {
   get: (queryData) => {
     return new Promise((resolve, reject) => {
       if (queryData.action === 'doNothing') {
         resolve({});
-      } else if (queryData.action === 'getSubCategories' || queryData.action === 'getMainCategories') {
+      } else if (queryData.action === 'getSubCategories' ||
+      queryData.action === 'getMainCategories') {
         let queryString = '';
-        let queryCondition = [];
+        const queryCondition = [];
         let categoriesType;
         if (queryData.action === 'getSubCategories') {
           categoriesType = 'subCategories';
@@ -21,13 +23,13 @@ module.exports = {
           categoriesType = 'mainCategories';
           queryString = 'SELECT * FROM main_categories m ORDER BY m.id DESC';
         } else {
-          console.log('no such requrest, categoryDAO');
+          console.log('no such requrest');
         }
         pool.query(queryString, queryCondition, (err, listData) => {
           if (err) {
             reject(err);
           } else {
-            let resObj = { listData };
+            const resObj = {listData};
             resObj[categoriesType] = categoriesType;
             resolve(resObj);
           }
@@ -44,8 +46,11 @@ function insertItemCategory(data) {
       'INSERT INTO item_category SET ?';
     const condition = [data];
     pool.query(string, condition, (err, result) => {
-      if (err) { reject(err); }
-      else { resolve(result.affectedRows); }
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result.affectedRows);
+      }
     });
   });
 }

@@ -22,7 +22,7 @@ if (!localStorage.getItem('token')) {
       error: () => {
         alert('登入有點問題喔，請確認一下，若持續發生請聯絡我們');
         return;
-      }
+      },
     });
   });
 } else {

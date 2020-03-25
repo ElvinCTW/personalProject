@@ -1,3 +1,5 @@
+/* eslint-disable new-cap */
+/* eslint-disable require-jsdoc */
 const express = require('express');
 const router = express.Router();
 
@@ -8,33 +10,34 @@ router.post('/new', async (req, res) => {
   const aws = require('aws-sdk');
   const multer = require('multer');
   const multerS3 = require('multer-s3');
-  const { accessKeyId, secretAccessKey } = require('../util/awsConfig');
-  const { getUserDataByToken } = require('../dao/user');
-  const { insertNewItem } = require('../dao/item');
-  const { insertItemCategory } = require('../dao/categoryDAO');
+  const {accessKeyId, secretAccessKey} = require('../util/awsConfig');
+  const {getUserDataByToken} = require('../model/user');
+  const {insertNewItem} = require('../model/item');
+  const {insertItemCategory} = require('../model/category');
   const upload = multer({
     storage: multerS3({
-      s3: new aws.S3({ accessKeyId, secretAccessKey }),
+      s3: new aws.S3({accessKeyId, secretAccessKey}),
       bucket: 'triangletradeelvintokyo',
       contentType: multerS3.AUTO_CONTENT_TYPE,
       acl: 'public-read',
-      key: async function (req, file, cb) {
+      key: async function(req, file, cb) {
         const userDataArr = await getUserDataByToken(req.body.token)
-          .catch(() => { res.status(500).send(); });
+            .catch(() => {
+              res.status(500).send();
+            });
         if (userDataArr[0]) {
           userID = userDataArr[0].id;
           userNickname = userDataArr[0].nickname;
-          cb(null, `userUpload/${userNickname}/${userNickname}-` + Date.now().toString());
+          cb(null, `userUpload/${userNickname}/${userNickname}-`+
+          Date.now().toString());
         } else {
           res.status(403).send();
           return;
         }
-      }
-    })
-  }).fields([{ name: 'pictures', maxCount: 6 }]);
+      },
+    }),
+  }).fields([{name: 'pictures', maxCount: 6}]);
   upload(req, res, async (err) => {
-    console.log('req.body');
-    console.log(req.body);
     if (!req.files.pictures) {
       console.log('no pic, itemAPI');
       res.status(400).send('Please choose pictures');
@@ -69,53 +72,61 @@ router.post('/new', async (req, res) => {
 
     const tagsArr = req.body.tags.replace(/#/g, '').split(' ');
     await insertItemTags(insertItemResult.insertId, tagsArr)
-      .catch(err => { console.log(err); });
+        .catch((err) => {
+          console.log(err);
+        });
 
     if (insertCategoryCount === 1) {
-      res.status(200).render('item_result', { successMsg: '新增物品成功!' });
+      res.status(200).render('item_result', {successMsg: '新增物品成功!'});
     } else {
-      res.status(500).render('item_result', { errorMsg: '抱歉，新增物品失敗><若持續發生請聯繫我們' });
+      res.status(500).render('item_result',
+          {errorMsg: '抱歉，新增物品失敗><若持續發生請聯繫我們'});
     }
-
   });
 
   async function insertItemTags(itemId, tagsArr) {
-    const { insertNewTags, getTagIds, insertItemTags } = require('../dao/tagDAO');
+    const {insertNewTags, getTagIds, insertItemTags} = require('../model/tag');
     await insertNewTags(tagsArr);
     const tagIdArr = await getTagIds(tagsArr);
     const insertedTagsOfItemCount = await insertItemTags(itemId, tagIdArr);
     if (tagIdArr.length !== insertedTagsOfItemCount) {
       console.log('Counts of item tags insertion was wrong :');
-      console.log(`Counts of tags: ${tagIdArr.length}, counts of insertion ${insertedTagsOfItemCount}`);
+      console.log(`Counts of tags: ${tagIdArr.length},
+      counts of insertion ${insertedTagsOfItemCount}`);
     }
   }
-
 });
 // get recommmand items
 router.get('/all', async (req, res) => {
   // Lastest items for someone not member
   await getItemDataProcess(req)
-    .then(ItemDataArr => { res.status(200).send(ItemDataArr); })
-    .catch(err => { res.status(500).send(err); return; });
+      .then((ItemDataArr) => {
+        res.status(200).send(ItemDataArr);
+      })
+      .catch((err) => {
+        res.status(500).send(err); return;
+      });
 });
 
 async function getItemDataProcess(req) {
-  const { getItemDataByType } = require('../dao/item');
-  const { appendTagsToItemData } = require('../dao/tagDAO');
+  const {getItemDataByType} = require('../model/item');
+  const {appendTagsToItemData} = require('../model/tag');
   const nickname = req.query.user_nickname ?
     req.query.user_nickname : null;
   const page = req.query.page ? req.query.page : 0;
-  let category = {};
+  const category = {};
   category.main_category = req.query.main_category ?
     req.query.main_category : null;
   category.sub_category = req.query.sub_category ?
     req.query.sub_category : null;
   category.status = req.query.status ?
     req.query.status : null;
-  let itemDataArr = await getItemDataByType(page, category, nickname)
-    .catch(err => { throw err; });
+  const itemDataArr = await getItemDataByType(page, category, nickname)
+      .catch((err) => {
+        throw err;
+      });
 
-  let itemDataWithTagsArr = await appendTagsToItemData(itemDataArr);
+  const itemDataWithTagsArr = await appendTagsToItemData(itemDataArr);
   return itemDataWithTagsArr;
 }
 

@@ -2,7 +2,7 @@
 /* eslint-disable no-undef */
 const {getWantBetweenItemIds,
   checkTripleMatch,
-  checkDoubleMatch} = require('../dao/wantDAO');
+  checkDoubleMatch} = require('../model/want');
 const {pool} = require('../util/mysql');
 
 describe('want unit test', () => {

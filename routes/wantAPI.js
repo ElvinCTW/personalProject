@@ -51,8 +51,8 @@ router.post('/new', async (req, res) => {
       // Send back success or fail msg
       res.send({
         msg: ` 配對結果: \n 已新增 ${newWantInsertResult.affectedRows} 筆交換邀請,
-        \n 為您找到 ${wantOfSecondUserToCurUserItems.length} 組雙人配對,
-        \n 找到 ${wantOfThirdItemsToCurUserItems.length} 組三人配對`,
+        為您找到 ${wantOfSecondUserToCurUserItems.length} 組雙人配對,
+        找到 ${wantOfThirdItemsToCurUserItems.length} 組三人配對`,
       });
     } else {
       res.status(403).send('cannot find user with this token');

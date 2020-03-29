@@ -40,7 +40,7 @@ if (localStorage.getItem('newItem')) {
 $('#main_category').trigger('click');
 // 取得母分類資料
 $.ajax({
-  url: '/api/1.0/category/item_insertion/main',
+  url: '/api/1.0/category/item-insertion/main',
   type: 'get',
   success: (mainList) => {
     mainList.forEach((main) => {
@@ -60,7 +60,7 @@ $('#main_category_list').click((e) => {
       .val(`${e.originalEvent.toElement.attributes.main_id.value}`);
   // 取得次分類資料
   $.ajax({
-    url: `/api/1.0/category/item_insertion/sub?main_category=
+    url: `/api/1.0/category/item-insertion/sub?main_category=
     ${e.originalEvent.toElement.attributes.main_id.value}`,
     type: 'get',
     success: (subCategorylist) => {

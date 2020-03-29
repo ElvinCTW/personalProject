@@ -2,7 +2,7 @@
 /* eslint-disable no-undef */
 let page = 0;
 let nomoreUpdate = false;
-let userNickname = null;
+let nickname = null;
 const selectItemIDArr = [];
 let lastTimeSelectedArr;
 
@@ -33,8 +33,8 @@ $('#exchange-request-btn').click(() => {
         method: 'post',
         url: '/api/1.0/want/new',
         data: {
-          'want_items_Arr': wantItemArr.toString(),
-          'required_item': parseInt(window.location.search.split('=')[1]),
+          'wantItemsArr': wantItemArr.toString(),
+          'requiredItem': parseInt(window.location.search.split('=')[1]),
           'token': localStorage.getItem('token'),
         },
         success: (successMsg) => {
@@ -78,16 +78,15 @@ function changePic() {
 // 讀取 user items
 if (page !== 'end') {
   // $('#subdiv-itemdetail-useritems').attr({ style: '' })
-  userNickname = localStorage.getItem('nickname');
+  nickname = localStorage.getItem('nickname');
+  const requiredItemId = parseInt(window.location.search.split('=')[1]);
   $.ajax({
-    url: `/api/1.0/want/last?required_item_id=
-    ${parseInt(window.location.search.split('=')[1])}&
-    user_nickname=${userNickname}`,
+    url: `/api/1.0/want/last?requiredItemId=${requiredItemId}&nickname=${nickname}`,
     type: 'get',
     success: (result) => {
       lastTimeSelectedArr = result;
       $.ajax({ // 前端發送 ajax，更新現有頁面為申請者所有物品頁面
-        url: `/api/1.0/items/all?page=${page}&user_nickname=${userNickname}`,
+        url: `/api/1.0/items/all?page=${page}&nickname=${nickname}`,
         type: 'get',
         success: (itemsListArr) => {
           for (let i = 20 * page; i < (20 * page + itemsListArr.length); i++) {

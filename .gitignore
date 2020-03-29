@@ -1,9 +1,4 @@
 node_modules
-# tech
-authur.js
-recursive.js
-luke.js
-
 # Personal Security
 *.pem
 *.key

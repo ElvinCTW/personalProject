@@ -177,7 +177,7 @@ async function registerTransaction(req) {
   }
 }
 
-function signinProcess(id, password) {
+function signInUser(id, password) {
   return new Promise((resolve, reject) => {
     password = crypto.createHash('sha256').update(password).digest('hex');
     const string = 'SELECT * FROM users WHERE sign_id = ? AND password = ?';
@@ -229,7 +229,7 @@ module.exports = {
   getUserDataByColumn,
   checkVaildUserOfChat,
   registerTransaction,
-  signinProcess,
+  signInUser,
   updateWatchMsgTime,
   getLastMsgWatchedTime,
 };

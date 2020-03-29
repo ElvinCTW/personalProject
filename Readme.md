@@ -2,7 +2,7 @@
 
 <img src="./public/images/demo/intro.gif" alt="intro"/>
 
-Triangle Trade aims to provide a brand new social experience for aficionados around the world. Browse, click and chat to gather your own treasure while metting different types of new friends with same habit.
+Maximise possibility of exchange for you! 
 
 [Website URL](https://triangletrade.jia-boung.com/)
 
@@ -56,7 +56,6 @@ ID: test3, Password: 123
 ### Development
 
 * Jest
-* Trello
 * EsLint
 * Github
 * Artillery

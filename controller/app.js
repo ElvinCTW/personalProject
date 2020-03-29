@@ -1,13 +1,17 @@
 /* eslint-disable require-jsdoc */
+const {getCategories} = require('../model/category');
+const {appendTagsToItemData} = require('../model/tag');
+const {getItemDetail} = require('../model/item');
+
 async function getHomePageData(req) {
   const {statusList} = require('../util/listData');
   const awsConfig = require('../util/awsConfig');
   const resData = {};
-  resData.categories = await getSideBarList(req.query);
+  resData.categories = await getCategories(req.query);
   if (!req.query.status && req.query.main_category && req.query.sub_category) {
     resData.statusList = statusList;
   }
-  // 添加 queries
+  // 添加 search queries
   Object.keys(req.query).forEach((query) => {
     resData[query] = req.query[query];
   });
@@ -18,27 +22,6 @@ async function getHomePageData(req) {
     resData.keywordString = keywordString;
   }
   return resData;
-
-  async function getSideBarList(query) {
-    const queryData = {};
-    const categoryDAO = require('../model/category');
-    if (!query.main_category) { // '/'
-      // 取得main_categories
-      queryData.action = 'getMainCategories';
-    } else if (!query.sub_category) { // '/?main_category'
-      // 取得sub_categories
-      queryData.action = 'getSubCategories';
-      queryData.main_category = query.main_category;
-    } else if (!query.status) { // '/?main_category&sub_category'
-      // 取得物品狀態
-      queryData.action = 'doNothing';
-    } else { // '/?main_category&sub_category&status'
-      // 不用取得list
-      queryData.action = 'doNothing';
-    }
-    const categories = await categoryDAO.get(queryData);
-    return categories;
-  }
 
   async function getSearchData(search) {
     const {getItemDataFromSearchBar} = require('../model/item');
@@ -74,6 +57,15 @@ async function getHomePageData(req) {
   }
 }
 
+async function getItemDetailData(itemId, gone) {
+  const itemDetail = gone ?
+  await getItemDetail(itemId, 'gone'):
+  await getItemDetail(itemId);
+  const itemDataArrWithTags = await appendTagsToItemData([itemDetail]);
+  return itemDataArrWithTags[0];
+}
+
 module.exports = {
   getHomePageData,
+  getItemDetailData,
 };

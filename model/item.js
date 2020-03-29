@@ -206,11 +206,11 @@ async function getItemDataFromSearchBar(titleArr, hashtagArr) {
 
 async function getItemDetail(itemId, gone) {
   return new Promise((resolve, reject) => {
-    let string;
+    let string = itemJoinString;
     if (!gone) {
-      string = itemJoinString + 'WHERE i.id = ? AND i.availability = "true"';
+      string += 'WHERE i.id = ? AND i.availability = "true"';
     } else {
-      string = itemJoinString + 'WHERE i.id = ? AND i.availability = "false"';
+      string += 'WHERE i.id = ? AND i.availability = "false"';
     }
     const condition = [itemId];
     pool.query(string, condition, (err, result) => {

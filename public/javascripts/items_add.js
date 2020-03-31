@@ -36,8 +36,6 @@ if (localStorage.getItem('newItem')) {
     $('#main_category_box').hide();
   });
 })();
-// 進入頁面自動點擊主分類
-$('#main_category').trigger('click');
 // 取得母分類資料
 $.ajax({
   url: '/api/1.0/category/item-insertion/main',
@@ -110,9 +108,6 @@ $('#status_list').click((e) => {
 // autoFocus & click
 $('#title_input').change(() => {
   $('#tags_input').trigger('focus');
-});
-$('#introduction_input').change(() => {
-  $('#pics-input').trigger('click');
 });
 // tag部分排除基本輸入錯誤
 function tagsNormalization() {
@@ -204,9 +199,4 @@ form.addEventListener('submit', () => {
     type: 'button',
     background: 'rgba(20,59,81,0.5)',
   }).html('上傳中');
-});
-// 選擇圖片後自動上傳
-$('#pics-input').change(() => {
-  // event.preventDefault();
-  $('#add-items-btn').trigger('click');
 });

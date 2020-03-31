@@ -188,7 +188,7 @@ function getMatchedResultData(itemId, matchResultObj, itemType) {
       console.log('data is:');
       console.log(data);
       $.ajax({
-        url: '/api/1.0/want/checked',
+        url: '/api/1.0/want/confirm',
         type: 'post',
         data: data,
         headers: {

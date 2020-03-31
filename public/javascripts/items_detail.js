@@ -11,11 +11,6 @@ let lastTimeSelectedArr;
  */
 $('#exchange-request-btn').click(() => {
   // 避免重複按鍵上傳
-  $('#exchange-request-btn').attr({
-    type: 'button',
-    style: 'display:none;',
-    background: 'rgba(20,59,81,0.5)',
-  }).html('送出中');
   if (!localStorage.getItem('nickname')) {
     // 確認使用者有登入，如果沒有，跳alert請user登入
     alert('請登入以進行物品交換申請');
@@ -25,6 +20,10 @@ $('#exchange-request-btn').click(() => {
     alert('請不要和自己交換喔～是在哈囉？');
     return;
   } else if (selectItemIDArr.length > 0) {
+    $('#exchange-request-btn').attr({
+      type: 'button',
+      background: 'rgba(20,59,81,0.5)',
+    }).html('送出中');
     // 送出請求 Aajx
     const wantItemArr = selectItemIDArr
         .filter((id) => lastTimeSelectedArr.indexOf(id) === -1);

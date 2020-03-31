@@ -1,26 +1,31 @@
 # Triangle Trade
 
-<img src="./public/images/demo/intro.gif" alt="intro"/>
+Inspired by **breadth-first searching** strategy and **linked-list** data structure, Triangle Trade's special "triple-matching" algorithm enables users to **exchange items among three people** in a second, whether owner of target-item wants your item or not.
 
-Maximise possibility of exchange for you! 
+* Main Features
+  * **Triple exchange mechanism with auto-matching algorithm**.
+  * **Real-time communication** between users with Socket.IO.
+  * **Active notifications** by every stage of exchanging process.
 
-[Website URL](https://triangletrade.jia-boung.com/)
+* Website URL 
+  * https://triangletrade.jia-boung.com/
 
-Test accounts :
-
-ID: test, Password: 123 (Default)
-
-ID: test2, Password: 123
-
-ID: test3, Password: 123
+* Test accounts
+  * ID: test / test2 / test3
+  * Password: 123
 
 ## Table of Contents
 
-* [Technologies](#techniques)
-* [Architecture](#architecture)
-* [Database Schema](#database-schema)
-* [Workflow](#workflow)
-* [Manual](#manual)
+* [Why Triple?](#Why-Triple?)
+* [How does it works](#How-does-it-works)
+  * [Search](#Search)
+  * [Match](#Match)
+  * [Report](#Report)
+* [Skills & Tools](#Skills-&-Tools)
+* [Database Schema](#Database-schema)
+* [Architecture](#Architecture)
+* [Contect](#Contect)
+<!-- * [Manual](#manual)
   * [Browse items](#browse-items)
   * [Add items](#add-items)
   * [View item details](#view-item-details)
@@ -28,58 +33,85 @@ ID: test3, Password: 123
 * [Exchange Operations](#exchange-operations)
   * [Send invitations](#send-invitations)
   * [Match with others](#match-with-others)
-  * [Confirm for trade](#confirm-for-trade)
-* [Contect](#contect)
+  * [Confirm for trade](#confirm-for-trade) -->
 
-## Techniques
+## Why Triple?
 
-### Backend
+![doubleVStriple](./public/images/doubleVStriple.png)
 
-* Node.js
-* Express
-* Nginx
-* AWS EC2
-* AWS S3
-* Multer-S3
-* AWS RDS
-* MySQL
+Triple-matching mechanism not only means more chance than matching between two people, but **makes exchange available again** for you even if your direct exchange request was turned down by the item owner. Moreover, as time goes on, your exchange possibility will enlarge as number of potential bridge-items increase.
+
+## How does it works
+
+### Search
+
+![NodeAndRelation](./public/images/mechanismIntroduction.png)
+
+**System search through nodes by want relationship between them.** Every item is treated as a node, and each item connects to another with want relationship.
+
+Both request sender's item ID and request receiver's item ID will be recorded in want relationship, and system searches match of items layers by layers with these connections.
+
+### Match
+
+![SearchLayer](./public/images/match.png)
+
+**After searching for linked nodes, system match leaf nodes with root node.** Each match requires three steps to be done :
+
+1. Gets relationships based on target-items from last match.
+
+2. Checks the latest node with root node and records into response if they are identical.
+
+3. Combines new relationship with former one to generate linked-relationship from root node to the latest node.
+
+### Report
+
+![Reports](./public/images/report.png)
+
+After assigned times of search, system return information of all related items with match records to clients. Meanwhile, all related users will be notificated by system.
+
+## Skills & Tools
+
+* RESTful API
+* MVC design pattern
+* Functional Programming
+* SQL skills (transaction, index, foreign key)
+
+### Backend tools
+
+* Node/Express
 * Socket.IO
+* Nginx
+* AWS EC2/RDS/S3
+* Multer
+* MySQL
 * NPM
 * PM2
+
+### Front-End tools
+
 * Pug
-
-### Front-End
-
 * jQuery
 * CSS & HTML
 
-### Development
+### Development tools
 
 * Jest
-* EsLint
-* Github
+* ESLint
+* Git/Github
 * Artillery
 * MySQLWorkbench
-
-## Architecture
-
-![Architecture](./public/images/t3t_architecture.png)
 
 ## Database Schema
 
 ![Schema](./public/images/t3t_schema.png)
 
-## Workflow
+## Architecture
 
-![Workflow](./public/images/workflow.png)
-
-1. After an user sending "want" from its own item to others, Triangle Trade's algorithms will search for potential matches among 2-3 items.
-2. If any new match found, system will send match notifications to all related matcher.
-3. On the other hand, if no new matches were found, system will send match invitaion to all related non-matcher.
+![Architecture](./public/images/t3t_architecture.png)
 
 <!-- ## Demonstration -->
 
-## Manual
+<!-- ## Manual
 
 ### Browse items
 
@@ -106,7 +138,7 @@ Users will received notifications once an invitation, match or trade event relat
 ## Exchange Operations
 
 There are three scenarios of an exchange :
-> **Invitation** : If no matches were found for a new "want", system will send an exchange invitation to the owner of target item.  
+> **Invitation** : If no matches were found for a new "want", system will send an exchange invitation to the owner of target-item.  
 > **Match** : Once system found an potential exchange among items, it will send match notification to all related matchers.  
 > **Trade** : If all related matcher confirmed an exchange, system will generate a trade record and discontinue all items of the trade automatically.
 
@@ -134,8 +166,8 @@ If all related matchers confirmed the match, system will discontinue all items o
 
 Users can check their trade history and discuss details of trade in "Trade" page.
 
-<img src="./public/images/demo/chat.gif" alt="chat"/>
+<img src="./public/images/demo/chat.gif" alt="chat"/> -->
 
-## Contect
+## Contact
 
 Email : ad81328@gmail.com

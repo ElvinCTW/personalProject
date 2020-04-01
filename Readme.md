@@ -19,7 +19,7 @@ Inspired by **breadth-first search** and **linked-list** data structure, Triangl
 
 ## Table of Contents
 
-* [Why Triple?](#Why-Triple?)
+* [Why Triple](#Why-Triple)
 * [How Triangle Trade Work](#How-Triangle-Trade-Work)
   * [Search](#Search)
   * [Match](#Match)
@@ -39,7 +39,7 @@ Inspired by **breadth-first search** and **linked-list** data structure, Triangl
   * [Match with others](#match-with-others)
   * [Confirm for trade](#confirm-for-trade) -->
 
-## Why Triple?
+## Why Triple
 
 ![double VS triple](./public/images/doubleVStriple.png)
 

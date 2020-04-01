@@ -23,7 +23,7 @@ Inspired by **breadth-first search** and **linked-list** data structure, Triangl
 * [How Triangle Trade Work](#How-Triangle-Trade-Work)
   * [Search](#Search)
   * [Match](#Match)
-  * [Report](#Report)
+  * [Report](#Report) 
 * [What I have applied](#What-I-have-applied)
 * [Database Schema](#Database-schema)
 * [Architecture](#Architecture)
@@ -110,6 +110,10 @@ After assigned times of search, system return information of all related items w
 ## Architecture
 
 ![Architecture](./public/images/t3t_architecture.png)
+
+## GIF Demonstration
+
+![GIF Demonstration](./public/images/demo/quickdemo.gif)
 
 <!-- ## Demonstration -->
 

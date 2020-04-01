@@ -27,6 +27,7 @@ Inspired by **breadth-first search** and **linked-list** data structure, Triangl
 * [What I have applied](#What-I-have-applied)
 * [Database Schema](#Database-schema)
 * [Architecture](#Architecture)
+* [GIF Demonstration](#GIF-Demonstration)
 * [Contact](#Contact)
 
 <!-- * [Manual](#manual)

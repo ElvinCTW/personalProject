@@ -93,8 +93,8 @@ function getWantInvitation(token) {
 function getMatchedResultData(itemId, data, itemType) {
   // 取得 matches
   const matchedItemsDataArr = itemType === 'requiredUser' ?
-  data.hashedPosibleInvitationArrToCurUser[itemId] :
-  data.hashedInvitationArrFromCurUser[itemId];
+    data.hashedPosibleInvitationArrToCurUser[itemId] :
+    data.hashedInvitationArrFromCurUser[itemId];
   $('#items-area-match').empty();
   // 畫大框框給每個 match
   for (let i = 0; i < matchedItemsDataArr.length; i++) {
@@ -110,7 +110,7 @@ function getMatchedResultData(itemId, data, itemType) {
       interaction.append(interactionBtnDiv);
       // data for inserting want for CurUser
       const wantItemsArr =
-      matchedItemsDataArr[i].required_item_id.toString(); // cur user item id
+        matchedItemsDataArr[i].required_item_id.toString(); // cur user item id
       const confirmBtn = $('<button></button>').attr({
         'class': 'interaction-btn',
       }).html('接受邀請').click(() => { // 送出確認請求
@@ -119,8 +119,8 @@ function getMatchedResultData(itemId, data, itemType) {
           url: '/api/1.0/want/new',
           type: 'post',
           data: {
-            'required_item': matchedItemsDataArr[i].want_item_id,
-            'want_items_Arr': wantItemsArr,
+            'requiredItem': matchedItemsDataArr[i].want_item_id,
+            'wantItemsArr': wantItemsArr,
             'token': localStorage.getItem('token'),
           },
           success: (checkAllConfirmResultArr) => {

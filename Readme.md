@@ -1,14 +1,18 @@
 # Triangle Trade
 
-Inspired by **breadth-first searching** strategy and **linked-list** data structure, Triangle Trade's special "triple-matching" algorithm enables users to **exchange items among three people** in a second, whether owner of target-item wants your item or not.
+Inspired by **breadth-first search** and **linked-list** data structure, Triangle Trade's special "triple-matching" algorithm enables users to **exchange items among three people** in real time and helps users get what they are longing for.
 
 * Main Features
-  * **Triple exchange mechanism with auto-matching algorithm**.
+  * **Triple exchange mechanism** with auto-matching algorithm.
   * **Real-time communication** between users with Socket.IO.
-  * **Active notifications** by every stage of exchanging process.
+  * **Active notifications** to related users by every stage of exchanging process.
 
-* Website URL 
+* Website URL
   * https://triangletrade.jia-boung.com/
+
+* One Minute Demonstration
+  * https://youtu.be/tjqDEWMc1Kk
+<iframe width="560" height="315" src="https://www.youtube.com/embed/tjqDEWMc1Kk" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 * Test accounts
   * ID: test / test2 / test3
@@ -17,14 +21,15 @@ Inspired by **breadth-first searching** strategy and **linked-list** data struct
 ## Table of Contents
 
 * [Why Triple?](#Why-Triple?)
-* [How does it works](#How-does-it-works)
+* [How Triangle Trade Work](#How-Triangle-Trade-Work)
   * [Search](#Search)
   * [Match](#Match)
   * [Report](#Report)
-* [Skills & Tools](#Skills-&-Tools)
+* [What I have applied](#What-I-have-applied)
 * [Database Schema](#Database-schema)
 * [Architecture](#Architecture)
-* [Contect](#Contect)
+* [Contact](#Contact)
+
 <!-- * [Manual](#manual)
   * [Browse items](#browse-items)
   * [Add items](#add-items)
@@ -37,69 +42,67 @@ Inspired by **breadth-first searching** strategy and **linked-list** data struct
 
 ## Why Triple?
 
-![doubleVStriple](./public/images/doubleVStriple.png)
+![double VS triple](./public/images/doubleVSTriple.png)
 
-Triple-matching mechanism not only means more chance than matching between two people, but **makes exchange available again** for you even if your direct exchange request was turned down by the item owner. Moreover, as time goes on, your exchange possibility will enlarge as number of potential bridge-items increase.
+Triple-matching mechanism not only means more chance than matching between two people, but **makes exchange available again** for you even if your direct exchange request was turned down by the item owner. Moreover, as time goes on, your exchange possibility will enlarge as number of potential bridging items increase.
 
-## How does it works
+## How Triangle Trade Work
 
 ### Search
 
-![NodeAndRelation](./public/images/mechanismIntroduction.png)
+![Node And Relation](./public/images/mechanismIntroduction.png)
 
-**System search through nodes by want relationship between them.** Every item is treated as a node, and each item connects to another with want relationship.
+System search through nodes by **want relationship between them.** Every item is treated as a node, and each item connects to another with want relationship.
 
 Both request sender's item ID and request receiver's item ID will be recorded in want relationship, and system searches match of items layers by layers with these connections.
 
 ### Match
 
-![SearchLayer](./public/images/match.png)
+![Match](./public/images/match.png)
 
-**After searching for linked nodes, system match leaf nodes with root node.** Each match requires three steps to be done :
+After searching for linked nodes, **system match leaf nodes with root node.** Each match requires three steps to be done :
 
-1. Gets relationships based on target-items from last match.
+1. Gets want based on target nodes from last match.
 
-2. Checks the latest node with root node and records into response if they are identical.
+2. Compares the latest node with root node and records into response if they are identical.
 
-3. Combines new relationship with former one to generate linked-relationship from root node to the latest node.
+3. Combines new want with former one to generate linked-want from root node to the latest node.
 
 ### Report
 
-![Reports](./public/images/report.png)
+![Report](./public/images/report.png)
 
-After assigned times of search, system return information of all related items with match records to clients. Meanwhile, all related users will be notificated by system.
+After assigned times of search, system return information of all related items with match records to clients. Meanwhile, all related users will be notified by system.
 
-## Skills & Tools
+## What I have applied
 
-* RESTful API
-* MVC design pattern
-* Functional Programming
-* SQL skills (transaction, index, foreign key)
+* General
+  * RESTful API
+  * MVC design pattern
+  * Functional Programming
+  * SQL skills (transaction, index, foreign key)
 
-### Backend tools
+* Backend tools
+  * Node/Express
+  * Socket.IO
+  * Nginx
+  * AWS EC2/RDS/S3
+  * Multer
+  * MySQL
+  * NPM
+  * PM2
 
-* Node/Express
-* Socket.IO
-* Nginx
-* AWS EC2/RDS/S3
-* Multer
-* MySQL
-* NPM
-* PM2
+* Front-End tools
+  * Pug
+  * jQuery
+  * CSS & HTML
 
-### Front-End tools
-
-* Pug
-* jQuery
-* CSS & HTML
-
-### Development tools
-
-* Jest
-* ESLint
-* Git/Github
-* Artillery
-* MySQLWorkbench
+* Development tools
+  * Jest
+  * ESLint
+  * Git/Github
+  * Artillery
+  * MySQLWorkbench
 
 ## Database Schema
 

@@ -13,8 +13,6 @@ Inspired by **breadth-first search** and **linked-list** data structure, Triangl
 * One Minute Demonstration
   * https://youtu.be/tjqDEWMc1Kk
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/tjqDEWMc1Kk" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
 * Test accounts
   * ID: test / test2 / test3
   * Password: 123
@@ -43,7 +41,7 @@ Inspired by **breadth-first search** and **linked-list** data structure, Triangl
 
 ## Why Triple?
 
-![double VS triple](./public/images/doubleVSTriple.png)
+![double VS triple](./public/images/doubleVStriple.png)
 
 Triple-matching mechanism not only means more chance than matching between two people, but **makes exchange available again** for you even if your direct exchange request was turned down by the item owner. Moreover, as time goes on, your exchange possibility will enlarge as number of potential bridging items increase.
 

@@ -3,7 +3,6 @@ const multer = require('multer');
 const multerS3 = require('multer-s3');
 const {accessKeyId, secretAccessKey} = require('../util/awsConfig');
 const {getUserDataByToken} = require('../model/user');
-let userNickname;
 
 const upload = multer({
   storage: multerS3({
@@ -18,7 +17,7 @@ const upload = multer({
           });
       if (userDataArr[0]) {
         req.body.userID = userDataArr[0].id;
-        userNickname = userDataArr[0].nickname;
+        const userNickname = userDataArr[0].nickname;
         cb(null, `userUpload/${userNickname}/${userNickname}-`+
         Date.now().toString());
       } else {

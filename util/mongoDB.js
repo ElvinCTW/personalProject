@@ -13,7 +13,7 @@ db.once('open', ()=>{
 // Want
 const wantTreeSchema = new mongoose.Schema({
   wantItemId: Number,
-  requiredItemsId: Array,
+  requiredItemsIdMap: Map, // next tree pointer
 });
 
 wantTreeSchema.methods.getWantItemId = function() {
@@ -37,13 +37,23 @@ function _getRequiredItems() {
   return this.requiredItemsId;
 };
 
+// wantTreeSchema.methods.setRequiredItems = function(itemIdArray) {
+//   return _setRequiredItems(itemIdArray);
+// };
+// function _setRequiredItems(itemIdArray) {
+//   this.requiredItemsId = new Map();
+//   itemIdArray.forEach((itemId)=>{
+//     this.requiredItemsId.set(itemId, true);
+//   });
+// };
+
 wantTreeSchema.methods.setRequiredItems = function(itemIdArray) {
   return _setRequiredItems(itemIdArray);
 };
 function _setRequiredItems(itemIdArray) {
-  this.requiredItemsId.length = 0;
+  this.requiredItemsId = new Map();
   itemIdArray.forEach((itemId)=>{
-    this.requiredItemsId.push(itemId);
+    this.requiredItemsId.set(itemId, true);
   });
 };
 
@@ -53,11 +63,11 @@ wantTreeSchema.methods.insertMongoDB = function() {
 async function _insertMongoDB() {
   // Check empty value or wrong type
   if (!this.wantItemId ||
-    typeof this.wantItemId !== 'number' ||
-    this.requiredItemsId.length === 0 ) {
+    !this.wantItemId instanceof Map ||
+    this.requiredItemsId.size === 0 ) {
     return false;
   }
-  this.requiredItemsId.forEach((itemId)=>{
+  this.requiredItemsId.keys.forEach((itemId)=>{
     if (typeof itemId !== 'number') return false;
   });
 
@@ -76,5 +86,6 @@ async function _insertMongoDB() {
 const WantTree = mongoose.model('WantTree', userSchema, 'WantTree');
 
 module.exports = {
+  mongoose,
   WantTree,
 };
